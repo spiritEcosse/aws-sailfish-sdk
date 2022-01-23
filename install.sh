@@ -37,18 +37,28 @@ function install_docker() {
 	log_app_msg "docker already installed."
 }
 
-function install_sailfish_sdk() {
-	# install sailfish sdk
-	log_app_msg "begin install sailfish sdk"
-
+function download_sailfish_sdk() {
 	if [ ! -f "${SDK_FILE_NAME}" ]; then
 		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}/${SDK_FILE_NAME}
 		chmod +x ${SDK_FILE_NAME}
 		log_app_msg "download ${SDK_FILE_NAME} is successfully."
+	else
+		log_app_msg "file ${SDK_FILE_NAME} exists."
 	fi
+}
+
+function run_sailfish_sdk() {
 	if [[ -z ${DISPLAY} ]]; then
 		./${SDK_FILE_NAME}
 	fi
 }
 
-install_deps && install_docker && install_sailfish_sdk
+function theme_qtcreator() {
+	if [ ! -d "qtcreator" ]; then
+		git clone https://github.com/dracula/qtcreator.git
+		cp qtcreator/dracula.xml /home/ubuntu/SailfishOS/share/qtcreator/styles/
+		log_app_msg "dracula.xml have copied successfully."
+	fi
+}
+
+install_deps && install_docker && download_sailfish_sdk && theme_qtcreator && run_sailfish_sdk
