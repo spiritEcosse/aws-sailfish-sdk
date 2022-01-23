@@ -30,7 +30,7 @@ function install_docker() {
 		sudo apt-get update -y && \
 		sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
-		sudo usermod -aG docker $USER 
+		sudo usermod -aG docker "$USER"
 		newgrp docker
 		log_app_msg "Manage Docker as a non-root user. Successfully."
 	fi
@@ -39,7 +39,7 @@ function install_docker() {
 
 function install_sailfish_sdk() {
 	# install sailfish sdk
-	log_app_msg "install_sailfish_sdk"
+	log_app_msg "begin install sailfish sdk"
 
 	if [ ! -f "${SDK_FILE_NAME}" ]; then
 		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}/${SDK_FILE_NAME}
