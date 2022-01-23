@@ -29,7 +29,6 @@ function install_docker() {
 }
 
 function manage_docker_as_a_non_root_user() {
-	sudo groupadd docker
 	sudo usermod -aG docker $USER 
 	exec sudo su -l $USER
 	newgrp docker
