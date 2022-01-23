@@ -4,6 +4,7 @@
 RED='\033[0;31m'
 BLUE='\033[1;36m'
 SDK_VERSION='3.7.4'
+SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
 
 function log_app_msg() {
 	echo -ne "[${BLUE}INFO${NC}] $@\n"
@@ -36,9 +37,13 @@ function manage_docker_as_a_non_root_user() {
 
 function install_sailfish_sdk() {
 	# install sailfish sdk
-	curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}/SailfishSDK-${SDK_VERSION}-linux64-offline.run
-	chmod +x SailfishSDK-${SDK_VERSION}-linux64-offline.run
-	./SailfishSDK-${SDK_VERSION}-linux64-offline.run
+	if [ ! -f "${SDK_FILE_NAME}" ]; then
+		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}/${SDK_FILE_NAME}
+		chmod +x ${SDK_FILE_NAME}
+	fi
+	if [[ -z ${DISPLAY} ]]; then
+		./${SDK_FILE_NAME}
+	fi
 }
 
 install_deps && install_docker && manage_docker_as_a_non_root_user && install_sailfish_sdk
