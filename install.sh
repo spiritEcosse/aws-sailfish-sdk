@@ -38,6 +38,8 @@ function install_docker() {
 
 function install_sailfish_sdk() {
 	# install sailfish sdk
+	log_app_msg "install_sailfish_sdk"
+	
 	if [ ! -f "${SDK_FILE_NAME}" ]; then
 		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}/${SDK_FILE_NAME}
 		chmod +x ${SDK_FILE_NAME}
