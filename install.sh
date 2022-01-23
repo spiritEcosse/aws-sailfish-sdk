@@ -41,9 +41,9 @@ function download_sailfish_sdk() {
 	if [ ! -f "${SDK_FILE_NAME}" ]; then
 		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}/${SDK_FILE_NAME}
 		chmod +x ${SDK_FILE_NAME}
-		log_app_msg "download ${SDK_FILE_NAME} is successfully."
+		log_app_msg "Download ${SDK_FILE_NAME} has completed successfully."
 	else
-		log_app_msg "file ${SDK_FILE_NAME} exists."
+		log_app_msg "File ${SDK_FILE_NAME} already exists."
 	fi
 }
 
@@ -57,8 +57,20 @@ function theme_qtcreator() {
 	if [ ! -d "qtcreator" ]; then
 		git clone https://github.com/dracula/qtcreator.git
 		cp qtcreator/dracula.xml /home/ubuntu/SailfishOS/share/qtcreator/styles/
-		log_app_msg "dracula.xml have copied successfully."
+		log_app_msg "File dracula.xml has copied successfully."
 	fi
 }
 
-install_deps && install_docker && download_sailfish_sdk && theme_qtcreator && run_sailfish_sdk
+function bible_project() {
+	if [ ! -d "bible" ]; then
+		git clone https://github.com/spiritEcosse/bible.git
+		log_app_msg "Project bible has downloaded successfully."
+	fi
+}
+
+install_deps && \
+install_docker && \
+download_sailfish_sdk && \
+theme_qtcreator && \
+bible_project && \
+run_sailfish_sdk
