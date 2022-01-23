@@ -30,10 +30,7 @@ function install_docker() {
 
 function manage_docker_as_a_non_root_user() {
 	sudo usermod -aG docker $USER 
-	exec sudo su -l $USER
-	log_app_msg "exec sudo su -l $USER. Successfully."
 	newgrp docker
-	log_app_msg "newgrp docker. Successfully."
 	log_app_msg "Manage Docker as a non-root user. Successfully."
 }
 
