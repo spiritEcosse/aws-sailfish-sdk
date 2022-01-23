@@ -28,18 +28,18 @@ function install_docker() {
 		echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 		sudo apt-get update -y && \
 		sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-		log_app_msg "docker already installed."
 
 		sudo usermod -aG docker $USER 
 		newgrp docker
 		log_app_msg "Manage Docker as a non-root user. Successfully."
 	fi
+	log_app_msg "docker already installed."
 }
 
 function install_sailfish_sdk() {
 	# install sailfish sdk
 	log_app_msg "install_sailfish_sdk"
-	
+
 	if [ ! -f "${SDK_FILE_NAME}" ]; then
 		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}/${SDK_FILE_NAME}
 		chmod +x ${SDK_FILE_NAME}
