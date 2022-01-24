@@ -30,8 +30,9 @@ function install_virtualbox() {
 function install_docker() {
 	# install docker
 	# https://docs.docker.com/engine/install/ubuntu/
+	docker -v
 
-	if [[ -x "$(docker -v)" ]]; then
+	if [[ $? -ne 0 ]]; then
 		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 		echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 		sudo apt-get update -y && \
@@ -86,9 +87,9 @@ function grt_aliases() {
 }
 
 install_deps && \
-install_virtualbox && \
-#install_docker && \
+# install_virtualbox && \
+install_docker && \
 download_sailfish_sdk && \
-theme_qtcreator && \
 bible_project && \
-run_sailfish_sdk
+run_sailfish_sdk && \
+theme_qtcreator 
