@@ -72,11 +72,14 @@ function theme_qtcreator() {
 function bible_project() {
 	if [ ! -d "bible" ]; then
 		git clone https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${GITHUB_USER}/bible.git
+		cd bible
+		git co github_action_build
+		cd ~/
 		log_app_msg "Project bible has downloaded successfully."
 	fi
 }
 
-function grt_aliases() {
+function git_aliases() {
 	git config --global alias.co checkout                                                                                                                                        ─╯
 	git config --global alias.ci commit
 	git config --global alias.st status
@@ -90,6 +93,7 @@ install_deps && \
 # install_virtualbox && \
 install_docker && \
 download_sailfish_sdk && \
+git_aliases && \
 bible_project && \
 run_sailfish_sdk && \
 theme_qtcreator 
