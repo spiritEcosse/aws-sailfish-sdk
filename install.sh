@@ -24,6 +24,7 @@ function install_deps() {
 
 function install_virtualbox() {
 	sudo apt-get install -y virtualbox
+	log_app_msg "virtualbox has installed successfully."
 }
 
 function install_docker() {
