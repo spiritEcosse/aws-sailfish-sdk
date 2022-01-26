@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      context: .
+    volumes:
+      - /Users/ihor/.Xauthority:/root/.Xauthority
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./install.sh:/home/ubuntu/install.sh
+    privileged: true
+    environment:
+      - DISPLAY=${DISPLAY}
+    command: bash /home/ubuntu/install.sh
+
