@@ -154,5 +154,5 @@ download_sailfish_sdk && \
 git_aliases && \
 bible_project && \
 set_envs && \
-run_sailfish_sdk && \
-theme_qtcreator 
+theme_qtcreator && \
+run_sailfish_sdk
