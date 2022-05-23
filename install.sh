@@ -3,7 +3,7 @@
 # builtin variables
 RED='\033[0;31m'
 BLUE='\033[1;36m'
-SDK_VERSION='3.7.4'
+SDK_VERSION='3.9.6'
 SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
 BIBLE_GIT_BRANCH=github_action_build
 GITHUB_TOKEN="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"
