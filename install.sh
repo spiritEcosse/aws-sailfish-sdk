@@ -6,7 +6,6 @@ BLUE='\033[1;36m'
 SDK_VERSION='3.9.6'
 SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
 BIBLE_GIT_BRANCH=support_mac_m1
-GITHUB_TOKEN="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"
 GITHUB_USER="spiritEcosse"
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_NONINTERACTIVE_SEEN=true
@@ -148,6 +147,7 @@ function git_aliases() {
 	return 0
 }
 
+read -p 'GITHUB_TOKEN: ' GITHUB_TOKEN &&
 install_deps && \
 install_docker && \
 download_sailfish_sdk && \
