@@ -118,7 +118,7 @@ function theme_qtcreator() {
 
 function bible_project() {
 	if [ ! -d "bible" ]; then
-		git clone https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${GITHUB_USER}/bible.git  && \
+		git clone https://github.com/spiritEcosse/bible.git  && \
 		cd bible && \
 		git switch -c ${BIBLE_GIT_BRANCH} && \
 		git branch --set-upstream-to=origin/${BIBLE_GIT_BRANCH} ${BIBLE_GIT_BRANCH} && \
@@ -147,7 +147,7 @@ function git_aliases() {
 	return 0
 }
 
-read -p 'GITHUB_TOKEN: ' GITHUB_TOKEN &&
+#read -p 'GITHUB_TOKEN: ' GITHUB_TOKEN &&
 install_deps && \
 install_docker && \
 download_sailfish_sdk && \
