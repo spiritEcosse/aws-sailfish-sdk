@@ -114,6 +114,7 @@ function set_envs() {
 	if ! grep "$PATH_" ~/.zshrc; then
 		echo "$PATH_" >> ~/.zshrc
 	fi
+  source ~/.zshrc
 }
 
 function git_aliases() {
