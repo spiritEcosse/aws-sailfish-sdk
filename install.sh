@@ -107,7 +107,7 @@ function set_envs() {
 	if ! grep "$LIBGL_ALWAYS_INDIRECT" ~/.zshrc; then
 		echo "$LIBGL_ALWAYS_INDIRECT" >> ~/.zshrc
 	fi
-	PATH_="export PATH=$HOME/bin:/usr/local/bin:$PATH"
+	PATH_="export PATH=$HOME/bin:/usr/local/bin:\$PATH"
 	if ! grep "$PATH_" ~/.bashrc; then
 		echo "$PATH_" >> ~/.bashrc
 	fi
