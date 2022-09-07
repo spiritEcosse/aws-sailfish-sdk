@@ -46,6 +46,7 @@ function log_failure_msg() {
 function set_tz() {
 	sudo timedatectl list-timezones | grep Europe
 	sudo timedatectl set-timezone Europe/Madrid
+	timedatectl
 }
 
 function install_deps() {
@@ -100,9 +101,17 @@ function run_sailfish_sdk() {
 }
 
 function set_envs() {
-	echo "LIBGL_ALWAYS_INDIRECT=1" >> ~/.bashrc
-	echo "LIBGL_ALWAYS_INDIRECT=1" >> ~/.zshc
-	echo "alias sfdk=~/SailfishOS/bin/sfdk" >> ~/.zshc
+	LIBGL_ALWAYS_INDIRECT="LIBGL_ALWAYS_INDIRECT=1"
+	if ! grep "$LIBGL_ALWAYS_INDIRECT" ~/.bashrc; then
+		echo "$LIBGL_ALWAYS_INDIRECT" >> ~/.bashrc
+	fi
+	if ! grep "$LIBGL_ALWAYS_INDIRECT" ~/.zshrc; then
+		echo "$LIBGL_ALWAYS_INDIRECT" >> ~/.zshrc
+	fi
+	SFDK="alias sfdk=~/SailfishOS/bin/sfdk"
+	if ! grep "$SFDK" ~/.zshrc; then
+		echo "$SFDK" >> ~/.zshrc
+	fi
 }
 
 function git_aliases() {
