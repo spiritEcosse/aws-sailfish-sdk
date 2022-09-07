@@ -92,7 +92,11 @@ function sfdk_download() {
 }
 
 function sfdk_install() {
-	QT_QPA_PLATFORM=minimal ./${SDK_FILE_NAME} --verbose non-interactive=1 accept-licenses=1 build-engine-type=docker
+  if [[ ! -d "SailfishOS" ]]; then
+	  QT_QPA_PLATFORM=minimal ./${SDK_FILE_NAME} --verbose non-interactive=1 accept-licenses=1 build-engine-type=docker
+	else
+	  log_app_msg "Folder SailfishOS already exists."
+	fi
 }
 
 function set_envs() {
@@ -137,6 +141,10 @@ exec ~/SailfishOS/bin/sfdk "$@"' > ~/bin/sfdk
   sfdk --help
 }
 
+sfdk_tools_lis() {
+  sfdk tools list
+}
+
 set_envs
 install_deps
 install_docker
@@ -147,3 +155,4 @@ git_aliases
 sfdk_download
 sfdk_install
 sfdk_put_to_bin
+sfdk_tools_lis
