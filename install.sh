@@ -107,6 +107,13 @@ function set_envs() {
 	if ! grep "$LIBGL_ALWAYS_INDIRECT" ~/.zshrc; then
 		echo "$LIBGL_ALWAYS_INDIRECT" >> ~/.zshrc
 	fi
+	PATH_="/home/ubuntu/bin:${PATH}"
+	if ! grep "$PATH_" ~/.bashrc; then
+		echo "$PATH_" >> ~/.bashrc
+	fi
+	if ! grep "$PATH_" ~/.zshrc; then
+		echo "$PATH_" >> ~/.zshrc
+	fi
 }
 
 function git_aliases() {
