@@ -92,7 +92,7 @@ function sfdk_download() {
 }
 
 function sfdk_install() {
-	QT_QPA_PLATFORM=minimal ${SDK_FILE_NAME} --verbose non-interactive=1 accept-licenses=1 build-engine-type=docker
+	QT_QPA_PLATFORM=minimal ./${SDK_FILE_NAME} --verbose non-interactive=1 accept-licenses=1 build-engine-type=docker
 }
 
 function set_envs() {
