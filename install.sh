@@ -146,7 +146,6 @@ sfdk_put_to_bin() {
   echo '#!/bin/sh
 exec ~/SailfishOS/bin/sfdk "$@"' > ~/bin/sfdk
   chmod +x ~/bin/sfdk
-  sfdk --help
 }
 
 sfdk_tools_lis() {
