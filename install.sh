@@ -114,6 +114,9 @@ function set_envs() {
 	if ! grep "$PATH_" ~/.zshrc; then
 		echo "$PATH_" >> ~/.zshrc
 	fi
+	if [[ -z ${ZSH_VERSION+x} ]]; then
+    ZSH_VERSION=$(zsh --version)
+  fi
   source ~/.zshrc
 }
 
