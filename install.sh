@@ -1,12 +1,17 @@
 #!/bin/bash
 
+# e - script stops on error (return != 0)
+# u - error if undefined variable
+# o pipefail - script fails if one of piped command fails
+# x - output each line (debug)
+set -euox pipefail
+
+
 # builtin variables
 RED='\033[0;31m'
 BLUE='\033[1;36m'
 SDK_VERSION='3.9.6'
 SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
-BIBLE_GIT_BRANCH=support_mac_m1
-GITHUB_USER="spiritEcosse"
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_NONINTERACTIVE_SEEN=true
 
@@ -31,35 +36,27 @@ function install_for_ubuntu {
 }
 
 function log_app_msg() {
-	echo -ne "[${BLUE}INFO${NC}] $@\n"
+	echo -ne "[${BLUE}INFO] $@\n"
 }
 
 function log_failure_msg() {
-	echo -ne "[${RED}ERROR${NC}] $@\n"
+	echo -ne "[${RED}ERROR] $@\n"
 }
 
-function install_tzdata() {
-	lib=tzdata
-	if [[ ! $(dpkg -s ${lib}) ]]
-	then
-		echo "============================================= install ${lib} ===================================================="
-		sudo apt-get install -y ${lib}
-		debconf-set-selections \
-			tzdata tzdata/Areas select Europe \
-			tzdata tzdata/Zones/Europe select Ukraine
-	fi
+function set_tz() {
+	sudo timedatectl list-timezones | grep Europe
+	sudo timedatectl set-timezone Europe/Madrid
 }
 
 function install_deps() {
 	system_prepare_ubuntu
 	programs=()
-	install_for_ubuntu tzdata libxcb1 libx11-xcb1 libxcb1 libxcb-glx0 libfontconfig1 libx11-data libx11-xcb1 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-sync1 libxcb-xfixes0 libxcb-xinerama0 libxcb-xkb1 libsm6 libxkbcommon-x11-0 libwayland-egl1 libegl-dev libxcomposite1 libwayland-cursor0 libharfbuzz-dev libxi-dev libtinfo5 ca-certificates curl gnupg lsb-release mesa-utils libgl1-mesa-glx micro lsb-release sudo
+	install_for_ubuntu sudo systemd libxcb1 libx11-xcb1 libxcb1 libxcb-glx0 libfontconfig1 libx11-data libx11-xcb1 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-sync1 libxcb-xfixes0 libxcb-xinerama0 libxcb-xkb1 libsm6 libxkbcommon-x11-0 libwayland-egl1 libegl-dev libxcomposite1 libwayland-cursor0 libharfbuzz-dev libxi-dev libtinfo5 ca-certificates curl gnupg lsb-release mesa-utils libgl1-mesa-glx micro lsb-release sudo zsh git
 	if [[ $programs ]]
     then
         log_app_msg "Installed programs: "
         echo -e ${programs[@]}
     fi
-	return 0
 }
 
 function install_virtualbox() {
@@ -70,9 +67,8 @@ function install_virtualbox() {
 function install_docker() {
 	# install docker
 	# https://docs.docker.com/engine/install/ubuntu/
-	docker -v
 
-	if [[ $? -ne 0 ]]; then
+	if ! which docker; then
 		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
 		echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
 		sudo apt-get update -y && \
@@ -82,7 +78,6 @@ function install_docker() {
 		exit 1
 	fi
 	log_app_msg "docker already installed."
-	return 0
 }
 
 function download_sailfish_sdk() {
@@ -93,7 +88,6 @@ function download_sailfish_sdk() {
 	else
 		log_app_msg "File ${SDK_FILE_NAME} already exists."
 	fi
-	return 0
 }
 
 function run_sailfish_sdk() {
@@ -102,7 +96,7 @@ function run_sailfish_sdk() {
 		return $?
 	fi
 	log_app_msg "Variable DISPLAY has value '${DISPLAY}'."
-	return 1
+	exit 1
 }
 
 function theme_qtcreator() {
@@ -113,27 +107,12 @@ function theme_qtcreator() {
 	else
 		log_app_msg "File dracula.xml already copied."
 	fi
-	return 0
-}
-
-function bible_project() {
-	if [ ! -d "bible" ]; then
-		git clone https://github.com/spiritEcosse/bible.git  && \
-		cd bible && \
-		git switch -c ${BIBLE_GIT_BRANCH} && \
-		git branch --set-upstream-to=origin/${BIBLE_GIT_BRANCH} ${BIBLE_GIT_BRANCH} && \
-		git pull && \
-		cd ~/
-		log_app_msg "Project bible has downloaded successfully."
-	else
-		log_app_msg "Project bible already exists."
-	fi
-	return 0
 }
 
 function set_envs() {
 	echo "LIBGL_ALWAYS_INDIRECT=1" >> ~/.bashrc
-	return 0
+	echo "LIBGL_ALWAYS_INDIRECT=1" >> ~/.zshc
+	echo "alias sfdk=~/SailfishOS/bin/sfdk" >> ~/.zshc
 }
 
 function git_aliases() {
@@ -144,15 +123,29 @@ function git_aliases() {
 	git config --global alias.hist "log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short"
 	git config --global alias.type 'cat-file -t'
 	git config --global alias.dump 'cat-file -p'
-	return 0
 }
 
-#read -p 'GITHUB_TOKEN: ' GITHUB_TOKEN &&
-install_deps && \
-install_docker && \
-download_sailfish_sdk && \
-git_aliases && \
-bible_project && \
-set_envs && \
-theme_qtcreator && \
+function set_zsh_by_default() {
+	sudo chsh -s $(which zsh)
+}
+
+create_spec_dirs() {
+	mkdir -p ~/build-bible-SailfishOS_4_4_0_58_armv7hl_in_sailfish_sdk_build_engine_ubuntu-Debug
+}
+
+ohmyzsh() {
+	if [ ! -d ".oh-my-zsh" ]; then
+		sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	fi
+}
+
+install_deps
+set_tz
+ohmyzsh
+install_docker
+download_sailfish_sdk 
+git_aliases
+set_envs
+theme_qtcreator
+set_zsh_by_default
 run_sailfish_sdk
