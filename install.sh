@@ -81,7 +81,7 @@ function install_docker() {
 	log_app_msg "docker already installed."
 }
 
-function download_sailfish_sdk() {
+function sfdk_download() {
 	if [ ! -f "${SDK_FILE_NAME}" ]; then
 		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}/${SDK_FILE_NAME} && \
 		chmod +x ${SDK_FILE_NAME}
@@ -91,13 +91,8 @@ function download_sailfish_sdk() {
 	fi
 }
 
-function run_sailfish_sdk() {
-	if [[ ! -z ${DISPLAY} ]]; then
-		./${SDK_FILE_NAME}
-		return $?
-	fi
-	log_app_msg "Variable DISPLAY has value '${DISPLAY}'."
-	exit 1
+function sfdk_install() {
+	QT_QPA_PLATFORM=minimal ${SDK_FILE_NAME} --verbose non-interactive=1 accept-licenses=1 build-engine-type=docker
 }
 
 function set_envs() {
@@ -107,10 +102,6 @@ function set_envs() {
 	fi
 	if ! grep "$LIBGL_ALWAYS_INDIRECT" ~/.zshrc; then
 		echo "$LIBGL_ALWAYS_INDIRECT" >> ~/.zshrc
-	fi
-	SFDK="alias sfdk=~/SailfishOS/bin/sfdk"
-	if ! grep "$SFDK" ~/.zshrc; then
-		echo "$SFDK" >> ~/.zshrc
 	fi
 }
 
@@ -132,18 +123,27 @@ create_spec_dirs() {
 	mkdir -p ~/build-bible-SailfishOS_4_4_0_58_armv7hl_in_sailfish_sdk_build_engine_ubuntu-Debug
 }
 
-ohmyzsh() {
+install_ohmyzsh() {
 	if [ ! -d ".oh-my-zsh" ]; then
 		sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 	fi
 }
 
-install_deps
-set_tz
-ohmyzsh
-install_docker
-download_sailfish_sdk 
-git_aliases
+sfdk_put_to_bin() {
+  mkdir -p ~/bin
+  echo '#!/bin/sh
+exec ~/SailfishOS/bin/sfdk "$@"' > ~/bin/sfdk
+  chmod +x ~/bin/sfdk
+  sfdk --help
+}
+
 set_envs
+install_deps
+install_docker
+install_ohmyzsh
+set_tz
 set_zsh_by_default
-run_sailfish_sdk
+git_aliases
+sfdk_download
+sfdk_install
+sfdk_put_to_bin
