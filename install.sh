@@ -99,16 +99,6 @@ function run_sailfish_sdk() {
 	exit 1
 }
 
-function theme_qtcreator() {
-	if [ ! -d "qtcreator" ]; then
-		git clone https://github.com/dracula/qtcreator.git && \
-		cp qtcreator/dracula.xml /home/ubuntu/SailfishOS/share/qtcreator/styles/
-		log_app_msg "File dracula.xml has copied successfully."
-	else
-		log_app_msg "File dracula.xml already copied."
-	fi
-}
-
 function set_envs() {
 	echo "LIBGL_ALWAYS_INDIRECT=1" >> ~/.bashrc
 	echo "LIBGL_ALWAYS_INDIRECT=1" >> ~/.zshc
@@ -146,6 +136,5 @@ install_docker
 download_sailfish_sdk 
 git_aliases
 set_envs
-theme_qtcreator
 set_zsh_by_default
 run_sailfish_sdk
