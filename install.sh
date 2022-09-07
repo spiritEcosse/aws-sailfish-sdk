@@ -116,7 +116,7 @@ function git_aliases() {
 }
 
 function set_zsh_by_default() {
-	chsh -s $(which zsh)
+	sudo chsh -s $(which zsh) $(whoami)
 }
 
 create_spec_dirs() {
