@@ -6,7 +6,6 @@
 # x - output each line (debug)
 set -euox pipefail
 
-
 # builtin variables
 RED='\033[0;31m'
 BLUE='\033[1;36m'
@@ -14,15 +13,31 @@ SDK_VERSION='3.9.6'
 SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_NONINTERACTIVE_SEEN=true
+SSH_ID_RSA="$HOME/.ssh/id_rsa"
 
-function system_prepare_ubuntu {
+# Default values
+func=main
+operands=()
+
+# Arguments handling
+while (( ${#} > 0 )); do
+  case "${1}" in
+    ( '--func='* ) func="${1#*=}" ;;           # Handles --opt1
+    ( '--' ) operands+=( "${@:2}" ); break ;;  # End of options
+    ( '-'?* ) ;;                               # Discard non-valid options
+    ( * ) operands+=( "${1}" )                 # Handles operands
+  esac
+  shift
+done
+
+system_prepare_ubuntu {
     sudo apt-get update -y
     sudo apt-get upgrade -y
     sudo apt-get dist-upgrade -y
     # sudo dpkg --configure -a
 }
 
-function install_for_ubuntu {
+install_for_ubuntu {
     for lib in "$@"
     do
         if [[ ! $(dpkg -s ${lib}) ]]
@@ -35,21 +50,21 @@ function install_for_ubuntu {
     done
 }
 
-function log_app_msg() {
+log_app_msg() {
 	echo -ne "[${BLUE}INFO] $@\n"
 }
 
-function log_failure_msg() {
+log_failure_msg() {
 	echo -ne "[${RED}ERROR] $@\n"
 }
 
-function set_tz() {
+set_tz() {
 	sudo timedatectl list-timezones | grep Europe
 	sudo timedatectl set-timezone Europe/Madrid
 	timedatectl
 }
 
-function install_deps() {
+install_deps() {
 	system_prepare_ubuntu
 	programs=()
 	install_for_ubuntu sudo systemd libxcb1 libx11-xcb1 libxcb1 libxcb-glx0 libfontconfig1 libx11-data libx11-xcb1 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-sync1 libxcb-xfixes0 libxcb-xinerama0 libxcb-xkb1 libsm6 libxkbcommon-x11-0 libwayland-egl1 libegl-dev libxcomposite1 libwayland-cursor0 libharfbuzz-dev libxi-dev libtinfo5 ca-certificates curl gnupg lsb-release mesa-utils libgl1-mesa-glx micro lsb-release sudo zsh git
@@ -60,12 +75,12 @@ function install_deps() {
     fi
 }
 
-function install_virtualbox() {
+install_virtualbox() {
 	sudo apt-get install -y virtualbox
 	log_app_msg "virtualbox has installed successfully."
 }
 
-function install_docker() {
+install_docker() {
 	# install docker
 	# https://docs.docker.com/engine/install/ubuntu/
 
@@ -81,7 +96,7 @@ function install_docker() {
 	log_app_msg "docker already installed."
 }
 
-function sfdk_download() {
+sfdk_download() {
 	if [ ! -f "${SDK_FILE_NAME}" ]; then
 		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}/${SDK_FILE_NAME} && \
 		chmod +x ${SDK_FILE_NAME}
@@ -91,7 +106,7 @@ function sfdk_download() {
 	fi
 }
 
-function sfdk_install() {
+sfdk_install() {
   if [[ ! -d "SailfishOS" ]]; then
 	  QT_QPA_PLATFORM=minimal ./${SDK_FILE_NAME} --verbose non-interactive=1 accept-licenses=1 build-engine-type=docker
 	else
@@ -99,7 +114,7 @@ function sfdk_install() {
 	fi
 }
 
-function set_envs() {
+set_envs() {
 	LIBGL_ALWAYS_INDIRECT="LIBGL_ALWAYS_INDIRECT=1"
 	if ! grep "$LIBGL_ALWAYS_INDIRECT" ~/.bashrc; then
 		echo "$LIBGL_ALWAYS_INDIRECT" >> ~/.bashrc
@@ -116,7 +131,7 @@ function set_envs() {
 	fi
 }
 
-function set_zsh_by_default() {
+set_zsh_by_default() {
 	sudo chsh -s $(which zsh) $(whoami)
 }
 
@@ -132,6 +147,7 @@ install_ohmyzsh() {
 
 sfdk_put_to_bin() {
   mkdir -p ~/bin
+
   echo '#!/bin/sh
 exec ~/SailfishOS/bin/sfdk "$@"' > ~/bin/sfdk
   chmod +x ~/bin/sfdk
@@ -141,13 +157,39 @@ sfdk_tools_lis() {
   sfdk tools list
 }
 
-set_envs
-install_deps
-install_docker
-install_ohmyzsh
-set_tz
-set_zsh_by_default
-sfdk_download
-sfdk_install
-sfdk_put_to_bin
-sfdk_tools_lis
+set_ssh() {
+  mkdir -p "$HOME"/.ssh
+  chmod 0700 "$HOME"/.ssh
+  if [ ! -f "$SSH_ID_RSA" ]; then
+    ssh-keygen -t rsa -q -f "$SSH_ID_RSA" -N ""
+  fi
+}
+
+ssh_copy_id() {
+  SAILFISH_IP=$(echo "$SSH_CLIENT" | awk '{ print $1}')
+  set_up_instance_host_to_known_hosts "$SAILFISH_IP"
+  ssh-copy-id -i "$SSH_ID_RSA.pub" nemo@"${SAILFISH_IP}"
+}
+
+set_up_instance_host_to_known_hosts () {
+  if ! grep "$1" ~/.ssh/known_hosts; then
+    SSH_KEYSCAN=$(ssh-keyscan -T 180 -H "$1")
+    printf "#start %s\n%s\n#end %s" "$1" "$SSH_KEYSCAN" "$1" >> ~/.ssh/known_hosts
+  fi
+}
+
+main() {
+  set_envs
+  install_deps
+  install_docker
+  install_ohmyzsh
+  set_tz
+  set_zsh_by_default
+  set_ssh
+  sfdk_download
+  sfdk_install
+  sfdk_put_to_bin
+  sfdk_tools_lis
+}
+
+$func
