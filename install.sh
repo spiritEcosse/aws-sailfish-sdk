@@ -30,14 +30,14 @@ while (( ${#} > 0 )); do
   shift
 done
 
-system_prepare_ubuntu {
+system_prepare_ubuntu() {
     sudo apt-get update -y
     sudo apt-get upgrade -y
     sudo apt-get dist-upgrade -y
     # sudo dpkg --configure -a
 }
 
-install_for_ubuntu {
+install_for_ubuntu() {
     for lib in "$@"
     do
         if [[ ! $(dpkg -s ${lib}) ]]
