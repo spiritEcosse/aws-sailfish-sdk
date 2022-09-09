@@ -179,6 +179,7 @@ set_up_instance_host_to_known_hosts () {
 }
 
 main() {
+  create_spec_dirs
   set_envs
   install_deps
   install_docker
