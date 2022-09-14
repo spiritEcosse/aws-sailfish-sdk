@@ -360,7 +360,11 @@ create_user_mersdk() {
 download_backup() {
   echo "${EC2_INSTANCE_USER}"
   echo "${BACKUP_FILE_PATH}"
+  echo "${EC2_INSTANCE}"
   echo "${SSH_ID_RSA}"
+  echo "${AWS_ACCESS_KEY_ID}"
+  echo "${AWS_REGION}"
+  echo "${AWS_SECRET_ACCESS_KEY}"
   CHUNKS=$(python3 -c "print(10 * 1024 * 1024)")
 
   system_prepare_ubuntu

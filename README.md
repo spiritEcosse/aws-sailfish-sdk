@@ -7,8 +7,9 @@ curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/inst
 apt update && apt install -y curl
 curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=ssh_copy_id
 
+# Run download_backup
 apt update && apt install -y curl
-ARCH=armv7hl;AWS_ACCESS_KEY_ID=AKIAWMRE35PB7FHRNZ7Z;AWS_REGION=us-east-1;AWS_SECRET_ACCESS_KEY=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;EC2_INSTANCE=i-0262fcba3075c0f1b;EC2_INSTANCE_USER=ec2-user;PLATFORM=sailfishos;IDENTITY_FILE="-----BEGIN RSA PRIVATE KEY-----
+export ARCH=armv7hl;export AWS_ACCESS_KEY_ID=AKIAWMRE35PB7FHRNZ7Z;export AWS_REGION=us-east-1;export AWS_SECRET_ACCESS_KEY=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;export EC2_INSTANCE=i-0262fcba3075c0f1b;export EC2_INSTANCE_USER=ec2-user;PLATFORM=sailfishos;export IDENTITY_FILE="-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEAhaLHEBr47CpoHeQY/MhsmVYV3+/OIt8azya5dCfDabR86A/L
 XrRP6O8iTsi1N/gm5VkJuT78pU4I4YX8eeKcT4Ttah4S5XgsIIWupyXaay1ZPbLe
 A+jrWjAJXhggJG9pPHcAE6PwvRImAuVyHmcJL6udccE9fpBSrAdkZK/Tiejspajo
