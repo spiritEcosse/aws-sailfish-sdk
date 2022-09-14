@@ -90,7 +90,7 @@ set_up_instance_aws_host_to_known_hosts () {
   if ! grep "$1" ~/.ssh/known_hosts; then
       SSH_KEYSCAN=$(ssh-keyscan -T 180 -H "$1")
       printf "#start %s\n%s\n#end %s\n" "$1" "$SSH_KEYSCAN" "$1" >> ~/.ssh/known_hosts
-      ssh -i "${SSH_ID_RSA}" "${EC2_INSTANCE_USER}"@"$1" "sudo shutdown +60"
+      ssh "${EC2_INSTANCE_USER}"@"$1" "sudo shutdown +60"
 
       if [[ -d ".idea" ]]; then
         sed -i '' -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$1/g" .idea/webServers.xml .idea/sshConfigs.xml
@@ -147,7 +147,7 @@ prepare_aws_instance() {
 upload_backup() {
   cd /home/mersdk/
   tar -zcf "${FILE}" "${BUILD_FOLDER}"
-  rsync -e "ssh -i ${SSH_ID_RSA}" -av --partial --inplace --append --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":~/backups/
+  rsync -av --partial --inplace --append --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":~/backups/
   aws_stop
 }
 
@@ -368,10 +368,10 @@ download_backup() {
   mkdir -p ~/backups/
   cd ~/backups/
 
-  SIZE_BACKUP_FILE=$(ssh -i "${SSH_ID_RSA}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}" "stat -c%s ${BACKUP_FILE_PATH}")
+  SIZE_BACKUP_FILE=$(ssh "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}" "stat -c%s ${BACKUP_FILE_PATH}")
 
   if [[ "${SIZE_BACKUP_FILE}" ]]; then
-    HASH_ORIGINAL=$(ssh -i "${SSH_ID_RSA}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}" "openssl sha256 ${BACKUP_FILE_PATH} | awk -F'= ' '{print $2}'")
+    HASH_ORIGINAL=$(ssh "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}" "openssl sha256 ${BACKUP_FILE_PATH} | awk -F'= ' '{print $2}'")
     SEC=$SECONDS
 
     count=0
