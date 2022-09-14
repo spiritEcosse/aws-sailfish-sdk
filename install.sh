@@ -34,15 +34,15 @@ if [[ -z ${ARCH+x} ]]; then
   ARCH=$(uname -m)
 fi
 
+get_name_platform() {
+  awk -F= '$1=="ID" { print $2 ;}' /etc/os-release
+}
+
 PLATFORM=$(get_name_platform)
 BUILD_FOLDER=$(get_name_platform)_${ARCH}
 BUILD_FOLDER_FULL_PATH=/home/mersdk/"${BUILD_FOLDER}"/
 FILE=$(get_name_platform)_${ARCH}.tar.gz
 BACKUP_FILE_PATH=~/backups/"${FILE}"
-
-get_name_platform() {
-  awk -F= '$1=="ID" { print $2 ;}' /etc/os-release
-}
 
 aws_get_host() {
   EC2_INSTANCE_HOST=$(aws ec2 describe-instances --instance-ids "${EC2_INSTANCE}" --query "Reservations[*].Instances[*].[PublicIpAddress]" --output text)
