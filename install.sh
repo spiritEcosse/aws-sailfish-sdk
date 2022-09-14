@@ -198,7 +198,7 @@ code_coverage() {
 }
 
 system_prepare_ubuntu() {
-  if $(whoami) = 'root'; then
+  if "$(whoami)" = "root"; then
     apt update
     apt install -y sudo
   fi
