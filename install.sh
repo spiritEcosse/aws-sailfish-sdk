@@ -365,7 +365,6 @@ download_backup() {
   echo "${AWS_ACCESS_KEY_ID}"
   echo "${AWS_REGION}"
   echo "${AWS_SECRET_ACCESS_KEY}"
-  CHUNKS=$(python3 -c "print(10 * 1024 * 1024)")
 
   system_prepare_ubuntu
   install_for_ubuntu pip openssh-client openssl curl
@@ -378,6 +377,7 @@ download_backup() {
   SIZE_BACKUP_FILE=$(ssh "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}" "stat -c%s ${BACKUP_FILE_PATH}")
 
   if [[ "${SIZE_BACKUP_FILE}" ]]; then
+    CHUNKS=$(python3 -c "print(10 * 1024 * 1024)")
     HASH_ORIGINAL=$(ssh "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}" "openssl sha256 ${BACKUP_FILE_PATH} | awk -F'= ' '{print $2}'")
     SEC=$SECONDS
 
