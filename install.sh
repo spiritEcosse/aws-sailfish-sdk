@@ -335,13 +335,14 @@ set_ssh() {
   if [ ! -f "${SSH_ID_RSA}" ]; then
     mkdir -p "$HOME"/.ssh
     chmod 0700 "$HOME"/.ssh
-    chmod 600 "${SSH_ID_RSA}"
 
     if [[ -z ${IDENTITY_FILE+x} ]]; then
       ssh-keygen -t rsa -q -f "${SSH_ID_RSA}" -N ""
     else
       echo "${IDENTITY_FILE}" > "${SSH_ID_RSA}"
     fi
+
+    chmod 600 "${SSH_ID_RSA}"
   fi
 }
 
@@ -372,7 +373,7 @@ download_backup() {
   echo "${AWS_SECRET_ACCESS_KEY}"
 
   system_prepare_ubuntu
-  install_for_ubuntu pip openssh-client openssl curl
+  install_for_ubuntu python3-pip openssh-client openssl curl
   set_ssh
 #  touch ~/.ssh/known_hosts
   prepare_aws_instance
