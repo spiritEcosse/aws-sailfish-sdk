@@ -198,10 +198,15 @@ code_coverage() {
 }
 
 system_prepare_ubuntu() {
-    sudo apt-get update -y
-    sudo apt-get upgrade -y
-    sudo apt-get dist-upgrade -y
-    # sudo dpkg --configure -a
+  if $(whoami) = 'root'; then
+    apt update
+    apt install -y sudo
+  fi
+
+  sudo apt update -y
+  sudo apt upgrade -y
+  sudo apt dist-upgrade -y
+  # sudo dpkg --configure -a
 }
 
 install_for_ubuntu() {
