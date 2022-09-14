@@ -38,10 +38,13 @@ get_name_platform() {
   awk -F= '$1=="ID" { print $2 ;}' /etc/os-release
 }
 
-PLATFORM=$(get_name_platform)
-BUILD_FOLDER=$(get_name_platform)_${ARCH}
+if [[ -z ${PLATFORM+x} ]]; then
+  PLATFORM=$(get_name_platform)
+fi
+
+BUILD_FOLDER=${PLATFORM}_${ARCH}
 BUILD_FOLDER_FULL_PATH=/home/mersdk/"${BUILD_FOLDER}"/
-FILE=$(get_name_platform)_${ARCH}.tar.gz
+FILE=${PLATFORM}_${ARCH}.tar.gz
 BACKUP_FILE_PATH=~/backups/"${FILE}"
 
 aws_get_host() {
