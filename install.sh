@@ -190,7 +190,6 @@ upload_backup() {
 
 mb2_cmake_build() {
   cd "${BUILD_FOLDER}"
-  cp -fr ../bible/rpm .
   mb2 build-init
   mb2 build-requires
   mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
@@ -476,6 +475,7 @@ print(size if end > size else end)")
     ls -la  "${BUILD_FOLDER}"
   else
     mkdir -p "${BUILD_FOLDER}"
+    rsync -rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.git/modules' "${HOME}"/bible/ "${BUILD_FOLDER}"
   fi
 }
 
