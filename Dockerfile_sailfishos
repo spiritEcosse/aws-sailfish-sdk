@@ -1,0 +1,7 @@
+FROM coderus/sailfishos-platform-sdk-aarch64:4.4.0.64
+
+ENV USER=mersdk
+RUN mkdir -p /home/${USER}/app
+WORKDIR /home/${USER}/app
+
+CMD ["/bin/bash"]
