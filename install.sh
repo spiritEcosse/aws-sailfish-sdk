@@ -474,6 +474,7 @@ print(size if end > size else end)")
     [ "$HASH_ORIGINAL" = "$HASH" ]
 
     tar -xf "${FILE}"
+    ls -la .
     ls -la  "${BUILD_FOLDER}"
   else
     mkdir -p "${BUILD_FOLDER}"
