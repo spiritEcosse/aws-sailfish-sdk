@@ -184,7 +184,7 @@ prepare_aws_instance() {
 upload_backup() {
   aws_start
   cd "${HOME}"
-  tar -zcf "${FILE}" "${BUILD_FOLDER}"
+  tar -zcf "${FILE}" "${PLATFORM}_${ARCH}"
   rsync -av --inplace --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
   aws_stop
 }
@@ -474,11 +474,10 @@ print(size if end > size else end)")
     [ "$HASH_ORIGINAL" = "$HASH" ]
 
     tar -xf "${FILE}"
-    ls -la .
-    ls -la  "${BUILD_FOLDER}"
   else
     mkdir -p "${BUILD_FOLDER}"
   fi
+  ls -la  "${BUILD_FOLDER}"
 }
 
 ec2_user_add_to_nginx_group() {
