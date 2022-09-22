@@ -182,7 +182,7 @@ prepare_aws_instance() {
 }
 
 upload_backup() {
-  aws_start
+  prepare_aws_instance
   cd "${HOME}"
   tar -zcf "${FILE}" "${PLATFORM}_${ARCH}"
   rsync -av --inplace --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
