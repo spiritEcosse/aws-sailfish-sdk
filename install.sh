@@ -191,7 +191,7 @@ upload_backup() {
 
 mb2_cmake_build() {
   cd "${BUILD_FOLDER}"
-  rsync -rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.git/modules' "${HOME}"/bible/ "${BUILD_FOLDER}"
+#  rsync -rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.git/modules' "${HOME}"/bible/ "${BUILD_FOLDER}"
   mb2 build-init
   mb2 build-requires
   mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
