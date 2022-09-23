@@ -483,7 +483,8 @@ print(size if end > size else end)")
   else
     mkdir -p "${BUILD_FOLDER}"
   fi
-  ls -la  "${BUILD_FOLDER}"
+  ls -la "${BUILD_FOLDER}"
+  du -sh "${BUILD_FOLDER}"
 }
 
 ec2_user_add_to_nginx_group() {
