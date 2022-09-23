@@ -184,14 +184,20 @@ prepare_aws_instance() {
 upload_backup() {
   prepare_aws_instance
   cd "${HOME}"
-  tar -zcf "${FILE}" "${PLATFORM}_${ARCH}"
-  rsync -av --inplace --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
+
+  if [[ -z ${HASH_ORIGINAL+x} ]]; then
+    tar -zcf "${FILE}" "${PLATFORM}_${ARCH}"
+    rsync -av --inplace --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
+  else
+    rsync -av --inplace --progress "${BUILD_FOLDER}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
+    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "cd ${DESTINATION_PATH} && tar -zcf \"${FILE}\" \"${PLATFORM}_${ARCH}\" "
+  fi
   aws_stop
 }
 
 mb2_cmake_build() {
   cd "${BUILD_FOLDER}"
-#  rsync -rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.git/modules' "${HOME}"/bible/ "${BUILD_FOLDER}"
+  rsync -rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.git/modules' "${HOME}"/bible/ "${BUILD_FOLDER}"
   mb2 build-init
   mb2 build-requires
   mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
@@ -225,7 +231,7 @@ rsync_share_to_bible() {
 
 code_coverage() {
   alias mb2='mb2 --target SailfishOS-$RELEASE-$ARCH'
-#  rsync_share_to_bible &
+  rsync_share_to_bible
   download_backup
   mb2_cmake_build
   upload_backup
