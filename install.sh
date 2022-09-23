@@ -225,10 +225,10 @@ rsync_share_to_bible() {
 
 code_coverage() {
   alias mb2='mb2 --target SailfishOS-$RELEASE-$ARCH'
-  rsync_share_to_bible &
+#  rsync_share_to_bible &
   download_backup
   mb2_cmake_build
-  upload_backup
+#  upload_backup
   mb2_run_tests
   mb2_run_ccov_all_capture
   codecov_push_results
