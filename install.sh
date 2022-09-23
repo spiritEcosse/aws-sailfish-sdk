@@ -184,14 +184,8 @@ prepare_aws_instance() {
 upload_backup() {
   prepare_aws_instance
   cd "${HOME}"
-
-  if [[ -z ${HASH_ORIGINAL+x} ]]; then
-    tar -zcf "${FILE}" "${PLATFORM}_${ARCH}"
-    rsync -av --inplace --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
-  else
-    rsync -av --inplace --progress "${BUILD_FOLDER}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
-    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "cd ${DESTINATION_PATH} && tar -zcf \"${FILE}\" \"${PLATFORM}_${ARCH}\" "
-  fi
+  tar -zcf "${FILE}" "${PLATFORM}_${ARCH}"
+  rsync -av --inplace --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
   aws_stop
 }
 
