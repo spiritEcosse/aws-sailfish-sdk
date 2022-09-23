@@ -197,7 +197,6 @@ upload_backup() {
 
 mb2_cmake_build() {
   cd "${BUILD_FOLDER}"
-  rsync -rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.git/modules' "${HOME}"/bible/ "${BUILD_FOLDER}"
   mb2 build-init
   mb2 build-requires
   mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
@@ -222,17 +221,16 @@ codecov_push_results() {
   ./codecov -t "${CODECOV_TOKEN}" -f ccov/all-merged.info
 }
 
-rsync_share_to_bible() {
-  mkdir -p /home/mersdk/bible/
-  cd /home/mersdk/bible/
+rsync_share_to_build() {
+  cd "${BUILD_FOLDER}"
   sudo rsync -rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.git/modules' /share/ .
   sudo chown -R mersdk:mersdk .
 }
 
 code_coverage() {
   alias mb2='mb2 --target SailfishOS-$RELEASE-$ARCH'
-  rsync_share_to_bible
   download_backup
+  rsync_share_to_build
   mb2_cmake_build
   upload_backup
   mb2_run_tests
