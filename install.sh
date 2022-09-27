@@ -185,8 +185,10 @@ upload_backup() {
   prepare_aws_instance
   cd "${HOME}"
   tar -zcf "${FILE}" "${PLATFORM}_${ARCH}"
+  SEC=$SECONDS
   scp "${FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:${DESTINATION_PATH}"
 #  rsync -av --inplace --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
+  echo "after scp : $(( SECONDS - SEC ))"
   aws_stop
 }
 
