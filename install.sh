@@ -504,7 +504,7 @@ git_submodule_checkout() {
         fi
     done
 
-    git submodule foreach "git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag || echo master)"
+    git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag || echo master)'
 }
 
 ec2_user_add_to_nginx_group() {
