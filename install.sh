@@ -35,7 +35,21 @@ if [[ -z ${ARCH+x} ]]; then
 fi
 
 get_name_platform() {
-  awk -F= '$1=="ID" { print $2 ;}' /etc/os-release
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    awk -F= '$1=="ID" { print $2 ;}' /etc/os-release
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "darwin"
+#  elif [[ "$OSTYPE" == "cygwin" ]]; then
+#          # POSIX compatibility layer and Linux environment emulation for Windows
+#  elif [[ "$OSTYPE" == "msys" ]]; then
+#          # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+#  elif [[ "$OSTYPE" == "win32" ]]; then
+#          # I'm not sure this can happen.
+#  elif [[ "$OSTYPE" == "freebsd"* ]]; then
+#          # ...
+#  else
+#          # Unknown.
+  fi
 }
 
 if [[ -z ${PLATFORM+x} ]]; then
@@ -479,6 +493,18 @@ print(size if end > size else end)")
     mkdir -p "${BUILD_FOLDER}"
   fi
   ls -la "${BUILD_FOLDER}"
+}
+
+git_submodule_checkout() {
+    MODULE_NAMES=$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | tr ' ' '\n')
+
+    for folder_name in ${MODULE_NAMES}; do
+        if [[ ! -d "${folder_name}" ]]; then
+          git submodule update --init "${folder_name}"
+        fi
+    done
+
+    git submodule foreach "git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag || echo master)"
 }
 
 ec2_user_add_to_nginx_group() {
