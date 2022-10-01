@@ -500,9 +500,11 @@ git_submodule_checkout() {
 
     for folder_name in ${MODULE_NAMES}; do
         if [[ ! -d "${folder_name}" ]]; then
-          git submodule update --init "${folder_name}"
+          git submodule update --init "${folder_name}" &
         fi
     done
+
+    wait
 
     git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag || echo master)'
 }
