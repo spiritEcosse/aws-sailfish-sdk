@@ -195,13 +195,68 @@ prepare_aws_instance() {
   set_up_instance_aws_host_to_known_hosts "${EC2_INSTANCE_HOST}"
 }
 
+download_backup() {
+  echo "${EC2_INSTANCE_USER}"
+  echo "${BACKUP_FILE_PATH}"
+  echo "${EC2_INSTANCE}"
+  echo "${SSH_ID_RSA}"
+  echo "${AWS_ACCESS_KEY_ID}"
+  echo "${AWS_REGION}"
+  echo "${AWS_SECRET_ACCESS_KEY}"
+
+  if [[ "${PLATFORM}" == "ubuntu" ]]; then
+    system_prepare_ubuntu
+    install_for_ubuntu openssl curl
+  elif [[ "${PLATFORM}" == "sailfishos" ]]; then
+    sudo zypper -n install openssl curl
+  fi
+
+  set_ssh
+  prepare_aws_instance
+
+  cd ~/
+
+  if [[ $(file_get_size) ]]; then # TODO put result to SIZE_BACKUP_FILE
+    SIZE_BACKUP_FILE=$(file_get_size)
+    CHUNKS=$(python3 -c "print(100 * 1024 * 1024)")
+    HASH_ORIGINAL=$(ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "openssl sha256 ${DESTINATION_FILE_PATH} | awk -F'= ' '{print \$2}'")
+
+    rm -f ${BACKUP_FILE_PATH}*
+
+    SEC=$SECONDS
+    count=0
+    start=0
+    for i in `seq 1 ${CHUNKS} ${SIZE_BACKUP_FILE}`; do
+    	end=$(python3 -c "start = int(${start})
+end = int(start + ${CHUNKS} - 1)
+size = int(${SIZE_BACKUP_FILE})
+print(size if end > size else end)")
+      curl -r "${start}"-"${end}" http://"${EC2_INSTANCE_HOST}/backups/${FILE}" -o "${BACKUP_FILE_PATH}_${count}" &
+    	count=$(( "${count}" + 1 ))
+    	start=$(python3 -c "print(int(${start}) + int(${CHUNKS}))")
+    done
+    wait
+    echo "after downloads : $(( SECONDS - SEC ))"
+
+    cat $(ls ${BACKUP_FILE_PATH}_* | sort -V) > "${BACKUP_FILE_PATH}";
+
+    HASH=$(openssl sha256 "${BACKUP_FILE_PATH}" | awk -F'= ' '{print $2}')
+    [ "$HASH_ORIGINAL" = "$HASH" ]
+
+    tar -xf "${FILE}"
+  else
+    mkdir -p "${BUILD_FOLDER}"
+  fi
+  ls -la "${BUILD_FOLDER}"
+}
+
 upload_backup() {
   prepare_aws_instance
   cd "${HOME}"
   tar -zcf "${FILE}" "${PLATFORM}_${ARCH}"
   SEC=$SECONDS
-  scp "${FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:${DESTINATION_PATH}"
-#  rsync -av --inplace --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
+#  scp "${FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:${DESTINATION_PATH}"
+  rsync -av --inplace --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
   echo "after scp : $(( SECONDS - SEC ))"
   aws_stop
 }
@@ -243,7 +298,7 @@ code_coverage() {
   download_backup
   rsync_share_to_build
   mb2_cmake_build
-  upload_backup
+  upload_backup &
   mb2_run_tests
   mb2_run_ccov_all_capture
   codecov_push_results
@@ -438,61 +493,6 @@ mersdk ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/rules-for-user-mersdk'
 
 file_get_size() {
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "stat -c%s ${DESTINATION_FILE_PATH}"
-}
-
-download_backup() {
-  echo "${EC2_INSTANCE_USER}"
-  echo "${BACKUP_FILE_PATH}"
-  echo "${EC2_INSTANCE}"
-  echo "${SSH_ID_RSA}"
-  echo "${AWS_ACCESS_KEY_ID}"
-  echo "${AWS_REGION}"
-  echo "${AWS_SECRET_ACCESS_KEY}"
-
-  if [[ "${PLATFORM}" == "ubuntu" ]]; then
-    system_prepare_ubuntu
-    install_for_ubuntu openssl curl
-  elif [[ "${PLATFORM}" == "sailfishos" ]]; then
-    sudo zypper -n install openssl curl
-  fi
-
-  set_ssh
-  prepare_aws_instance
-
-  cd ~/
-
-  if [[ $(file_get_size) ]]; then # TODO put result to SIZE_BACKUP_FILE
-    SIZE_BACKUP_FILE=$(file_get_size)
-    CHUNKS=$(python3 -c "print(100 * 1024 * 1024)")
-    HASH_ORIGINAL=$(ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "openssl sha256 ${DESTINATION_FILE_PATH} | awk -F'= ' '{print \$2}'")
-
-    rm -f ${BACKUP_FILE_PATH}*
-
-    SEC=$SECONDS
-    count=0
-    start=0
-    for i in `seq 1 ${CHUNKS} ${SIZE_BACKUP_FILE}`; do
-    	end=$(python3 -c "start = int(${start})
-end = int(start + ${CHUNKS} - 1)
-size = int(${SIZE_BACKUP_FILE})
-print(size if end > size else end)")
-      curl -r "${start}"-"${end}" http://"${EC2_INSTANCE_HOST}/backups/${FILE}" -o "${BACKUP_FILE_PATH}_${count}" &
-    	count=$(( "${count}" + 1 ))
-    	start=$(python3 -c "print(int(${start}) + int(${CHUNKS}))")
-    done
-    wait
-    echo "after downloads : $(( SECONDS - SEC ))"
-
-    cat $(ls ${BACKUP_FILE_PATH}_* | sort -V) > "${BACKUP_FILE_PATH}";
-
-    HASH=$(openssl sha256 "${BACKUP_FILE_PATH}" | awk -F'= ' '{print $2}')
-    [ "$HASH_ORIGINAL" = "$HASH" ]
-
-    tar -xf "${FILE}"
-  else
-    mkdir -p "${BUILD_FOLDER}"
-  fi
-  ls -la "${BUILD_FOLDER}"
 }
 
 git_submodule_init() {
