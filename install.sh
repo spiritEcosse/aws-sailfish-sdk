@@ -495,18 +495,19 @@ print(size if end > size else end)")
   ls -la "${BUILD_FOLDER}"
 }
 
+git_submodule_init() {
+	URL=$(git config --file .gitmodules --get-regexp url | grep "${1}" | awk '{ print $2 }' | tr ' ' '\n')
+	git submodule add "${URL}" "${1}"
+}
+
 git_submodule_checkout() {
-    MODULE_NAMES=$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | tr ' ' '\n')
+  for folder_name in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | tr ' ' '\n'); do
+    if [[ ! -d "${folder_name}" ]]; then
+      git_submodule_init "${folder_name}"
+    fi
+  done
 
-    for folder_name in ${MODULE_NAMES}; do
-        if [[ ! -d "${folder_name}" ]]; then
-          git submodule update --init "${folder_name}" &
-        fi
-    done
-
-    wait
-
-    git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag || echo master)'
+  git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag || echo master)'
 }
 
 ec2_user_add_to_nginx_group() {
