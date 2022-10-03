@@ -519,6 +519,7 @@ git_submodule_checkout() {
     fi
   done
 
+  git submodule update
   git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag || echo master)'
 }
 
