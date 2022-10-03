@@ -251,13 +251,25 @@ print(size if end > size else end)")
 }
 
 upload_backup() {
-  prepare_aws_instance
+  if [[ "${PLATFORM}" == "ubuntu" ]]; then
+    install_for_ubuntu pigz
+  elif [[ "${PLATFORM}" == "sailfishos" ]]; then
+    sudo zypper -n install pigz
+  fi
+
   cd "${HOME}"
-  tar -zcf "${FILE}" "${PLATFORM}_${ARCH}"
-  SEC=$SECONDS
-#  scp "${FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:${DESTINATION_PATH}"
-  rsync -av --inplace --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
-  echo "after scp : $(( SECONDS - SEC ))"
+  tar --use-compress-program="pigz -k " -zcf "${FILE}" "${PLATFORM}_${ARCH}"
+  HASH=$(openssl sha256 "${FILE}" | awk -F'= ' '{print $2}')
+
+  if [[ "${HASH_ORIGINAL}" != "${HASH}" ]]; then
+    prepare_aws_instance
+    SEC=$SECONDS
+    rsync -av --partial --inplace --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
+    echo "after rsync : $(( SECONDS - SEC ))"
+    SEC=$SECONDS
+    scp "${FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:${DESTINATION_PATH}"
+    echo "after scp : $(( SECONDS - SEC ))"
+  fi
   aws_stop
 }
 
