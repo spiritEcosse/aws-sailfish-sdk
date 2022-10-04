@@ -514,12 +514,13 @@ git_submodule_init() {
 
 git_submodule_checkout() {
   for folder_name in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | tr ' ' '\n'); do
+    pwd
+    echo "${folder_name}"
     if [[ ! -d "${folder_name}" ]]; then
       git_submodule_init "${folder_name}"
     fi
   done
 
-  git submodule update
   git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag || echo master)'
 }
 
