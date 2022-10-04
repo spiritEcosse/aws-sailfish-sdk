@@ -301,7 +301,7 @@ codecov_push_results() {
 
 rsync_share_to_build() {
   cd "${BUILD_FOLDER}"
-  sudo rsync -rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.git/modules' /share/ .
+  sudo rsync -rv --checksum --ignore-times --info=progress2 --stats --human-readable /share/ .
   sudo chown -R mersdk:mersdk .
 }
 
@@ -514,8 +514,10 @@ git_submodule_init() {
 
 git_submodule_checkout() {
   for folder_name in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | tr ' ' '\n'); do
-    if [[ ! -d "${folder_name}/.git" ]]; then
+    if [[ ! -d "${folder_name}" ]]; then
       git_submodule_init "${folder_name}"
+    elif [[ ! -d "${folder_name}/.git" ]]; then
+      git submodule update "${folder_name}"
     fi
   done
 
