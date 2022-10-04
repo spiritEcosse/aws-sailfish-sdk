@@ -517,7 +517,7 @@ git_submodule_checkout() {
     if [[ ! -d "${folder_name}" ]]; then
       git_submodule_init "${folder_name}"
     elif [[ ! -d "${folder_name}/.git" ]]; then
-      git submodule update "${folder_name}"
+      git submodule update --init "${folder_name}"
     fi
   done
 
