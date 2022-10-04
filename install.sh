@@ -514,7 +514,7 @@ git_submodule_init() {
 
 git_submodule_checkout() {
   for folder_name in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | tr ' ' '\n'); do
-    if [[ ! -d "${folder_name}" ]]; then
+    if [[ ! -d "${folder_name}/.git" ]]; then
       git_submodule_init "${folder_name}"
     fi
   done
