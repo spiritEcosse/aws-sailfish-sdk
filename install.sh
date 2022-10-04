@@ -61,6 +61,7 @@ FILE=${PLATFORM}_${ARCH}.tar.gz
 BACKUP_FILE_PATH="${HOME}/${FILE}"
 DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
+DESTINATION_FILE_HASH_PATH="${DESTINATION_PATH}${FILE}_hash"
 
 aws_get_host() {
   EC2_INSTANCE_HOST=$(aws ec2 describe-instances --instance-ids "${EC2_INSTANCE}" --query "Reservations[*].Instances[*].[PublicIpAddress]" --output text)
@@ -196,6 +197,8 @@ prepare_aws_instance() {
 }
 
 download_backup() {
+  rm -f ${BACKUP_FILE_PATH}*
+
   SEC=$SECONDS
   count=0
   start=0
@@ -240,9 +243,8 @@ download_backup_from_aws() {
   if [[ $(file_get_size) ]]; then # TODO put result to SIZE_BACKUP_FILE
     SIZE_BACKUP_FILE=$(file_get_size)
     CHUNKS=$(python3 -c "print(100 * 1024 * 1024)")
-    HASH_ORIGINAL=$(ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "openssl sha256 ${DESTINATION_FILE_PATH} | awk -F'= ' '{print \$2}'")
+    HASH_ORIGINAL=$(ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "cat ${DESTINATION_FILE_HASH_PATH}")
 
-    rm -f ${BACKUP_FILE_PATH}*
     download_backup http://"${EC2_INSTANCE_HOST}/backups/${FILE}"
     HASH=$(openssl sha256 "${BACKUP_FILE_PATH}" | awk -F'= ' '{print $2}')
     [ "$HASH_ORIGINAL" = "$HASH" ]
@@ -269,6 +271,7 @@ upload_backup() {
     prepare_aws_instance
     SEC=$SECONDS
     rsync -av --partial --inplace --append --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
+    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "echo ${HASH} > ${DESTINATION_FILE_HASH_PATH}"
     echo "after rsync : $(( SECONDS - SEC ))"
   fi
   aws_stop
