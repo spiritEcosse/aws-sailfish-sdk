@@ -258,7 +258,7 @@ upload_backup() {
   fi
 
   cd "${HOME}"
-  tar --use-compress-program="pigz -k " -zcf "${FILE}" "${PLATFORM}_${ARCH}"
+  tar --use-compress-program="pigz -k " -cf "${FILE}" "${PLATFORM}_${ARCH}"
   HASH=$(openssl sha256 "${FILE}" | awk -F'= ' '{print $2}')
 
   if [[ "${HASH_ORIGINAL}" != "${HASH}" ]]; then
