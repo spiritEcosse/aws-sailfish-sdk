@@ -513,6 +513,8 @@ git_submodule_init() {
 }
 
 git_submodule_checkout() {
+  ls -la 3rdparty
+
   for folder_name in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | tr ' ' '\n'); do
     pwd
     echo "${folder_name}"
