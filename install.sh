@@ -196,6 +196,27 @@ prepare_aws_instance() {
 }
 
 download_backup() {
+  SEC=$SECONDS
+  count=0
+  start=0
+
+  for i in `seq 1 ${CHUNKS} ${SIZE_BACKUP_FILE}`; do
+    end=$(python3 -c "start = int(${start})
+end = int(start + ${CHUNKS} - 1)
+size = int(${SIZE_BACKUP_FILE})
+print(size if end > size else end)")
+    curl -r "${start}"-"${end}" "${1}" -o "${BACKUP_FILE_PATH}_${count}" &
+    count=$(( "${count}" + 1 ))
+    start=$(python3 -c "print(int(${start}) + int(${CHUNKS}))")
+  done
+
+  wait
+  echo "after downloads : $(( SECONDS - SEC ))"
+
+  cat $(ls ${BACKUP_FILE_PATH}_* | sort -V) > "${BACKUP_FILE_PATH}";
+}
+
+download_backup_from_aws() {
   echo "${EC2_INSTANCE_USER}"
   echo "${BACKUP_FILE_PATH}"
   echo "${EC2_INSTANCE}"
@@ -222,24 +243,7 @@ download_backup() {
     HASH_ORIGINAL=$(ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "openssl sha256 ${DESTINATION_FILE_PATH} | awk -F'= ' '{print \$2}'")
 
     rm -f ${BACKUP_FILE_PATH}*
-
-    SEC=$SECONDS
-    count=0
-    start=0
-    for i in `seq 1 ${CHUNKS} ${SIZE_BACKUP_FILE}`; do
-    	end=$(python3 -c "start = int(${start})
-end = int(start + ${CHUNKS} - 1)
-size = int(${SIZE_BACKUP_FILE})
-print(size if end > size else end)")
-      curl -r "${start}"-"${end}" http://"${EC2_INSTANCE_HOST}/backups/${FILE}" -o "${BACKUP_FILE_PATH}_${count}" &
-    	count=$(( "${count}" + 1 ))
-    	start=$(python3 -c "print(int(${start}) + int(${CHUNKS}))")
-    done
-    wait
-    echo "after downloads : $(( SECONDS - SEC ))"
-
-    cat $(ls ${BACKUP_FILE_PATH}_* | sort -V) > "${BACKUP_FILE_PATH}";
-
+    download_backup http://"${EC2_INSTANCE_HOST}/backups/${FILE}"
     HASH=$(openssl sha256 "${BACKUP_FILE_PATH}" | awk -F'= ' '{print $2}')
     [ "$HASH_ORIGINAL" = "$HASH" ]
 
@@ -304,7 +308,7 @@ rsync_share_to_build() {
 
 code_coverage() {
   alias mb2='mb2 --target SailfishOS-$RELEASE-$ARCH'
-  download_backup
+  download_backup_from_aws
   rsync_share_to_build
   mb2_cmake_build
   upload_backup
