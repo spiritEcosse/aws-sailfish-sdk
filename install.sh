@@ -266,9 +266,6 @@ upload_backup() {
     SEC=$SECONDS
     rsync -av --partial --inplace --append --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
     echo "after rsync : $(( SECONDS - SEC ))"
-    SEC=$SECONDS
-    scp "${FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:${DESTINATION_PATH}"
-    echo "after scp : $(( SECONDS - SEC ))"
   fi
   aws_stop
 }
