@@ -249,7 +249,7 @@ download_backup_from_aws() {
     HASH=$(openssl sha256 "${BACKUP_FILE_PATH}" | awk -F'= ' '{print $2}')
     [ "$HASH_ORIGINAL" = "$HASH" ]
 
-    unpigz < "${FILE}" | tar -xv
+    unpigz < "${FILE}" | tar -x
   else
     mkdir -p "${BUILD_FOLDER}"
   fi
