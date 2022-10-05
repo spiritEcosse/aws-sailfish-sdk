@@ -98,10 +98,11 @@ install_aws() {
 
     sudo pip install awscli
     aws --version
-    mkdir -p ~/.aws/
-    echo "[default]
-    region = ${AWS_REGION}" > ~/.aws/config
   fi
+
+  mkdir -p ~/.aws/
+  echo "[default]
+  region = ${AWS_REGION}" > ~/.aws/config
 }
 
 set_up_instance_aws_host_to_known_hosts () {
