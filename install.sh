@@ -243,9 +243,11 @@ download_backup_from_aws() {
   if [[ $(file_get_size) ]]; then # TODO put result to SIZE_BACKUP_FILE
     SIZE_BACKUP_FILE=$(file_get_size)
     CHUNKS=$(python3 -c "print(100 * 1024 * 1024)")
-    HASH_ORIGINAL=$(ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "openssl sha256 ${DESTINATION_FILE_PATH} | awk -F'= ' '{print \$2}'")
 
+    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "openssl sha256 ${DESTINATION_FILE_PATH} | awk -F'= ' '{print \$2}'" > "${FILE}"_hash &
     download_backup http://"${EC2_INSTANCE_HOST}/backups/${FILE}"
+    wait
+    HASH_ORIGINAL=$(cat "${FILE}"_hash)
     HASH=$(openssl sha256 "${BACKUP_FILE_PATH}" | awk -F'= ' '{print $2}')
     [ "$HASH_ORIGINAL" = "$HASH" ]
 
