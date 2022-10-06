@@ -244,7 +244,7 @@ download_backup_from_aws() {
     SIZE_BACKUP_FILE=$(file_get_size)
     CHUNKS=$(python3 -c "print(100 * 1024 * 1024)")
 
-    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "openssl sha256 ${DESTINATION_FILE_PATH} | awk -F'= ' '{print \$2}'" > "${FILE}"_hash &
+    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "openssl sha256 ${DESTINATION_FILE_PATH} | awk -F'= ' '{print \$2}'" > "${FILE}"-hash &
     download_backup http://"${EC2_INSTANCE_HOST}/backups/${FILE}"
     wait
     HASH_ORIGINAL=$(cat "${FILE}"-hash)
