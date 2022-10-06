@@ -247,7 +247,7 @@ download_backup_from_aws() {
     ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "openssl sha256 ${DESTINATION_FILE_PATH} | awk -F'= ' '{print \$2}'" > "${FILE}"_hash &
     download_backup http://"${EC2_INSTANCE_HOST}/backups/${FILE}"
     wait
-    HASH_ORIGINAL=$(cat "${FILE}"_hash)
+    HASH_ORIGINAL=$(cat "${FILE}"-hash)
     HASH=$(openssl sha256 "${BACKUP_FILE_PATH}" | awk -F'= ' '{print $2}')
     [ "$HASH_ORIGINAL" = "$HASH" ]
 
