@@ -272,8 +272,8 @@ upload_backup() {
   if [[ "${HASH_ORIGINAL}" != "${HASH}" ]]; then
     prepare_aws_instance
     SEC=$SECONDS
-    rsync -av --partial --inplace --append --progress "${FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}":"${DESTINATION_PATH}"
-    echo "after rsync : $(( SECONDS - SEC ))"
+    scp "${FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:${DESTINATION_PATH}"
+    echo "after scp : $(( SECONDS - SEC ))"
   fi
   aws_stop
 }
