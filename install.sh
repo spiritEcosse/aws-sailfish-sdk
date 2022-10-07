@@ -539,6 +539,32 @@ nginx_destination_path_chown_ec2_user() {
   sudo chown -R ec2-user:nginx "${DESTINATION_PATH}"
 }
 
+docker_login() {
+  echo "${CR_PAT}" | docker login ghcr.io -u spiritEcosse --password-stdin
+}
+
+docker_push() {
+  if [[ -z ${RELEASE+x} ]]; then
+    RELEASE="latest"
+  fi
+
+  docker push ghcr.io/spiritecosse/bible-sailfishos-"${ARCH}":"${RELEASE}"
+}
+
+docker_build() {
+  if [[ -z ${RELEASE+x} ]]; then
+    RELEASE="latest"
+  fi
+
+  docker build -t ghcr.io/spiritecosse/bible-sailfishos-"${ARCH}":"${RELEASE}" --build-arg ARCH="${ARCH}" --build-arg RELEASE="${RELEASE}" .
+}
+
+docker_login_build_push() {
+  docker_login
+  docker_build
+  docker_push
+}
+
 main() {
   prepare_user_mersdk
   [ "$(whoami)" = "mersdk" ]
