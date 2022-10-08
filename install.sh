@@ -115,7 +115,11 @@ set_up_instance_aws_host_to_known_hosts () {
     fi
 
     printf "#start %s\n%s\n#end %s\n" "$1" "$SSH_KEYSCAN" "$1" >> ~/.ssh/known_hosts
-    ssh "${EC2_INSTANCE_USER}"@"$1" "sudo shutdown +60"
+    if [[ -z ${ID_FILE+x} ]]; then
+      ssh "${EC2_INSTANCE_USER}"@"$1" "sudo shutdown +60"
+    else
+      ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}"@"$1" "sudo shutdown +60"
+    fi
 
     if [[ -f ".idea/sshConfigs.xml" && -f ".idea/.idea/webServers.xml" ]]; then
       sed -i '' -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$1/g" .idea/webServers.xml .idea/sshConfigs.xml
@@ -174,6 +178,10 @@ sfdk_run_app_on_device() {
 
 sfdk_device_list() {
   sfdk device list
+}
+
+sfdk_tools_list() {
+  sfdk tools list
 }
 
 sfdk_config_target_sony() {
@@ -455,10 +463,6 @@ sfdk_put_to_bin() {
   echo '#!/bin/sh
 exec ~/SailfishOS/bin/sfdk "$@"' > ~/bin/sfdk
   chmod +x ~/bin/sfdk
-}
-
-sfdk_tools_list() {
-  sfdk tools list
 }
 
 set_ssh() {
