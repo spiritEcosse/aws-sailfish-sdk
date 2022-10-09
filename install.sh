@@ -573,13 +573,13 @@ main() {
   prepare_user_mersdk
   [ "$(whoami)" = "mersdk" ]
   create_spec_dirs &
-  set_envs &
   sfdk_put_to_bin &
   install_deps
   install_docker
   install_ohmyzsh &
   set_tz &
   set_zsh_by_default &
+  set_envs &
   set_ssh
   sfdk_download
 
