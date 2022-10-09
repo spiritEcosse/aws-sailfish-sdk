@@ -197,8 +197,13 @@ sfdk_device_exec_app() {
   sfdk device exec journalctl -f /usr/bin/bible
 }
 
+set_ec2_instance() {
+    EC2_INSTANCE=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${EC2_INSTANCE_NAME}" --query 'Reservations[*].Instances[*].[InstanceId]' --output text)
+}
+
 prepare_aws_instance() {
   install_aws
+  set_ec2_instance
   aws_start
   aws_get_host
   set_up_instance_aws_host_to_known_hosts "${EC2_INSTANCE_HOST}"
@@ -230,7 +235,7 @@ print(size if end > size else end)")
 download_backup_from_aws() {
   echo "${EC2_INSTANCE_USER}"
   echo "${BACKUP_FILE_PATH}"
-  echo "${EC2_INSTANCE}"
+  echo "${EC2_INSTANCE_NAME}"
   echo "${SSH_ID_RSA}"
   echo "${AWS_ACCESS_KEY_ID}"
   echo "${AWS_REGION}"
