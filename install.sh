@@ -455,6 +455,7 @@ install_ohmyzsh() {
 	if [[ ! -d ".oh-my-zsh" && -z ${DOCKER_RUNNING+x} ]]; then
 		sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 	fi
+	set_envs
 }
 
 sfdk_put_to_bin() {
@@ -579,7 +580,6 @@ main() {
   install_ohmyzsh &
   set_tz &
   set_zsh_by_default &
-  set_envs &
   set_ssh
   sfdk_download
 
