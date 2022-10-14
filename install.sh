@@ -141,7 +141,7 @@ aws_start() {
 sfdk_deploy_to_device() {
   prepare_aws_instance
   ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}" "
-    set -euox pipefail
+    bash -c \"set -euo pipefail
     export BUILD_FOLDER=\"${BUILD_FOLDER}\"
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_device_list
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_tools_list
@@ -151,6 +151,7 @@ sfdk_deploy_to_device() {
     sfdk build ../bible
     sfdk deploy --sdk
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_device_exec_app
+    \"
   "
 }
 
