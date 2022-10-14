@@ -179,9 +179,7 @@ sfdk_run_app_on_device() {
 }
 
 sfdk_device_list() {
-  pwd
-  ls -la ~/bin
-  sfdk device list
+  ~/bin/sfdk device list
 }
 
 sfdk_tools_list() {
