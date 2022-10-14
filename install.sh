@@ -14,6 +14,7 @@ SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_NONINTERACTIVE_SEEN=true
 SSH_ID_RSA="${HOME}/.ssh/id_rsa"
+PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Default values
 func=main
@@ -179,9 +180,6 @@ sfdk_run_app_on_device() {
 }
 
 sfdk_device_list() {
-  pwd
-  cat ~/.bashrc
-  echo "${PATH}"
   sfdk device list
 }
 
