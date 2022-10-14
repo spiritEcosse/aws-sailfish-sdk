@@ -179,7 +179,10 @@ sfdk_run_app_on_device() {
 }
 
 sfdk_device_list() {
-  ~/bin/sfdk device list
+  pwd
+  cat ~/.bashrc
+  echo "${PATH}"
+  sfdk device list
 }
 
 sfdk_tools_list() {
