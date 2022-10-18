@@ -13,7 +13,7 @@ SDK_VERSION='3.9.6'
 SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_NONINTERACTIVE_SEEN=true
-SSH_ID_RSA="${HOME}/.ssh/id_rsa"
+SSH_AUTHORIZED_KEYS="${HOME}/.ssh/authorized_keys"
 PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Default values
@@ -264,7 +264,7 @@ download_backup_from_aws() {
   echo "${EC2_INSTANCE_USER}"
   echo "${BACKUP_FILE_PATH}"
   echo "${EC2_INSTANCE_NAME}"
-  echo "${SSH_ID_RSA}"
+  echo "${IDENTITY_FILE}"
   echo "${AWS_ACCESS_KEY_ID}"
   echo "${AWS_REGION}"
   echo "${AWS_SECRET_ACCESS_KEY}"
@@ -510,13 +510,9 @@ set_ssh() {
   touch ~/.ssh/known_hosts
   chmod 0700 "${HOME}"/.ssh
 
-  if [[ ! -f "${SSH_ID_RSA}" ]]; then
-    if [[ -z ${IDENTITY_FILE+x} ]]; then
-      ssh-keygen -t rsa -q -f "${SSH_ID_RSA}" -N ""
-    else
-      echo "${IDENTITY_FILE}" > "${SSH_ID_RSA}"
-    fi
-    chmod 600 "${SSH_ID_RSA}"
+  if ! grep "${IDENTITY_FILE}" "${SSH_AUTHORIZED_KEYS}"; then
+    echo "${IDENTITY_FILE}" >> "${SSH_AUTHORIZED_KEYS}"
+    chmod 600 "${SSH_AUTHORIZED_KEYS}"
   fi
 }
 
