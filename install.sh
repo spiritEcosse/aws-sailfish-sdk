@@ -111,6 +111,7 @@ set_up_instance_aws_host_to_known_hosts () {
     if [[ ! $(ssh-keyscan -H "$1") ]];then
       sleep 5
       set_up_instance_aws_host_to_known_hosts "$1"
+      return
     else
       SSH_KEYSCAN=$(ssh-keyscan -H "$1")
     fi
