@@ -17,13 +17,13 @@ SSH_ID_RSA="${HOME}/.ssh/id_rsa"
 PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Default values
-func=main
+funcs=main
 operands=()
 
 # Arguments handling
 while (( ${#} > 0 )); do
   case "${1}" in
-    ( '--func='* ) func="${1#*=}" ;;           # Handles --opt1
+    ( '--func='* ) funcs="${1#*=}" ;;           # Handles --opt1
     ( '--' ) operands+=( "${@:2}" ); break ;;  # End of options
     ( '-'?* ) ;;                               # Discard non-valid options
     ( * ) operands+=( "${1}" )                 # Handles operands
@@ -141,42 +141,39 @@ aws_start() {
 
 sfdk_deploy_to_device() {
   prepare_aws_instance
-  ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}" "
-    bash -c \"set -euox pipefail
-    export BUILD_FOLDER=\"${BUILD_FOLDER}\"
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_device_list
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_tools_list
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_config_device_sony
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_config_target_sony
-    cd ~/\"${BUILD_FOLDER}\"
-    sfdk build ../bible
-    sfdk deploy --sdk
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_device_exec_app
-    \"
+  ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+    export ARCH=${ARCH}
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='sfdk_device_list;sfdk_tools_list;sfdk_config_device_sony;sfdk_config_target_sony;sfdk_build_deploy;sfdk_device_exec_app'
   "
 }
 
 sailfish_run_tests_on_aws() {
     prepare_aws_instance
-    ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}" "
-      export BUILD_FOLDER=\"${BUILD_FOLDER}\"
-      curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_tools_list
-      curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_config_target_sony
-      cd \"${BUILD_FOLDER}\"
-      sfdk build ../bible -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
-      sfdk build-shell ctest --output-on-failure
+    ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+      export ARCH=${ARCH}
+      curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='sfdk_tools_list;sfdk_config_target_sony;sfdk_build_test'
     "
 }
 
 sfdk_run_app_on_device() {
   # on device: devel-su usermod -a -G systemd-journal nemo
   prepare_aws_instance
-  ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}"@"${EC2_INSTANCE_HOST}" "
-    export ARCH=\"${ARCH}\"
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_device_list
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_config_device_sony
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=sfdk_device_exec_app
+  ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+    export ARCH=${ARCH}
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='sfdk_device_list;sfdk_config_device_sony;sfdk_device_exec_app'
   "
+}
+
+sfdk_build_test() {
+  cd "${BUILD_FOLDER}"
+  sfdk build ../bible -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
+  sfdk build-shell ctest --output-on-failure
+}
+
+sfdk_build_deploy() {
+  cd "${BUILD_FOLDER}"
+  sfdk build ../bible
+  sfdk deploy --sdk
 }
 
 sfdk_device_list() {
@@ -599,4 +596,7 @@ main() {
   wait
 }
 
-$func
+for func in $(echo "${funcs}" | tr ";" "\n")
+do
+  "${func}"
+done
