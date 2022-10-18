@@ -157,7 +157,6 @@ sailfish_run_tests_on_aws() {
 }
 
 sfdk_run_app_on_device() {
-  # on device: devel-su usermod -a -G systemd-journal nemo
   prepare_aws_instance
   ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
@@ -194,6 +193,7 @@ sfdk_config_device_sony() {
 }
 
 sfdk_device_exec_app() {
+  # on device: devel-su usermod -a -G systemd-journal nemo
   sfdk device exec /usr/bin/bible &
   sfdk device exec journalctl -f /usr/bin/bible
 }
