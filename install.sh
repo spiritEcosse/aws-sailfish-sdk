@@ -144,6 +144,7 @@ sfdk_deploy_to_device() {
   prepare_aws_instance
   ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
+    export PLATFORM=${PLATFORM}
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='sfdk_device_list;sfdk_tools_list;sfdk_config_device_sony;sfdk_config_target_sony;sfdk_build_deploy;sfdk_device_exec_app'
   "
 }
@@ -152,6 +153,7 @@ sailfish_run_tests_on_aws() {
     prepare_aws_instance
     ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
       export ARCH=${ARCH}
+      export PLATFORM=${PLATFORM}
       curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='sfdk_tools_list;sfdk_config_target_sony;sfdk_build_test'
     "
 }
@@ -160,6 +162,7 @@ sfdk_run_app_on_device() {
   prepare_aws_instance
   ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
+    export PLATFORM=${PLATFORM}
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='sfdk_device_list;sfdk_config_device_sony;sfdk_device_exec_app'
   "
 }
@@ -196,6 +199,28 @@ sfdk_device_exec_app() {
   # on device: devel-su usermod -a -G systemd-journal nemo
   sfdk device exec /usr/bin/bible &
   sfdk device exec journalctl -f /usr/bin/bible
+}
+
+download_backup_from_aws_to_aws() {
+  echo "${EC2_INSTANCE_NAME_BACKUP}"
+  echo "${ARCH}"
+  echo "${PLATFORM}"
+  echo "${AWS_ACCESS_KEY_ID}"
+  echo "${AWS_REGION}"
+  echo "${EC2_INSTANCE_USER}"
+  echo "${EC2_INSTANCE_USER_BACKUP}"
+
+  prepare_aws_instance
+  ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+    export ARCH=${ARCH}
+    export PLATFORM=${PLATFORM}
+    export EC2_INSTANCE_NAME=${EC2_INSTANCE_NAME_BACKUP}
+    export EC2_INSTANCE_USER=${EC2_INSTANCE_USER_BACKUP}
+    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    export AWS_REGION=${AWS_REGION}
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=download_backup_from_aws
+  "
 }
 
 set_ec2_instance() {
