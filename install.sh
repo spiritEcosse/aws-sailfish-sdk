@@ -493,7 +493,7 @@ set_ssh() {
   fi
 }
 
-ssh_copy_id() {
+ssh_copy_id_on_sailfish_device() {
   SAILFISH_IP=$(echo "$SSH_CLIENT" | awk '{ print $1}')
   set_up_instance_host_to_known_hosts "$SAILFISH_IP"
   ssh-copy-id -i "$SSH_ID_RSA.pub" nemo@"${SAILFISH_IP}"
