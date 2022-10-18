@@ -122,7 +122,7 @@ set_up_instance_aws_host_to_known_hosts () {
       ssh -i "${ID_FILE}" "${EC2_INSTANCE_USER}"@"$1" "sudo shutdown +60"
     fi
 
-    if [[ -f ".idea/sshConfigs.xml" && -f ".idea/.idea/webServers.xml" ]]; then
+    if [[ -f ".idea/sshConfigs.xml" && -f ".idea/webServers.xml" ]]; then
       sed -i '' -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$1/g" .idea/webServers.xml .idea/sshConfigs.xml
     fi
   fi
