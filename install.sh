@@ -53,6 +53,8 @@ get_name_platform() {
   fi
 }
 
+PLATFORM_HOST=$(get_name_platform)
+
 if [[ -z ${PLATFORM+x} ]]; then
   PLATFORM=$(get_name_platform)
 fi
@@ -91,9 +93,9 @@ aws_get_instance_status() {
 
 install_aws() {
   if ! which aws; then
-    if [[ "${PLATFORM}" == "ubuntu" ]]; then
+    if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
       install_for_ubuntu python3-pip
-    elif [[ "${PLATFORM}" == "sailfishos" ]]; then
+    elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
       sudo zypper -n install python3-pip
     fi
 
@@ -267,10 +269,10 @@ download_backup_from_aws() {
   echo "${AWS_REGION}"
   echo "${AWS_SECRET_ACCESS_KEY}"
 
-  if [[ "${PLATFORM}" == "ubuntu" ]]; then
+  if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
     system_prepare_ubuntu
     install_for_ubuntu openssl curl
-  elif [[ "${PLATFORM}" == "sailfishos" ]]; then
+  elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
     sudo zypper -n install openssl curl
   fi
 
@@ -298,9 +300,9 @@ download_backup_from_aws() {
 }
 
 upload_backup() {
-  if [[ "${PLATFORM}" == "ubuntu" ]]; then
+  if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
     install_for_ubuntu pigz
-  elif [[ "${PLATFORM}" == "sailfishos" ]]; then
+  elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
     sudo zypper -n install pigz
   fi
 
@@ -498,9 +500,9 @@ exec ~/SailfishOS/bin/sfdk "$@"' > ~/bin/sfdk
 }
 
 set_ssh() {
-  if [[ "${PLATFORM}" == "ubuntu" ]]; then
+  if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
     install_for_ubuntu openssh-client
-  elif [[ "${PLATFORM}" == "sailfishos" ]]; then
+  elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
     sudo zypper -n install openssh
   fi
 
