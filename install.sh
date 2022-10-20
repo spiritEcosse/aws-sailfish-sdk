@@ -128,14 +128,8 @@ set_ssh() {
 }
 
 get_secret_identity_file() {
-  if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
-    install_for_ubuntu # jq
-  elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
-    sudo zypper -n install # jq
-  fi
-
-  IDENTITY_FILE=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | jq -r .IDENTITY_FILE)
-  EC2_INSTANCE_USER=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | jq -r .EC2_INSTANCE_USER)
+  IDENTITY_FILE=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"IDENTITY_FILE":"[^"]*' |  grep -o '[^"]*$')
+  EC2_INSTANCE_USER=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"EC2_INSTANCE_USER":"[^"]*' |  grep -o '[^"]*$')
 }
 
 set_up_instance_aws_host_to_known_hosts () {
@@ -246,7 +240,7 @@ download_backup_from_aws_to_aws() {
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
     export PLATFORM=${PLATFORM}
-    export EC2_INSTANCE_NAME=${EC2_INSTANCE_NAME_BACKUP}
+    export EC2_INSTANCE_NAME=backup_server
     export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
