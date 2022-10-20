@@ -14,6 +14,7 @@ SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_NONINTERACTIVE_SEEN=true
 SSH_ID_RSA="${HOME}/.ssh/id_rsa"
+SSH_ID_RSA_PUB="${HOME}/.ssh/id_rsa.pub"
 TEMP_SSH_ID_RSA="${HOME}/.id_rsa"
 PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -109,10 +110,6 @@ install_aws() {
   region = ${AWS_REGION}" > ~/.aws/config
 }
 
-cat_ssh_id_rsa_pub() {
-  cat "$SSH_ID_RSA.pub"
-}
-
 set_ssh() {
   if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
     install_for_ubuntu openssh-client
@@ -130,6 +127,17 @@ set_ssh() {
   fi
 }
 
+get_secret_identity_file() {
+  if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
+    install_for_ubuntu # jq
+  elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
+    sudo zypper -n install # jq
+  fi
+
+  IDENTITY_FILE=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | jq -r .IDENTITY_FILE)
+  EC2_INSTANCE_USER=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | jq -r .EC2_INSTANCE_USER)
+}
+
 set_up_instance_aws_host_to_known_hosts () {
   set_ssh
 
@@ -143,8 +151,9 @@ set_up_instance_aws_host_to_known_hosts () {
 
     printf "#start %s\n%s\n#end %s\n" "$1" "$SSH_KEYSCAN" "$1" >> ~/.ssh/known_hosts
 
+    get_secret_identity_file
     echo "${IDENTITY_FILE}" > "${TEMP_SSH_ID_RSA}"
-    cat "$SSH_ID_RSA.pub" | ssh -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${EC2_INSTANCE_USER}@$1" 'cat >> ~/.ssh/authorized_keys'
+    cat "${SSH_ID_RSA_PUB}" | ssh -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${EC2_INSTANCE_USER}@$1" 'cat >> ~/.ssh/authorized_keys'
 
     ssh "${EC2_INSTANCE_USER}@$1" "sudo shutdown +60"
 
@@ -227,24 +236,20 @@ sfdk_device_exec_app() {
 }
 
 download_backup_from_aws_to_aws() {
-  echo "${EC2_INSTANCE_NAME_BACKUP}"
-  echo "${ARCH}"
-  echo "${PLATFORM}"
-  echo "${AWS_ACCESS_KEY_ID}"
-  echo "${AWS_REGION}"
-  echo "${EC2_INSTANCE_USER}"
-  echo "${EC2_INSTANCE_USER_BACKUP}"
+  echo "ARCH: ${ARCH}"
+  echo "PLATFORM: ${PLATFORM}"
+  echo "AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}"
+  echo "AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}"
+  echo "AWS_REGION: ${AWS_REGION}"
 
   prepare_aws_instance
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
     export PLATFORM=${PLATFORM}
     export EC2_INSTANCE_NAME=${EC2_INSTANCE_NAME_BACKUP}
-    export EC2_INSTANCE_USER=${EC2_INSTANCE_USER_BACKUP}
     export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
-    export IDENTITY_FILE_BACKUP=${IDENTITY_FILE}
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=download_backup_from_aws
   "
 }
@@ -288,7 +293,6 @@ download_backup_from_aws() {
   echo "${EC2_INSTANCE_USER}"
   echo "${BACKUP_FILE_PATH}"
   echo "${EC2_INSTANCE_NAME}"
-  echo "${IDENTITY_FILE}"
   echo "${AWS_ACCESS_KEY_ID}"
   echo "${AWS_REGION}"
   echo "${AWS_SECRET_ACCESS_KEY}"
@@ -525,7 +529,7 @@ exec ~/SailfishOS/bin/sfdk "$@"' > ~/bin/sfdk
 ssh_copy_id_on_sailfish_device() {
   SAILFISH_IP=$(echo "$SSH_CLIENT" | awk '{ print $1}')
   set_up_instance_host_to_known_hosts "$SAILFISH_IP"
-  ssh-copy-id -i "$SSH_ID_RSA.pub" nemo@"${SAILFISH_IP}"
+  ssh-copy-id -i "${SSH_ID_RSA_PUB}" nemo@"${SAILFISH_IP}"
 }
 
 set_up_instance_host_to_known_hosts () {
