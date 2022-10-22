@@ -151,6 +151,7 @@ set_up_instance_aws_host_to_known_hosts () {
 
     get_ec2_instance_identify_file
     echo "${IDENTITY_FILE}" | xargs -n 1 > "${TEMP_SSH_ID_RSA}"
+    cat "${TEMP_SSH_ID_RSA}"
     chmod 600 "${TEMP_SSH_ID_RSA}"
     cat "${SSH_ID_RSA_PUB}" | ssh -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${EC2_INSTANCE_USER}@$1" 'cat >> ~/.ssh/authorized_keys'
 
