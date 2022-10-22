@@ -62,6 +62,7 @@ if [[ -z ${PLATFORM+x} ]]; then
 fi
 
 echo "PLATFORM: ${PLATFORM}"
+echo "ARCH: ${ARCH}"
 echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
 BUILD_FOLDER="${HOME}/${PLATFORM}_${ARCH}"
 FILE=${PLATFORM}_${ARCH}.tar.gz
@@ -314,7 +315,7 @@ download_backup_from_aws() {
     HASH=$(openssl sha256 "${BACKUP_FILE_PATH}" | awk -F'= ' '{print $2}')
     [ "$HASH_ORIGINAL" = "$HASH" ]
 
-    unpigz < "${FILE}" | tar -x
+    unpigz < "${FILE}" | tar -xv
   else
     mkdir -p "${BUILD_FOLDER}"
   fi
