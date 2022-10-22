@@ -127,13 +127,17 @@ set_ssh() {
   fi
 }
 
-get_secret_identity_file() {
-  IDENTITY_FILE=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"IDENTITY_FILE":"[^"]*' |  grep -o '[^"]*$')
+get_ec2_instance_user() {
   EC2_INSTANCE_USER=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"EC2_INSTANCE_USER":"[^"]*' |  grep -o '[^"]*$')
+}
+
+get_ec2_instance_identify_file() {
+  IDENTITY_FILE=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"IDENTITY_FILE":"[^"]*' |  grep -o '[^"]*$')
 }
 
 set_up_instance_aws_host_to_known_hosts () {
   set_ssh
+  get_ec2_instance_user
 
   if ! grep "$1" ~/.ssh/known_hosts; then
     if [[ ! $(ssh-keyscan -H "$1") ]];then
@@ -145,7 +149,7 @@ set_up_instance_aws_host_to_known_hosts () {
 
     printf "#start %s\n%s\n#end %s\n" "$1" "$SSH_KEYSCAN" "$1" >> ~/.ssh/known_hosts
 
-    get_secret_identity_file
+    get_ec2_instance_identify_file
     echo "${IDENTITY_FILE}" | xargs -n 1 > "${TEMP_SSH_ID_RSA}"
     chmod 600 "${TEMP_SSH_ID_RSA}"
     cat "${SSH_ID_RSA_PUB}" | ssh -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${EC2_INSTANCE_USER}@$1" 'cat >> ~/.ssh/authorized_keys'
@@ -167,6 +171,14 @@ aws_start() {
       aws_wait_status_running
     fi
   fi
+}
+
+prepare_aws_instance() {
+  install_aws
+  set_ec2_instance
+  aws_start
+  aws_get_host
+  set_up_instance_aws_host_to_known_hosts "${EC2_INSTANCE_HOST}"
 }
 
 sfdk_deploy_to_device() {
@@ -251,14 +263,6 @@ download_backup_from_aws_to_aws() {
 
 set_ec2_instance() {
     EC2_INSTANCE=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${EC2_INSTANCE_NAME}" --query 'Reservations[*].Instances[*].[InstanceId]' --output text)
-}
-
-prepare_aws_instance() {
-  install_aws
-  set_ec2_instance
-  aws_start
-  aws_get_host
-  set_up_instance_aws_host_to_known_hosts "${EC2_INSTANCE_HOST}"
 }
 
 download_backup() {
