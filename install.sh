@@ -271,7 +271,7 @@ set_ec2_instance() {
 }
 
 download_backup() {
-  rm -f ${BACKUP_FILE_PATH}*
+  rm -f ${BACKUP_FILE_PATH}_*
 
   SEC=$SECONDS
   count=0
