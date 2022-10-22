@@ -61,6 +61,8 @@ if [[ -z ${PLATFORM+x} ]]; then
   PLATFORM=$(get_name_platform)
 fi
 
+echo "PLATFORM: ${PLATFORM}"
+echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
 BUILD_FOLDER="${HOME}/${PLATFORM}_${ARCH}"
 FILE=${PLATFORM}_${ARCH}.tar.gz
 BACKUP_FILE_PATH="${HOME}/${FILE}"
@@ -290,12 +292,6 @@ print(size if end > size else end)")
 }
 
 download_backup_from_aws() {
-  echo "${BACKUP_FILE_PATH}"
-  echo "${EC2_INSTANCE_NAME}"
-  echo "${AWS_ACCESS_KEY_ID}"
-  echo "${AWS_REGION}"
-  echo "${AWS_SECRET_ACCESS_KEY}"
-
   if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
     system_prepare_ubuntu
     install_for_ubuntu openssl curl
