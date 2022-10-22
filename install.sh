@@ -290,7 +290,6 @@ print(size if end > size else end)")
 }
 
 download_backup_from_aws() {
-  echo "${EC2_INSTANCE_USER}"
   echo "${BACKUP_FILE_PATH}"
   echo "${EC2_INSTANCE_NAME}"
   echo "${AWS_ACCESS_KEY_ID}"
