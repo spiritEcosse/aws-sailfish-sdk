@@ -65,7 +65,8 @@ echo "PLATFORM: ${PLATFORM}"
 echo "ARCH: ${ARCH}"
 echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
 BUILD_FOLDER="${HOME}/${PLATFORM}_${ARCH}"
-FILE=${PLATFORM}_${ARCH}.tar.gz
+FILE_TAR=${PLATFORM}_${ARCH}.tar
+FILE=${FILE_TAR}.gz
 BACKUP_FILE_PATH="${HOME}/${FILE}"
 DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
@@ -315,7 +316,8 @@ download_backup_from_aws() {
     HASH=$(openssl sha256 "${BACKUP_FILE_PATH}" | awk -F'= ' '{print $2}')
     [ "$HASH_ORIGINAL" = "$HASH" ]
 
-    unpigz < "${FILE}" | tar -xv
+    unpigz -v "${FILE}"
+    tar -xf "${FILE_TAR}"
   else
     mkdir -p "${BUILD_FOLDER}"
   fi
