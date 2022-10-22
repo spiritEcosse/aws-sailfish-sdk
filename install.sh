@@ -296,9 +296,9 @@ print(size if end > size else end)")
 download_backup_from_aws() {
   if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
     system_prepare_ubuntu
-    install_for_ubuntu openssl curl
+    install_for_ubuntu openssl curl pigz
   elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
-    sudo zypper -n install openssl curl
+    sudo zypper -n install openssl curl pigz
   fi
 
   prepare_aws_instance
