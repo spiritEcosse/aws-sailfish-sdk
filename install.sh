@@ -89,7 +89,13 @@ aws_wait_status_running() {
   done
 }
 
+
+set_ec2_instance() {
+    EC2_INSTANCE=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${EC2_INSTANCE_NAME}" --query 'Reservations[*].Instances[*].[InstanceId]' --output text)
+}
+
 aws_stop() {
+  set_ec2_instance
   aws ec2 stop-instances --instance-ids "${EC2_INSTANCE}"
 }
 
@@ -264,10 +270,6 @@ download_backup_from_aws_to_aws() {
     export AWS_REGION=${AWS_REGION}
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=download_backup_from_aws
   "
-}
-
-set_ec2_instance() {
-    EC2_INSTANCE=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${EC2_INSTANCE_NAME}" --query 'Reservations[*].Instances[*].[InstanceId]' --output text)
 }
 
 download_backup() {
