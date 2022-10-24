@@ -71,6 +71,14 @@ BACKUP_FILE_PATH="${HOME}/${FILE}"
 DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
 
+install_pigz() {
+  cd ~/
+  curl -O https://zlib.net/pigz/pigz-2.7.tar.gz
+  tar -xzvf pigz-2.7.tar.gz
+  sudo make
+  pigz --version
+}
+
 aws_get_host() {
   EC2_INSTANCE_HOST=$(aws ec2 describe-instances --instance-ids "${EC2_INSTANCE}" --query "Reservations[*].Instances[*].[PublicIpAddress]" --output text)
   while [[ "$EC2_INSTANCE_HOST" == "None" ]]
