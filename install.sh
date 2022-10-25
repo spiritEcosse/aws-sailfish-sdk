@@ -395,6 +395,7 @@ codecov_push_results() {
 }
 
 cp_share_to_bible() {
+  mkdir -p "${BIBLE_FOLDER}"
   cd "${BIBLE_FOLDER}"
   sudo cp /share/. .
   sudo chown -R mersdk:mersdk .
