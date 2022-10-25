@@ -61,6 +61,10 @@ if [[ -z ${PLATFORM+x} ]]; then
   PLATFORM=$(get_name_platform)
 fi
 
+if [[ -z ${EC2_INSTANCE_NAME+x} ]]; then
+  EC2_INSTANCE_NAME=backup_server
+fi
+
 echo "PLATFORM: ${PLATFORM}"
 echo "ARCH: ${ARCH}"
 echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
@@ -282,7 +286,6 @@ download_backup_from_aws_to_aws() {
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
     export PLATFORM=${PLATFORM}
-    export EC2_INSTANCE_NAME=backup_server
     export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
