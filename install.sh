@@ -70,11 +70,14 @@ FILE=${FILE_TAR}.gz
 BACKUP_FILE_PATH="${HOME}/${FILE}"
 DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
+PIGZ_VERSION=2.7
+NAME_PIGZ=pigz-${PIGZ_VERSION}
 
 install_pigz() {
   cd ~/
-  curl -O https://zlib.net/pigz/pigz-2.7.tar.gz
-  tar -xzvf pigz-2.7.tar.gz
+  curl -O https://zlib.net/pigz/${NAME_PIGZ}.tar.gz
+  tar -xzvf ${NAME_PIGZ}.tar.gz
+  cd ${NAME_PIGZ}
   sudo make
   pigz --version
 }
