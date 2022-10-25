@@ -69,6 +69,7 @@ echo "PLATFORM: ${PLATFORM}"
 echo "ARCH: ${ARCH}"
 echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
 BUILD_FOLDER="${HOME}/${PLATFORM}_${ARCH}"
+BIBLE_FOLDER="${HOME}/bible"
 FILE_TAR=${PLATFORM}_${ARCH}.tar
 FILE=${FILE_TAR}.gz
 BACKUP_FILE_PATH="${HOME}/${FILE}"
@@ -394,8 +395,7 @@ codecov_push_results() {
 }
 
 cp_share_to_bible() {
-  cd "${BUILD_FOLDER}"
-#  sudo rsync -rv --checksum --ignore-times --info=progress2 --stats --human-readable /share/ .
+  cd "${BIBLE_FOLDER}"
   sudo cp /share/. .
   sudo chown -R mersdk:mersdk .
 }
