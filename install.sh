@@ -317,6 +317,18 @@ print(size if end > size else end)")
   cat $(ls ${BACKUP_FILE_PATH}_* | sort -V) > "${BACKUP_FILE_PATH}";
 }
 
+system_prepare_ubuntu() {
+  if [[ "$(whoami)" == "root" ]]; then
+    apt update
+    apt install -y sudo
+  fi
+
+  sudo apt update -y
+  sudo apt upgrade -y
+  sudo apt dist-upgrade -y
+  # sudo dpkg --configure -a
+}
+
 download_backup_from_aws() {
   if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
     system_prepare_ubuntu
@@ -349,10 +361,15 @@ download_backup_from_aws() {
 }
 
 upload_backup() {
+  if [[ -z ${HASH_ORIGINAL+x} ]]; then
+    HASH_ORIGINAL=""
+  fi
+
   if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
-    install_for_ubuntu pigz
+    system_prepare_ubuntu
+    install_for_ubuntu pigz openssl
   elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
-    sudo zypper -n install pigz
+    sudo zypper -n install pigz openssl
   fi
 
   cd "${HOME}"
@@ -395,7 +412,6 @@ codecov_push_results() {
 }
 
 cp_share_to_bible() {
-  mkdir -p "${BUILD_FOLDER}"
   mkdir -p "${BIBLE_FOLDER}"
   cd "${BIBLE_FOLDER}"
   sudo cp -r /share/. .
@@ -405,7 +421,7 @@ cp_share_to_bible() {
 
 code_coverage() {
   alias mb2='mb2 --target SailfishOS-$RELEASE-$ARCH'
-#  download_backup_from_aws
+  download_backup_from_aws
   cp_share_to_bible
   mb2_cmake_build
   upload_backup
@@ -413,18 +429,6 @@ code_coverage() {
   mb2_run_ccov_all_capture
   codecov_push_results
   wait
-}
-
-system_prepare_ubuntu() {
-  if [[ "$(whoami)" == "root" ]]; then
-    apt update
-    apt install -y sudo
-  fi
-
-  sudo apt update -y
-  sudo apt upgrade -y
-  sudo apt dist-upgrade -y
-  # sudo dpkg --configure -a
 }
 
 install_for_ubuntu() {
