@@ -70,10 +70,11 @@ FILE=${FILE_TAR}.gz
 BACKUP_FILE_PATH="${HOME}/${FILE}"
 DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
-PIGZ_VERSION=2.7
-NAME_PIGZ=pigz-${PIGZ_VERSION}
 
 install_pigz() {
+  PIGZ_VERSION=2.7
+  NAME_PIGZ=pigz-${PIGZ_VERSION}
+
   if [[ $(pigz --version | awk -F ' ' '{print $2}') != "${PIGZ_VERSION}" ]];
   then
     cd ~/
