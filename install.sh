@@ -336,7 +336,7 @@ download_backup_from_aws() {
     HASH=$(openssl sha256 "${BACKUP_FILE_PATH}" | awk -F'= ' '{print $2}')
     [ "$HASH_ORIGINAL" = "$HASH" ]
 
-    unpigz -v "${FILE}"
+    unpigz -v "${FILE}" # TODO: this line is broken on the ubuntu, i will fix it in the future
     tar -xf "${FILE_TAR}"
   else
     mkdir -p "${BUILD_FOLDER}"
