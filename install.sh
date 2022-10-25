@@ -400,6 +400,7 @@ cp_share_to_bible() {
   cd "${BIBLE_FOLDER}"
   sudo cp -r /share/. .
   sudo chown -R mersdk:mersdk .
+  cp -r "${BIBLE_FOLDER}"/rpm "${BUILD_FOLDER}"
 }
 
 code_coverage() {
