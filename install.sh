@@ -78,7 +78,9 @@ install_pigz() {
   curl -O https://zlib.net/pigz/${NAME_PIGZ}.tar.gz
   tar -xzvf ${NAME_PIGZ}.tar.gz
   cd ${NAME_PIGZ}
-  sudo make
+  make
+  sudo cp -f pigz /usr/bin/
+  cd ~/
   pigz --version
 }
 
