@@ -74,13 +74,17 @@ PIGZ_VERSION=2.7
 NAME_PIGZ=pigz-${PIGZ_VERSION}
 
 install_pigz() {
-  cd ~/
-  curl -O https://zlib.net/pigz/${NAME_PIGZ}.tar.gz
-  tar -xzvf ${NAME_PIGZ}.tar.gz
-  cd ${NAME_PIGZ}
-  make
-  sudo cp -f pigz /usr/bin/
-  cd ~/
+  if [[ $(pigz --version | awk -F ' ' '{print $2}') != "${PIGZ_VERSION}" ]];
+  then
+    cd ~/
+    curl -O https://zlib.net/pigz/${NAME_PIGZ}.tar.gz
+    tar -xzvf ${NAME_PIGZ}.tar.gz
+    cd ${NAME_PIGZ}
+    make
+    sudo cp -f pigz /usr/bin/
+    cd ~/
+  fi
+
   pigz --version
 }
 
