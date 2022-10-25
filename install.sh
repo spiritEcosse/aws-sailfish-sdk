@@ -266,7 +266,7 @@ sfdk_config_target_sony() {
 }
 
 sfdk_config_device_sony() {
-  sfdk config device='Xperia 10 - Dual SIM \(ARM\)'
+  sfdk config device='Xperia 10 - Dual SIM (ARM)'
 }
 
 sfdk_device_exec_app() {
