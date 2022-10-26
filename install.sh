@@ -247,12 +247,13 @@ sfdk_build_test() {
   sfdk cmake ../bible -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
   sfdk make
 #  sfdk build ../bible -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
-#  sfdk build-shell ctest --output-on-failure
+  sfdk build-shell ctest --output-on-failure
 }
 
 sfdk_build_deploy() {
   cd "${BUILD_FOLDER}"
-  sfdk build ../bible
+  sfdk cmake ../bible
+  sfdk make
   sfdk deploy --sdk
 }
 
