@@ -422,6 +422,12 @@ cp_share_to_bible() {
   cp -r "${BIBLE_FOLDER}"/rpm "${BUILD_FOLDER}"
 }
 
+rsync_share_to_build() {
+  cd "${BUILD_FOLDER}"
+  sudo rsync -rv --checksum --ignore-times --info=progress2 --stats --human-readable /share/ .
+  sudo chown -R mersdk:mersdk .
+}
+
 code_coverage() {
   alias mb2='mb2 --target SailfishOS-$RELEASE-$ARCH'
   download_backup_from_aws
