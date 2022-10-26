@@ -506,12 +506,25 @@ sfdk_download() {
 	fi
 }
 
+sfdk_reinstall() {
+  # because of https://forum.sailfishos.org/t/sailfish-ide-unable-to-deploy-after-4-0-1-sdk-update/5292
+  rm_sdk_settings
+  rm -fr ~/SailfishOS
+  # TODO: add removing docker container if it needed
+  sfdk_install
+}
+
 sfdk_install() {
   if [[ ! -d "SailfishOS" ]]; then
+    rm_sdk_settings
 	  QT_QPA_PLATFORM=minimal ./${SDK_FILE_NAME} --verbose non-interactive=1 accept-licenses=1 build-engine-type=docker
 	else
 	  log_app_msg "Folder SailfishOS already exists."
 	fi
+}
+
+rm_sdk_settings() {
+  rm -fr ~/.config/SailfishSDK
 }
 
 set_envs() {
