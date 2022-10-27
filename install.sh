@@ -249,7 +249,7 @@ sfdk_run_app_on_device() {
 
 sfdk_build_test() {
   cd "${BUILD_FOLDER}"
-  sfdk cmake ../bible -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
+  sfdk cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
   sfdk make
 #  sfdk build ../bible -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
   sfdk build-shell ctest --output-on-failure
@@ -257,7 +257,7 @@ sfdk_build_test() {
 
 sfdk_build_deploy() {
   cd "${BUILD_FOLDER}"
-  sfdk cmake ../bible
+  sfdk cmake
   sfdk make
   sfdk deploy --sdk
 }
@@ -645,7 +645,7 @@ git_submodule_remove() {
 
     # Remove the entry in .gitmodules and remove the submodule directory located at path/to/submodule
     if [[ $(git rm -f 3rdparty/"${module}") ]];then
-      git rm -f 3rdparty/"${module}"
+      echo 'success: git rm -f'
     fi
 
     rm -fr 3rdparty/"${module}"
