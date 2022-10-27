@@ -9,7 +9,7 @@ set -euox pipefail
 # builtin variables
 RED='\033[0;31m'
 BLUE='\033[1;36m'
-SDK_VERSION='3.7.4'
+SDK_VERSION='3.9.6'
 SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_NONINTERACTIVE_SEEN=true
@@ -508,7 +508,7 @@ install_docker() {
 
 sfdk_download() {
 	if [ ! -f "${SDK_FILE_NAME}" ]; then
-		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}.deprecated/${SDK_FILE_NAME}
+		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}/${SDK_FILE_NAME}
 		chmod +x ${SDK_FILE_NAME}
 		log_app_msg "Download ${SDK_FILE_NAME} has completed successfully."
 	else
@@ -541,7 +541,7 @@ sfdk_reinstall() {
   # TODO: add removing docker container if it needed
   docker_armaggedon
   sfdk_download
-#  sfdk_install
+  sfdk_install
 }
 
 sfdk_install() {
@@ -689,10 +689,10 @@ main() {
   sfdk_download
 
   # Due to qemu-x86_64: Could not open '/lib64/ld-linux-x86-64.so.2': No such file or directory; TODO: add smart check
-#  if [[ -z ${DOCKER_RUNNING+x} ]]; then
-##    sfdk_install
-#    sfdk_tools_list
-#  fi
+  if [[ -z ${DOCKER_RUNNING+x} ]]; then
+    sfdk_install
+    sfdk_tools_list
+  fi
   wait
 }
 
