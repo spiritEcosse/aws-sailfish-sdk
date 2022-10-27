@@ -17,7 +17,7 @@ SSH_ID_RSA="${HOME}/.ssh/id_rsa"
 SSH_ID_RSA_PUB="${HOME}/.ssh/id_rsa.pub"
 TEMP_SSH_ID_RSA="${HOME}/.id_rsa"
 PATH=$HOME/bin:/usr/local/bin:$PATH
-RSYNC_PARAMS_UPLOAD_SOURCE_CODE="-rv --checksum --ignore-times --info=progress2 --stats --human-readable"
+RSYNC_PARAMS_UPLOAD_SOURCE_CODE="-rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.git' --exclude '.idea'"
 
 # Default values
 funcs=main
@@ -630,6 +630,20 @@ mersdk ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/rules-for-user-mersdk'
 
 file_get_size() {
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "stat -c%s ${DESTINATION_FILE_PATH}"
+}
+
+git_submodule_remove() {
+  for func in $(echo "$1" | tr ";" "\n")
+  do
+    # Remove the submodule entry from .git/config
+    git submodule deinit -f 3rdparty/"$1"
+
+    # Remove the submodule directory from the superproject's .git/modules directory
+    rm -rf .git/modules/3rdparty/"$1"
+
+    # Remove the entry in .gitmodules and remove the submodule directory located at path/to/submodule
+    git rm -f 3rdparty/"$1"
+  done
 }
 
 git_submodule_init() {
