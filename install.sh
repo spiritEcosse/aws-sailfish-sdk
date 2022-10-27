@@ -644,7 +644,9 @@ git_submodule_remove() {
     rm -rf .git/modules/3rdparty/"${module}"
 
     # Remove the entry in .gitmodules and remove the submodule directory located at path/to/submodule
-    git rm -f 3rdparty/"${module}"
+    if [[ $(git rm -f 3rdparty/"${module}") ]];then
+      git rm -f 3rdparty/"${module}"
+    fi
 
     rm -fr 3rdparty/"${module}"
   done
