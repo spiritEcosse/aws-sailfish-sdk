@@ -526,17 +526,17 @@ sfdk_reinstall() {
   rm_sdk_settings
   rm -fr ~/SailfishOS
   # TODO: add removing docker container if it needed
-  sfdk_install
+#  sfdk_install
 }
 
-sfdk_install() {
-  if [[ ! -d "SailfishOS" ]]; then
-    rm_sdk_settings
-	  QT_QPA_PLATFORM=minimal ./${SDK_FILE_NAME} --verbose non-interactive=1 accept-licenses=1 build-engine-type=docker
-	else
-	  log_app_msg "Folder SailfishOS already exists."
-	fi
-}
+#sfdk_install() {
+#  if [[ ! -d "SailfishOS" ]]; then
+#    rm_sdk_settings
+#	  QT_QPA_PLATFORM=minimal ./${SDK_FILE_NAME} --verbose non-interactive=1 accept-licenses=1 build-engine-type=docker
+#	else
+#	  log_app_msg "Folder SailfishOS already exists."
+#	fi
+#}
 
 set_envs() {
 	LIBGL_ALWAYS_INDIRECT="LIBGL_ALWAYS_INDIRECT=1"
@@ -675,7 +675,7 @@ main() {
 
   # Due to qemu-x86_64: Could not open '/lib64/ld-linux-x86-64.so.2': No such file or directory; TODO: add smart check
   if [[ -z ${DOCKER_RUNNING+x} ]]; then
-    sfdk_install
+#    sfdk_install
     sfdk_tools_list
   fi
   wait
