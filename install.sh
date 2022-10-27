@@ -636,13 +636,17 @@ git_submodule_remove() {
   for module in $(echo "$1" | tr "," "\n")
   do
     # Remove the submodule entry from .git/config
-    git submodule deinit -f 3rdparty/"${module}"
+    if [[ $(git submodule deinit -f 3rdparty/"${module}") ]];then
+      echo 'success: git submodule deinit'
+    fi
 
     # Remove the submodule directory from the superproject's .git/modules directory
     rm -rf .git/modules/3rdparty/"${module}"
 
     # Remove the entry in .gitmodules and remove the submodule directory located at path/to/submodule
     git rm -f 3rdparty/"${module}"
+
+    rm -fr 3rdparty/"${module}"
   done
 }
 
