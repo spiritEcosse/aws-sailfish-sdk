@@ -517,6 +517,10 @@ sfdk_download() {
 	fi
 }
 
+rm_sdk_settings() {
+  rm -fr ~/.config/SailfishSDK
+}
+
 sfdk_reinstall() {
   # because of https://forum.sailfishos.org/t/sailfish-ide-unable-to-deploy-after-4-0-1-sdk-update/5292
   rm_sdk_settings
@@ -532,10 +536,6 @@ sfdk_install() {
 	else
 	  log_app_msg "Folder SailfishOS already exists."
 	fi
-}
-
-rm_sdk_settings() {
-  rm -fr ~/.config/SailfishSDK
 }
 
 set_envs() {
@@ -561,10 +561,6 @@ set_zsh_by_default() {
 
 set_zsh_by_default_user() {
 	sudo chsh -s $(which zsh) "$1"
-}
-
-create_spec_dirs() {
-	mkdir -p ~/build-bible-SailfishOS_4_4_0_58_armv7hl_in_sailfish_sdk_build_engine_ubuntu-Debug
 }
 
 install_ohmyzsh() {
@@ -668,7 +664,6 @@ docker_login_build_push() {
 main() {
   prepare_user_mersdk
   [ "$(whoami)" = "mersdk" ]
-  create_spec_dirs &
   sfdk_put_to_bin &
   install_deps
   install_docker
