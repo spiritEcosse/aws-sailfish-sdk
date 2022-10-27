@@ -9,7 +9,7 @@ set -euox pipefail
 # builtin variables
 RED='\033[0;31m'
 BLUE='\033[1;36m'
-SDK_VERSION='3.9.6'
+SDK_VERSION='3.8.3'
 SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_NONINTERACTIVE_SEEN=true
@@ -526,17 +526,17 @@ sfdk_reinstall() {
   rm_sdk_settings
   rm -fr ~/SailfishOS
   # TODO: add removing docker container if it needed
-#  sfdk_install
+  sfdk_install
 }
 
-#sfdk_install() {
-#  if [[ ! -d "SailfishOS" ]]; then
-#    rm_sdk_settings
-#	  QT_QPA_PLATFORM=minimal ./${SDK_FILE_NAME} --verbose non-interactive=1 accept-licenses=1 build-engine-type=docker
-#	else
-#	  log_app_msg "Folder SailfishOS already exists."
-#	fi
-#}
+sfdk_install() {
+  if [[ ! -d "SailfishOS" ]]; then
+    rm_sdk_settings
+	  QT_QPA_PLATFORM=minimal ./${SDK_FILE_NAME} --verbose non-interactive=1 accept-licenses=1 build-engine-type=docker
+	else
+	  log_app_msg "Folder SailfishOS already exists."
+	fi
+}
 
 set_envs() {
 	LIBGL_ALWAYS_INDIRECT="LIBGL_ALWAYS_INDIRECT=1"
