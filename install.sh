@@ -9,7 +9,7 @@ set -euox pipefail
 # builtin variables
 RED='\033[0;31m'
 BLUE='\033[1;36m'
-SDK_VERSION='3.8.3'
+SDK_VERSION='3.7.4'
 SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_NONINTERACTIVE_SEEN=true
@@ -495,10 +495,10 @@ install_docker() {
 	# https://docs.docker.com/engine/install/ubuntu/
 
 	if ! which docker; then
-		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
-		echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-		sudo apt-get update -y && \
-		sudo apt-get install -y docker-ce docker-ce-cli containerd.io && \
+		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+		echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+		sudo apt-get update -y
+		sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 		sudo usermod -aG docker "$USER"
 		log_app_msg "Manage Docker as a non-root user. Successfully."
 		exit 0
@@ -508,7 +508,7 @@ install_docker() {
 
 sfdk_download() {
 	if [ ! -f "${SDK_FILE_NAME}" ]; then
-		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}/${SDK_FILE_NAME} && \
+		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}.deprecated/${SDK_FILE_NAME}
 		chmod +x ${SDK_FILE_NAME}
 		log_app_msg "Download ${SDK_FILE_NAME} has completed successfully."
 	else
@@ -541,7 +541,7 @@ sfdk_reinstall() {
   # TODO: add removing docker container if it needed
   docker_armaggedon
   sfdk_download
-  sfdk_install
+#  sfdk_install
 }
 
 sfdk_install() {
