@@ -674,10 +674,10 @@ main() {
   sfdk_download
 
   # Due to qemu-x86_64: Could not open '/lib64/ld-linux-x86-64.so.2': No such file or directory; TODO: add smart check
-  if [[ -z ${DOCKER_RUNNING+x} ]]; then
-#    sfdk_install
-    sfdk_tools_list
-  fi
+#  if [[ -z ${DOCKER_RUNNING+x} ]]; then
+##    sfdk_install
+#    sfdk_tools_list
+#  fi
   wait
 }
 
