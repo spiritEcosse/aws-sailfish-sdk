@@ -633,7 +633,7 @@ file_get_size() {
 }
 
 git_submodule_remove() {
-  for func in $(echo "$1" | tr ";" "\n")
+  for func in $(echo "$1" | tr "," "\n")
   do
     # Remove the submodule entry from .git/config
     git submodule deinit -f 3rdparty/"$1"
