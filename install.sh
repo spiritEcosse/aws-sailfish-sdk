@@ -429,7 +429,7 @@ cp_share_to_bible() {
 
 rsync_share_to_build() {
   cd "${BUILD_FOLDER}"
-  sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE}" /share/ .
+  sudo rsync ${RSYNC_PARAMS_UPLOAD_SOURCE_CODE} /share/ .
   sudo chown -R mersdk:mersdk .
 }
 
