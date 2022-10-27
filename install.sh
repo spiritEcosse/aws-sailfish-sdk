@@ -522,23 +522,32 @@ rm_sdk_settings() {
 }
 
 docker_removecontainers() {
-  docker stop $(docker ps -aq)
-  docker rm $(docker ps -aq)
+  if [[ $(docker ps -aq) ]]; then
+    docker stop $(docker ps -aq)
+  fi
+  if [[ $(docker ps -aq) ]]; then
+    docker rm $(docker ps -aq)
+  fi
 }
 
 docker_armaggedon() {
   docker_removecontainers
   docker network prune -f
-  docker rmi -f $(docker images --filter dangling=true -qa)
-  docker volume rm $(docker volume ls --filter dangling=true -q)
-  docker rmi -f $(docker images -qa)
+  if [[ $(docker images --filter dangling=true -qa) ]]; then
+    docker rmi -f $(docker images --filter dangling=true -qa)
+  fi
+  if [[ $(docker volume ls --filter dangling=true -q) ]]; then
+    docker volume rm $(docker volume ls --filter dangling=true -q)
+  fi
+  if [[ $(docker images -qa) ]]; then
+    docker rmi -f $(docker images -qa)
+  fi
 }
 
 sfdk_reinstall() {
   # because of https://forum.sailfishos.org/t/sailfish-ide-unable-to-deploy-after-4-0-1-sdk-update/5292
   rm_sdk_settings
   rm -fr ~/SailfishOS
-  # TODO: add removing docker container if it needed
   docker_armaggedon
   sfdk_download
   sfdk_install
