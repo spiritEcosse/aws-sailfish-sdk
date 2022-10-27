@@ -17,6 +17,7 @@ SSH_ID_RSA="${HOME}/.ssh/id_rsa"
 SSH_ID_RSA_PUB="${HOME}/.ssh/id_rsa.pub"
 TEMP_SSH_ID_RSA="${HOME}/.id_rsa"
 PATH=$HOME/bin:/usr/local/bin:$PATH
+RSYNC_PARAMS_UPLOAD_SOURCE_CODE="-rv --checksum --ignore-times --info=progress2 --stats --human-readable"
 
 # Default values
 funcs=main
@@ -189,10 +190,6 @@ set_up_instance_aws_host_to_known_hosts () {
     cat "${SSH_ID_RSA_PUB}" | ssh -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${EC2_INSTANCE_USER}@$1" 'cat >> ~/.ssh/authorized_keys'
 
     ssh "${EC2_INSTANCE_USER}@$1" "sudo shutdown +60"
-
-    if [[ -f ".idea/sshConfigs.xml" && -f ".idea/webServers.xml" ]]; then
-      sed -i '' -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$1/g" .idea/webServers.xml .idea/sshConfigs.xml
-    fi
   fi
 }
 
@@ -207,6 +204,10 @@ aws_start() {
   fi
 }
 
+rsync_from_host_to_sever() {
+  rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE}" ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}":~/bible
+}
+
 prepare_aws_instance() {
   install_aws
   set_ec2_instance
@@ -217,6 +218,7 @@ prepare_aws_instance() {
 
 sfdk_deploy_to_device() {
   prepare_aws_instance
+  rsync_from_host_to_sever
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
     export PLATFORM=${PLATFORM}
@@ -226,6 +228,7 @@ sfdk_deploy_to_device() {
 
 sailfish_run_tests_on_aws() {
     prepare_aws_instance
+    rsync_from_host_to_sever
     ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
       export ARCH=${ARCH}
       export PLATFORM=${PLATFORM}
@@ -235,6 +238,7 @@ sailfish_run_tests_on_aws() {
 
 sfdk_run_app_on_device() {
   prepare_aws_instance
+  rsync_from_host_to_sever
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
     export PLATFORM=${PLATFORM}
@@ -424,14 +428,14 @@ cp_share_to_bible() {
 
 rsync_share_to_build() {
   cd "${BUILD_FOLDER}"
-  sudo rsync -rv --checksum --ignore-times --info=progress2 --stats --human-readable /share/ .
+  sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE}" /share/ .
   sudo chown -R mersdk:mersdk .
 }
 
 code_coverage() {
   alias mb2='mb2 --target SailfishOS-$RELEASE-$ARCH'
   download_backup_from_aws
-  cp_share_to_bible
+  rsync_share_to_build
   mb2_cmake_build
   upload_backup
   mb2_run_tests
