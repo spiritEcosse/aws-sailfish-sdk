@@ -70,6 +70,7 @@ echo "PLATFORM: ${PLATFORM}"
 echo "ARCH: ${ARCH}"
 echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
 BUILD_FOLDER="${HOME}/${PLATFORM}_${ARCH}"
+BUILD_FOLDER_NAME="${PLATFORM}_${ARCH}"
 BIBLE_FOLDER="${HOME}/bible"
 FILE_TAR=${PLATFORM}_${ARCH}.tar
 FILE=${FILE_TAR}.gz
@@ -205,7 +206,7 @@ aws_start() {
 }
 
 rsync_from_host_to_sever() {
-  rsync ${RSYNC_PARAMS_UPLOAD_SOURCE_CODE} ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}":"${BUILD_FOLDER}"
+  rsync ${RSYNC_PARAMS_UPLOAD_SOURCE_CODE} ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}":"${BUILD_FOLDER_NAME}"
 }
 
 prepare_aws_instance() {
