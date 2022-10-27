@@ -206,7 +206,7 @@ aws_start() {
 }
 
 rsync_from_host_to_sever() {
-  rsync ${RSYNC_PARAMS_UPLOAD_SOURCE_CODE} ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}":"${BUILD_FOLDER_NAME}"
+  rsync ${RSYNC_PARAMS_UPLOAD_SOURCE_CODE} ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/${BUILD_FOLDER_NAME}"
 }
 
 prepare_aws_instance() {
