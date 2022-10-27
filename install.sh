@@ -249,7 +249,7 @@ sfdk_run_app_on_device() {
 
 sfdk_build_test() {
   cd "${BUILD_FOLDER}"
-  sfdk cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON "${BIBLE_FOLDER}"
+  sfdk cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
   sfdk make
 #  sfdk build ../bible -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
   sfdk build-shell ctest --output-on-failure
@@ -397,7 +397,7 @@ mb2_cmake_build() {
   cd "${BUILD_FOLDER}"
   mb2 build-init
   mb2 build-requires
-  mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON "${BIBLE_FOLDER}"
+  mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
   mb2 cmake --build .
 }
 
