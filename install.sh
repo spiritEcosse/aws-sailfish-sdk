@@ -609,6 +609,7 @@ sdk_download() {
 }
 
 main_from_client() {
+  echo "ARCH: ${ARCH}"
   echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
   echo "AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}"
   echo "AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}"
@@ -619,6 +620,10 @@ main_from_client() {
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash
   "
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+    export ARCH=${ARCH}
+    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    export AWS_REGION=${AWS_REGION}
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash
   "
 }
