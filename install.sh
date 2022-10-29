@@ -9,10 +9,11 @@ set -euox pipefail
 # builtin variables
 RED='\033[0;31m'
 BLUE='\033[1;36m'
-SDK_VERSION='3.9.6'
-SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
+#SDK_VERSION='3.9.6'
+#SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_NONINTERACTIVE_SEEN=true
+DOCKER_REPO="ghcr.io/spiritecosse/bible-sailfishos-"
 SSH_ID_RSA="${HOME}/.ssh/id_rsa"
 SSH_ID_RSA_PUB="${HOME}/.ssh/id_rsa.pub"
 TEMP_SSH_ID_RSA="${HOME}/.id_rsa"
@@ -66,6 +67,11 @@ if [[ -z ${EC2_INSTANCE_NAME+x} ]]; then
   EC2_INSTANCE_NAME=backup_server
 fi
 
+if [[ -z ${RELEASE+x} ]]; then
+  RELEASE="latest"
+fi
+
+echo "RELEASE: ${RELEASE}"
 echo "PLATFORM: ${PLATFORM}"
 echo "ARCH: ${ARCH}"
 echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
@@ -113,7 +119,6 @@ aws_wait_status_running() {
     aws_wait_status_running
   done
 }
-
 
 set_ec2_instance() {
     EC2_INSTANCE=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${EC2_INSTANCE_NAME}" --query 'Reservations[*].Instances[*].[InstanceId]' --output text)
@@ -166,6 +171,10 @@ get_ec2_instance_user() {
   EC2_INSTANCE_USER=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"EC2_INSTANCE_USER":"[^"]*' |  grep -o '[^"]*$')
 }
 
+get_ec2_github_token() {
+  aws secretsmanager get-secret-value --secret-id github --query 'SecretString' --output text | grep -o '"GIT_HUB_TOKEN_REGISTRY":"[^"]*' |  grep -o '[^"]*$'
+}
+
 get_ec2_instance_identify_file() {
   IDENTITY_FILE=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"IDENTITY_FILE":"[^"]*' |  grep -o '[^"]*$')
 }
@@ -215,73 +224,6 @@ prepare_aws_instance() {
   aws_start
   aws_get_host
   set_up_instance_aws_host_to_known_hosts "${EC2_INSTANCE_HOST}"
-}
-
-sfdk_deploy_to_device() {
-  prepare_aws_instance
-  rsync_from_host_to_sever
-  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
-    export ARCH=${ARCH}
-    export PLATFORM=${PLATFORM}
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='sfdk_device_list;sfdk_tools_list;sfdk_config_device_sony;sfdk_config_target_sony;sfdk_build_deploy;sfdk_device_exec_app'
-  "
-}
-
-sailfish_run_tests_on_aws() {
-    prepare_aws_instance
-    rsync_from_host_to_sever
-    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
-      export ARCH=${ARCH}
-      export PLATFORM=${PLATFORM}
-      curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='sfdk_tools_list;sfdk_config_target_sony;sfdk_build_test'
-    "
-}
-
-sfdk_run_app_on_device() {
-  prepare_aws_instance
-  rsync_from_host_to_sever
-  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
-    export ARCH=${ARCH}
-    export PLATFORM=${PLATFORM}
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='sfdk_device_list;sfdk_config_device_sony;sfdk_device_exec_app'
-  "
-}
-
-sfdk_build_test() {
-  cd "${BUILD_FOLDER}"
-  sfdk cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
-  sfdk make
-#  sfdk build ../bible -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
-  sfdk build-shell ctest --output-on-failure
-}
-
-sfdk_build_deploy() {
-  cd "${BUILD_FOLDER}"
-  sfdk cmake
-  sfdk make
-  sfdk deploy --sdk
-}
-
-sfdk_device_list() {
-  sfdk device list
-}
-
-sfdk_tools_list() {
-  sfdk tools list
-}
-
-sfdk_config_target_sony() {
-  sfdk config target=SailfishOS-4.4.0.58-"${ARCH}"
-}
-
-sfdk_config_device_sony() {
-  sfdk config device='Xperia 10 - Dual SIM (ARM)'
-}
-
-sfdk_device_exec_app() {
-  # on device: devel-su usermod -a -G systemd-journal nemo
-  sfdk device exec /usr/bin/bible &
-  sfdk device exec journalctl -f /usr/bin/bible
 }
 
 download_backup_from_aws_to_aws() {
@@ -419,14 +361,6 @@ codecov_push_results() {
   ./codecov -t "${CODECOV_TOKEN}" -f ccov/all-merged.info
 }
 
-cp_share_to_bible() {
-  mkdir -p "${BIBLE_FOLDER}"
-  cd "${BIBLE_FOLDER}"
-  sudo cp -r /share/. .
-  sudo chown -R mersdk:mersdk .
-  cp -r "${BIBLE_FOLDER}"/rpm "${BUILD_FOLDER}"
-}
-
 rsync_share_to_build() {
   cd "${BUILD_FOLDER}"
   sudo rsync ${RSYNC_PARAMS_UPLOAD_SOURCE_CODE} /share/ .
@@ -482,7 +416,8 @@ set_tz() {
 
 install_deps() {
 	system_prepare_ubuntu
-	install_for_ubuntu sudo systemd libxcb1 libx11-xcb1 libxcb1 libxcb-glx0 libfontconfig1 libx11-data libx11-xcb1 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-sync1 libxcb-xfixes0 libxcb-xinerama0 libxcb-xkb1 libsm6 libxkbcommon-x11-0 libwayland-egl1 libegl-dev libxcomposite1 libwayland-cursor0 libharfbuzz-dev libxi-dev libtinfo5 ca-certificates curl gnupg lsb-release mesa-utils libgl1-mesa-glx micro lsb-release sudo zsh git
+#	install_for_ubuntu sudo systemd libxcb1 libx11-xcb1 libxcb1 libxcb-glx0 libfontconfig1 libx11-data libx11-xcb1 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-sync1 libxcb-xfixes0 libxcb-xinerama0 libxcb-xkb1 libsm6 libxkbcommon-x11-0 libwayland-egl1 libegl-dev libxcomposite1 libwayland-cursor0 libharfbuzz-dev libxi-dev libtinfo5 ca-certificates curl gnupg lsb-release mesa-utils libgl1-mesa-glx micro lsb-release sudo zsh git
+  install_for_ubuntu sudo systemd ca-certificates curl micro lsb-release zsh
 }
 
 install_virtualbox() {
@@ -506,15 +441,24 @@ install_docker() {
 	log_app_msg "docker already installed."
 }
 
-sfdk_download() {
-	if [ ! -f "${SDK_FILE_NAME}" ]; then
-		curl -O https://releases.sailfishos.org/sdk/installers/${SDK_VERSION}/${SDK_FILE_NAME}
-		chmod +x ${SDK_FILE_NAME}
-		log_app_msg "Download ${SDK_FILE_NAME} has completed successfully."
-	else
-	  ls -la .
-		log_app_msg "File ${SDK_FILE_NAME} already exists."
-	fi
+make_deploy_to_device() {
+  prepare_aws_instance
+  rsync_from_host_to_sever
+  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+    export ARCH=${ARCH}
+    export PLATFORM=${PLATFORM}
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='conf_device_list;conf_tools_list;conf_config_device_sony;sfdk_config_target_sony;sfdk_build_deploy;sfdk_device_exec_app'
+  "
+}
+
+make_tests() {
+    prepare_aws_instance
+    rsync_from_host_to_sever
+    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+      export ARCH=${ARCH}
+      export PLATFORM=${PLATFORM}
+      curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='set_tools_list;set_config_target_sony;make_build_test'
+    "
 }
 
 rm_sdk_settings() {
@@ -542,24 +486,6 @@ docker_armaggedon() {
   if [[ $(docker images -qa) ]]; then
     docker rmi -f $(docker images -qa)
   fi
-}
-
-sfdk_reinstall() {
-  # because of https://forum.sailfishos.org/t/sailfish-ide-unable-to-deploy-after-4-0-1-sdk-update/5292
-  rm_sdk_settings
-  rm -fr ~/SailfishOS
-  docker_armaggedon
-  sfdk_download
-  sfdk_install
-}
-
-sfdk_install() {
-  if [[ ! -d "SailfishOS" ]]; then
-    rm_sdk_settings
-	  QT_QPA_PLATFORM=minimal ./${SDK_FILE_NAME} --verbose non-interactive=1 accept-licenses=1 build-engine-type=docker
-	else
-	  log_app_msg "Folder SailfishOS already exists."
-	fi
 }
 
 set_envs() {
@@ -594,14 +520,6 @@ install_ohmyzsh() {
 	set_envs
 }
 
-sfdk_put_to_bin() {
-  mkdir -p ~/bin
-
-  echo '#!/bin/sh
-exec ~/SailfishOS/bin/sfdk "$@"' > ~/bin/sfdk
-  chmod +x ~/bin/sfdk
-}
-
 ssh_copy_id_on_sailfish_device() {
   SAILFISH_IP=$(echo "$SSH_CLIENT" | awk '{ print $1}')
   set_up_instance_host_to_known_hosts "$SAILFISH_IP"
@@ -612,19 +530,6 @@ set_up_instance_host_to_known_hosts () {
   if ! grep "$1" ~/.ssh/known_hosts; then
     SSH_KEYSCAN=$(ssh-keyscan -T 180 -H "$1")
     printf "#start %s\n%s\n#end %s\n" "$1" "$SSH_KEYSCAN" "$1" >> ~/.ssh/known_hosts
-  fi
-}
-
-prepare_user_mersdk() {
-  USER_MERSDK=mersdk
-  if [[ ! $(getent passwd | grep "${USER_MERSDK}") ]]; then
-    sudo adduser --disabled-password --gecos "" "${USER_MERSDK}"
-    sudo usermod -a -G adm,dialout,cdrom,floppy,sudo,audio,dip,video,plugdev "${USER_MERSDK}"
-    sudo cp -fr ~/.ssh /home/"${USER_MERSDK}"/
-    sudo chown -R "${USER_MERSDK}": /home/"${USER_MERSDK}"/
-    sudo bash -c 'echo "# User rules for mersdk
-mersdk ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/rules-for-user-mersdk'
-    exit 0
   fi
 }
 
@@ -680,23 +585,16 @@ nginx_destination_path_chown_ec2_user() {
 }
 
 docker_login() {
-  echo "${CR_PAT}" | docker login ghcr.io -u spiritEcosse --password-stdin
+  # TODO: add smart check
+  echo get_ec2_github_token | docker login ghcr.io -u spiritEcosse --password-stdin
 }
 
 docker_push() {
-  if [[ -z ${RELEASE+x} ]]; then
-    RELEASE="latest"
-  fi
-
-  docker push ghcr.io/spiritecosse/bible-sailfishos-"${ARCH}":"${RELEASE}"
+  docker push "${DOCKER_REPO}${ARCH}:${RELEASE}"
 }
 
 docker_build() {
-  if [[ -z ${RELEASE+x} ]]; then
-    RELEASE="latest"
-  fi
-
-  docker build -t ghcr.io/spiritecosse/bible-sailfishos-"${ARCH}":"${RELEASE}" --build-arg ARCH="${ARCH}" --build-arg RELEASE="${RELEASE}" .
+  docker build -t "${DOCKER_REPO}${ARCH}:${RELEASE}" --build-arg ARCH="${ARCH}" --build-arg RELEASE="${RELEASE}" .
 }
 
 docker_login_build_push() {
@@ -705,23 +603,34 @@ docker_login_build_push() {
   docker_push
 }
 
+sdk_download() {
+  docker_login
+  docker pull "${DOCKER_REPO}${ARCH}:${RELEASE}"
+}
+
+main_from_client() {
+  echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
+  echo "AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}"
+  echo "AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}"
+  echo "AWS_REGION: ${AWS_REGION}"
+
+  prepare_aws_instance
+  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash
+  "
+  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash
+  "
+}
+
 main() {
-  prepare_user_mersdk
-  [ "$(whoami)" = "mersdk" ]
-  sfdk_put_to_bin &
   install_deps
   install_docker
   install_ohmyzsh &
-  set_tz &
   set_zsh_by_default &
-  set_ssh
-  sfdk_download
-
-  # Due to qemu-x86_64: Could not open '/lib64/ld-linux-x86-64.so.2': No such file or directory; TODO: add smart check
-  if [[ -z ${DOCKER_RUNNING+x} ]]; then
-    sfdk_install
-    sfdk_tools_list
-  fi
+  set_tz &
+  set_ssh &
+  sdk_download &
   wait
 }
 
