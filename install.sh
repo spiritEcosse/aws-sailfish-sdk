@@ -172,7 +172,7 @@ get_ec2_instance_user() {
 }
 
 get_ec2_github_token() {
-  aws secretsmanager get-secret-value --secret-id github --query 'SecretString' --output text | grep -o '"GIT_HUB_TOKEN_REGISTRY":"[^"]*' |  grep -o '[^"]*$'
+  GIT_HUB_TOKEN_REGISTRY=$(aws secretsmanager get-secret-value --secret-id github --query 'SecretString' --output text | grep -o '"GIT_HUB_TOKEN_REGISTRY":"[^"]*' |  grep -o '[^"]*$')
 }
 
 get_ec2_instance_identify_file() {
@@ -586,7 +586,7 @@ nginx_destination_path_chown_ec2_user() {
 
 docker_login() {
   # TODO: add smart check
-  echo get_ec2_github_token | docker login ghcr.io -u spiritEcosse --password-stdin
+  echo "${GIT_HUB_TOKEN_REGISTRY}" | docker login ghcr.io -u spiritEcosse --password-stdin
 }
 
 docker_push() {
