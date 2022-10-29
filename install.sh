@@ -585,6 +585,7 @@ nginx_destination_path_chown_ec2_user() {
 }
 
 docker_login() {
+  get_ec2_github_token
   # TODO: add smart check
   echo "${GIT_HUB_TOKEN_REGISTRY}" | docker login ghcr.io -u spiritEcosse --password-stdin
 }
