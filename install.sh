@@ -463,6 +463,20 @@ make_deploy_to_device() {
   "
 }
 
+make_build() {
+  prepare_aws_instance
+  rsync_from_host_to_sever
+  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+    export ARCH=${ARCH}
+    export RELEASE=${RELEASE}
+    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    export AWS_REGION=${AWS_REGION}
+    export PLATFORM=${PLATFORM}
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build'
+  "
+}
+
 run_tests() {
   prepare_aws_instance
   rsync_from_host_to_sever
