@@ -18,7 +18,7 @@ SSH_ID_RSA="${HOME}/.ssh/id_rsa"
 SSH_ID_RSA_PUB="${HOME}/.ssh/id_rsa.pub"
 TEMP_SSH_ID_RSA="${HOME}/.id_rsa"
 PATH=$HOME/bin:/usr/local/bin:$PATH
-RSYNC_PARAMS_UPLOAD_SOURCE_CODE="-rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude .git --exclude .idea "
+RSYNC_PARAMS_UPLOAD_SOURCE_CODE=(-rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.git' --exclude '.idea')
 
 # Default values
 funcs=main
@@ -214,7 +214,7 @@ aws_start() {
 }
 
 rsync_from_host_to_sever() {
-  rsync ${RSYNC_PARAMS_UPLOAD_SOURCE_CODE} ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/${BUILD_FOLDER_NAME}"
+  rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/${BUILD_FOLDER_NAME}"
 }
 
 prepare_aws_instance() {
@@ -367,7 +367,7 @@ codecov_push_results() {
 
 rsync_share_to_build() {
   cd "${BUILD_FOLDER}"
-  sudo rsync ${RSYNC_PARAMS_UPLOAD_SOURCE_CODE} /share/ .
+  sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" /share/ .
   sudo chown -R mersdk:mersdk .
 }
 
