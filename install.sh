@@ -77,7 +77,6 @@ echo "ARCH: ${ARCH}"
 echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
 BUILD_FOLDER="${HOME}/${PLATFORM}_${ARCH}"
 BUILD_FOLDER_NAME="${PLATFORM}_${ARCH}"
-BIBLE_FOLDER="${HOME}/bible"
 FILE_TAR=${PLATFORM}_${ARCH}.tar
 FILE=${FILE_TAR}.gz
 BACKUP_FILE_PATH="${HOME}/${FILE}"
@@ -337,6 +336,7 @@ upload_backup() {
 
 mb2_cmake_build() {
   cd "${BUILD_FOLDER}"
+  mb2_set_target
   mb2 build-init
   mb2 build-requires
   mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
@@ -346,6 +346,10 @@ mb2_cmake_build() {
 mb2_run_tests() {
   cd "${BUILD_FOLDER}"
   mb2 build-shell ctest --output-on-failure
+}
+
+mb2_exec_app_on_device() {
+  echo 11
 }
 
 mb2_run_ccov_all_capture() {
@@ -367,8 +371,11 @@ rsync_share_to_build() {
   sudo chown -R mersdk:mersdk .
 }
 
-code_coverage() {
+mb2_set_target() {
   alias mb2='mb2 --target SailfishOS-$RELEASE-$ARCH'
+}
+
+code_coverage() {
   download_backup_from_aws
   rsync_share_to_build
   mb2_cmake_build
@@ -446,19 +453,25 @@ make_deploy_to_device() {
   rsync_from_host_to_sever
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
-    export PLATFORM=${PLATFORM}
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='conf_device_list;conf_tools_list;conf_config_device_sony;sfdk_config_target_sony;sfdk_build_deploy;sfdk_device_exec_app'
+    export RELEASE=${RELEASE}
+    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    export AWS_REGION=${AWS_REGION}
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build,mb2_exec_app_on_device'
   "
 }
 
-make_tests() {
-    prepare_aws_instance
-    rsync_from_host_to_sever
-    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
-      export ARCH=${ARCH}
-      export PLATFORM=${PLATFORM}
-      curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='set_tools_list;set_config_target_sony;make_build_test'
-    "
+run_tests() {
+  prepare_aws_instance
+  rsync_from_host_to_sever
+  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+    export ARCH=${ARCH}
+    export RELEASE=${RELEASE}
+    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    export AWS_REGION=${AWS_REGION}
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build,mb2_run_tests'
+  "
 }
 
 rm_sdk_settings() {
@@ -520,10 +533,21 @@ install_ohmyzsh() {
 	set_envs
 }
 
+get_device_ip() {
+  DEVICE_IP=$(echo "${SSH_CLIENT}" | awk '{ print $1}')
+}
+
 ssh_copy_id_on_sailfish_device() {
-  SAILFISH_IP=$(echo "$SSH_CLIENT" | awk '{ print $1}')
-  set_up_instance_host_to_known_hosts "$SAILFISH_IP"
-  ssh-copy-id -i "${SSH_ID_RSA_PUB}" nemo@"${SAILFISH_IP}"
+  set_up_instance_host_to_known_hosts "${DEVICE_IP}"
+  ssh-copy-id -i "${SSH_ID_RSA_PUB}" nemo@"${DEVICE_IP}"
+}
+
+create_devices_xml() {
+  echo "<device name=\"sony_xperia_10\" type=\"custom\">
+    <ip>${DEVICE_IP}</ip>
+    <sshkeypath>/home/mersdk/.ssh</sshkeypath>
+    <version>1.0.0.5</version>
+   </device>" > devices.xml
 }
 
 set_up_instance_host_to_known_hosts () {
@@ -596,6 +620,25 @@ docker_push() {
 
 docker_build() {
   docker build -t "${DOCKER_REPO}${ARCH}:${RELEASE}" --build-arg ARCH="${ARCH}" --build-arg RELEASE="${RELEASE}" .
+}
+
+docker_run_commands() {
+  cd "${BUILD_FOLDER}"
+
+  func_=$(echo "$1" | sed 's^,^;^g')
+
+  docker run --rm --privileged
+    -e BUILD_FOLDER="/home/mersdk/${BUILD_FOLDER_NAME}"
+    -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
+    -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+    -e AWS_REGION="${AWS_REGION}"
+    -e ARCH="${ARCH}"
+    -e RELEASE="${RELEASE}"
+    -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}"
+    "${DOCKER_REPO}${ARCH}:${RELEASE}"
+    /bin/bash -c "
+      curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=${func_}
+    "
 }
 
 docker_login_build_push() {
