@@ -457,6 +457,7 @@ make_deploy_to_device() {
     export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
+    export PLATFORM=${PLATFORM}
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build,mb2_exec_app_on_device'
   "
 }
@@ -470,6 +471,7 @@ run_tests() {
     export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
+    export PLATFORM=${PLATFORM}
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build,mb2_run_tests'
   "
 }
