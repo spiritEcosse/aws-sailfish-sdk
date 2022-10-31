@@ -555,11 +555,13 @@ get_device_ip() {
 }
 
 ssh_copy_id_on_sailfish_device() {
+  get_device_ip
   set_up_instance_host_to_known_hosts "${DEVICE_IP}"
   ssh-copy-id -i "${SSH_ID_RSA_PUB}" nemo@"${DEVICE_IP}"
 }
 
 create_devices_xml() {
+  get_device_ip
   echo "<device name=\"sony_xperia_10\" type=\"custom\">
     <ip>${DEVICE_IP}</ip>
     <sshkeypath>/home/mersdk/.ssh</sshkeypath>
@@ -651,6 +653,7 @@ docker_run_commands() {
     -e AWS_REGION="${AWS_REGION}" \
     -e ARCH="${ARCH}" \
     -e RELEASE="${RELEASE}" \
+    -e SSH_CLIENT="${SSH_CLIENT}" \
     -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
     "${DOCKER_REPO}${ARCH}:${RELEASE}" \
     /bin/bash -c "
