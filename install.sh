@@ -629,15 +629,15 @@ docker_run_commands() {
 
   func_=$(echo "$1" | sed 's^,^;^g')
 
-  docker run --rm --privileged
-    -e BUILD_FOLDER="/home/mersdk/${BUILD_FOLDER_NAME}"
-    -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
-    -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
-    -e AWS_REGION="${AWS_REGION}"
-    -e ARCH="${ARCH}"
-    -e RELEASE="${RELEASE}"
-    -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}"
-    "${DOCKER_REPO}${ARCH}:${RELEASE}"
+  docker run --rm --privileged \
+    -e BUILD_FOLDER="/home/mersdk/${BUILD_FOLDER_NAME}" \
+    -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+    -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+    -e AWS_REGION="${AWS_REGION}" \
+    -e ARCH="${ARCH}" \
+    -e RELEASE="${RELEASE}" \
+    -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
+    "${DOCKER_REPO}${ARCH}:${RELEASE}" \
     /bin/bash -c "
       curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=${func_}
     "
