@@ -356,7 +356,7 @@ create_devices_xml() {
     <ip>${DEVICE_IP}</ip>
     <sshkeypath>/home/mersdk/.ssh</sshkeypath>
     <version>1.0.0.5</version>
-   </device>" > ~/devices.xml
+   </device>" > devices.xml
 }
 
 upload_backup() {
@@ -397,8 +397,9 @@ mb2_cmake_build() {
 mb2_deploy_to_device() {
   install_aws
   set_access_ssh_to_device
+  cd "${BUILD_FOLDER}"
   create_devices_xml
-  mb2 -d sony_xperia_10 -f "${HOME}" deploy --pkcon
+  mb2 -d sony_xperia_10 deploy --pkcon
 }
 
 mb2_run_tests() {
@@ -410,6 +411,7 @@ mb2_exec_app_on_device() {
   # on device: devel-su usermod -a -G systemd-journal nemo
   install_aws
   set_access_ssh_to_device
+  cd "${BUILD_FOLDER}"
   create_devices_xml
 #  mb2 device exec /usr/bin/bible &
 #  mb2 device exec journalctl -f /usr/bin/bible
