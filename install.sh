@@ -174,6 +174,10 @@ get_ec2_github_token() {
   GIT_HUB_TOKEN_REGISTRY=$(aws secretsmanager get-secret-value --secret-id github --query 'SecretString' --output text | grep -o '"GIT_HUB_TOKEN_REGISTRY":"[^"]*' |  grep -o '[^"]*$')
 }
 
+get_sony_xperia_10_password() {
+  PASSWORD=$(aws secretsmanager get-secret-value --secret-id sony_xperia_10 --query 'SecretString' --output text | grep -o '"PASSWORD":"[^"]*' |  grep -o '[^"]*$')
+}
+
 get_ec2_instance_identify_file() {
   IDENTITY_FILE=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"IDENTITY_FILE":"[^"]*' |  grep -o '[^"]*$')
 }
@@ -309,6 +313,50 @@ download_backup_from_aws() {
   ls -la "${BUILD_FOLDER}"
 }
 
+get_device_ip() {
+  DEVICE_IP=$(echo "${SSH_CLIENT}" | awk '{ print $1}')
+}
+
+set_up_instance_host_to_known_hosts () {
+  if ! grep "$1" ~/.ssh/known_hosts; then
+    SSH_KEYSCAN=$(ssh-keyscan -T 180 -H "$1")
+    printf "#start %s\n%s\n#end %s\n" "$1" "$SSH_KEYSCAN" "$1" >> ~/.ssh/known_hosts
+
+    get_sony_xperia_10_password
+    sshpass -p "${PASSWORD}" ssh-copy-id -i "${SSH_ID_RSA_PUB}" "${EC2_INSTANCE_USER}@${DEVICE_IP}"
+  fi
+}
+
+install_sshpass() {
+  # Add install sshpass to Dockerfile
+
+  if [[ ! $(which sshpass) ]]; then
+    cd ~/
+    curl -O https://altushost-swe.dl.sourceforge.net/project/sshpass/sshpass/1.08/sshpass-1.08.tar.gz
+    tar -xf sshpass-1.08.tar.gz
+    cd sshpass-1.08
+    ./configure
+    make
+    sudo make install
+  fi
+}
+
+set_access_ssh_to_device() {
+  install_sshpass
+  get_device_ip
+  get_ec2_instance_user
+  set_up_instance_host_to_known_hosts "${DEVICE_IP}"
+}
+
+create_devices_xml() {
+  get_device_ip
+  echo "<device name=\"sony_xperia_10\" type=\"custom\">
+    <ip>${DEVICE_IP}</ip>
+    <sshkeypath>/home/mersdk/.ssh</sshkeypath>
+    <version>1.0.0.5</version>
+   </device>" > ~/devices.xml
+}
+
 upload_backup() {
   if [[ -z ${HASH_ORIGINAL+x} ]]; then
     HASH_ORIGINAL=""
@@ -344,6 +392,12 @@ mb2_cmake_build() {
   mb2 cmake --build .
 }
 
+mb2_deploy_to_device() {
+  set_access_ssh_to_device
+  create_devices_xml
+  mb2 -d sony_xperia_10 -f "${HOME}" deploy --pkcon
+}
+
 mb2_run_tests() {
   cd "${BUILD_FOLDER}"
   mb2 build-shell ctest --output-on-failure
@@ -351,8 +405,10 @@ mb2_run_tests() {
 
 mb2_exec_app_on_device() {
   # on device: devel-su usermod -a -G systemd-journal nemo
-  mb2 device exec /usr/bin/bible &
-  mb2 device exec journalctl -f /usr/bin/bible
+  set_access_ssh_to_device
+  create_devices_xml
+#  mb2 device exec /usr/bin/bible &
+#  mb2 device exec journalctl -f /usr/bin/bible
 }
 
 mb2_run_ccov_all_capture() {
@@ -461,7 +517,7 @@ make_deploy_to_device() {
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
     export PLATFORM=${PLATFORM}
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build,mb2_exec_app_on_device'
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build,mb2_deploy_to_device,mb2_exec_app_on_device'
   "
 }
 
@@ -565,32 +621,6 @@ install_ohmyzsh() {
 	set_envs
 }
 
-get_device_ip() {
-  DEVICE_IP=$(echo "${SSH_CLIENT}" | awk '{ print $1}')
-}
-
-ssh_copy_id_on_sailfish_device() {
-  get_device_ip
-  set_up_instance_host_to_known_hosts "${DEVICE_IP}"
-  ssh-copy-id -i "${SSH_ID_RSA_PUB}" nemo@"${DEVICE_IP}"
-}
-
-create_devices_xml() {
-  get_device_ip
-  echo "<device name=\"sony_xperia_10\" type=\"custom\">
-    <ip>${DEVICE_IP}</ip>
-    <sshkeypath>/home/mersdk/.ssh</sshkeypath>
-    <version>1.0.0.5</version>
-   </device>" > devices.xml
-}
-
-set_up_instance_host_to_known_hosts () {
-  if ! grep "$1" ~/.ssh/known_hosts; then
-    SSH_KEYSCAN=$(ssh-keyscan -T 180 -H "$1")
-    printf "#start %s\n%s\n#end %s\n" "$1" "$SSH_KEYSCAN" "$1" >> ~/.ssh/known_hosts
-  fi
-}
-
 file_get_size() {
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "stat -c%s ${DESTINATION_FILE_PATH}"
 }
@@ -668,6 +698,7 @@ docker_run_commands() {
     -e AWS_REGION="${AWS_REGION}" \
     -e ARCH="${ARCH}" \
     -e RELEASE="${RELEASE}" \
+    -e EC2_INSTANCE_NAME="sony_xperia_10" \
     -e SSH_CLIENT="${SSH_CLIENT}" \
     -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
     "${DOCKER_REPO}${ARCH}:${RELEASE}" \
