@@ -393,6 +393,7 @@ mb2_cmake_build() {
 }
 
 mb2_deploy_to_device() {
+  echo "AWS_REGION: ${AWS_REGION}"
   set_access_ssh_to_device
   create_devices_xml
   mb2 -d sony_xperia_10 -f "${HOME}" deploy --pkcon
