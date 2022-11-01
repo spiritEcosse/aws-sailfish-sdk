@@ -318,6 +318,8 @@ get_device_ip() {
 }
 
 set_up_instance_host_to_known_hosts () {
+  set_ssh
+
   if ! grep "$1" ~/.ssh/known_hosts; then
     SSH_KEYSCAN=$(ssh-keyscan -T 180 -H "$1")
     printf "#start %s\n%s\n#end %s\n" "$1" "$SSH_KEYSCAN" "$1" >> ~/.ssh/known_hosts
