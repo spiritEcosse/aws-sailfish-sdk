@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # e - script stops on error (return != 0)
 # u - error if undefined variable
@@ -404,7 +404,7 @@ mb2_deploy_to_device() {
   get_last_modified_file
   scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:~"
   ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='rpm_install_app'
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -- --func='rpm_install_app'
   "
 }
 
