@@ -36,7 +36,7 @@ if [[ -z ${ARCH+x} ]]; then
 fi
 
 get_name_platform() {
-  if [[ $(uname -a | grep -i "linux-gnu") ]]; then
+  if [[ $(uname -a | grep -i "GNU/Linux") ]]; then
     awk -F= '$1=="ID" { print $2 ;}' /etc/os-release
   elif [[ $(uname -a | grep -i "darwin") ]]; then
     echo "darwin"
