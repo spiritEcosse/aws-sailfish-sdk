@@ -22,7 +22,7 @@ PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Default values
 funcs=main
-operands=()
+#operands=()
 
 # Arguments handling
 while (( ${#} > 0 )); do
@@ -30,7 +30,7 @@ while (( ${#} > 0 )); do
     ( '--func='* ) funcs="${1#*=}" ;;           # Handles --opt1
     ( '--' ) operands+=( "${@:2}" ); break ;;  # End of options
     ( '-'?* ) ;;                               # Discard non-valid options
-    ( * ) operands+=( "${1}" )                 # Handles operands
+#    ( * ) operands+=( "${1}" )                 # Handles operands
   esac
   shift
 done
@@ -411,7 +411,7 @@ ssh_on_device() {
   install_aws
   set_access_ssh_to_device
   ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -c -- --func='rpm_install_app'
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -c -- --func=rpm_install_app
   "
 }
 
