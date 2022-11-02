@@ -791,6 +791,6 @@ main() {
 
 for func in $(echo "${funcs}" | tr ";" "\n")
 do
-  func_with_params=$(echo "${func}" | sed 's;=; ;g')
+  func_with_params=$(echo "${func}" | sed 's;=; ;')
   ${func_with_params}
 done
