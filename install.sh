@@ -388,6 +388,7 @@ mb2_cmake_build() {
 mb2_deploy_to_device() {
   cd "${BUILD_FOLDER}"
   mb2_set_target
+  sudo chown -R mersdk:mersdk .
   install_aws
   set_access_ssh_to_device
   mb2_build
