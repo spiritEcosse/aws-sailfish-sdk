@@ -403,8 +403,12 @@ mb2_deploy_to_device() {
   cd "${BUILD_FOLDER}/RPMS"
   get_last_modified_file
   scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:~"
+  ssh_on_device
+}
+
+ssh_on_device() {
   ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -- --func='rpm_install_app'
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -c -- --func='rpm_install_app'
   "
 }
 
@@ -539,6 +543,21 @@ make_deploy_to_device() {
     export AWS_REGION=${AWS_REGION}
     export PLATFORM=${PLATFORM}
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='docker_run_commands=mb2_deploy_to_device,mb2_exec_app_on_device'
+  "
+}
+
+aws_run_commands() {
+  prepare_aws_instance
+  func_=$(echo "$1" | sed 's^,^;^g')
+
+  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+    export ARCH=${ARCH}
+    export RELEASE=${RELEASE}
+    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    export AWS_REGION=${AWS_REGION}
+    export PLATFORM=${PLATFORM}
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='${func_}'
   "
 }
 
