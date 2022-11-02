@@ -386,7 +386,7 @@ mb2_cmake_build() {
 }
 
 get_last_modified_file() {
-  cd "${BUILD_FOLDER}"
+  cd "${BUILD_FOLDER}/RPMS"
   LAST_RPM=$(ls -lt | sed 1d | head -1 | awk '{ print $9 }')
 }
 
