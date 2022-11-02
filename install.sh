@@ -36,9 +36,9 @@ if [[ -z ${ARCH+x} ]]; then
 fi
 
 get_name_platform() {
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  if [[ $(uname -a | grep -i "linux-gnu") ]]; then
     awk -F= '$1=="ID" { print $2 ;}' /etc/os-release
-  elif [[ "$OSTYPE" == "darwin"* ]]; then
+  elif [[ $(uname -a | grep -i "darwin") ]]; then
     echo "darwin"
 #  elif [[ "$OSTYPE" == "cygwin" ]]; then
 #          # POSIX compatibility layer and Linux environment emulation for Windows
