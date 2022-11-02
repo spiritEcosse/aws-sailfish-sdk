@@ -22,15 +22,11 @@ PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Default values
 funcs=main
-operands=()
 
 # Arguments handling
 while (( ${#} > 0 )); do
   case "${1}" in
     ( '--func='* ) funcs="${1#*=}" ;;           # Handles --opt1
-    ( '--' ) operands+=( "${@:2}" ); break ;;  # End of options
-    ( '-'?* ) ;;                               # Discard non-valid options
-    ( * ) operands+=( "${1}" )                 # Handles operands
   esac
   shift
 done
