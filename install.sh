@@ -53,6 +53,16 @@ get_name_platform() {
   fi
 }
 
+get_real_bash() {
+  if [[ $(${SHELL} --version | grep -i "GNU bash") ]]; then
+    echo "bash"
+  elif [[ $(${SHELL} --version | grep -i "BusyBox") ]]; then
+    echo "busy_box"
+  fi
+}
+
+SHELL_=$(get_real_bash)
+
 PLATFORM_HOST=$(get_name_platform)
 
 if [[ -z ${PLATFORM+x} ]]; then
@@ -80,7 +90,12 @@ DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
 
 set_rsync_params() {
-  RSYNC_PARAMS_UPLOAD_SOURCE_CODE=(-rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.idea' --exclude '.git/modules/')
+  if [[ "${SHELL_}" == 'bash' ]];
+  then
+    RSYNC_PARAMS_UPLOAD_SOURCE_CODE=(-rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.idea' --exclude '.git/modules/')
+  elif [[ "${SHELL_}" == 'busy_box' ]]; then
+    RSYNC_PARAMS_UPLOAD_SOURCE_CODE="-rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.idea' --exclude '.git/modules/'"
+  fi
 }
 
 install_pigz() {
