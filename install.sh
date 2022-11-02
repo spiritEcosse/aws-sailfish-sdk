@@ -5,6 +5,7 @@
 # o pipefail - script fails if one of piped command fails
 # x - output each line (debug)
 set -euox pipefail
+PS4='Line ${LINENO}: '
 
 # builtin variables
 RED='\033[0;31m'
@@ -407,6 +408,8 @@ mb2_deploy_to_device() {
 }
 
 ssh_on_device() {
+  install_aws
+  set_access_ssh_to_device
   ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
     curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -c -- --func='rpm_install_app'
   "
