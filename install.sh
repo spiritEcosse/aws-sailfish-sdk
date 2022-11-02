@@ -386,7 +386,6 @@ mb2_cmake_build() {
 }
 
 get_last_modified_file() {
-  cd "${BUILD_FOLDER}/RPMS"
   LAST_RPM=$(ls -lt | sed 1d | head -1 | awk '{ print $9 }')
 }
 
@@ -397,6 +396,7 @@ mb2_deploy_to_device() {
   install_aws
   set_access_ssh_to_device
   mb2_build
+  cd "${BUILD_FOLDER}/RPMS"
   get_last_modified_file
   scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:~"
   ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
