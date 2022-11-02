@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # e - script stops on error (return != 0)
 # u - error if undefined variable
