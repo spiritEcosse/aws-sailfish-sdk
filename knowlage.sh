@@ -112,7 +112,7 @@ prepare_user_mersdk() {
     sudo cp -fr ~/.ssh /home/"${USER_MERSDK}"/
     sudo chown -R "${USER_MERSDK}": /home/"${USER_MERSDK}"/
     sudo bash -c 'echo "# User rules for mersdk
-mersdk ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/rules-for-user-mersdk'
+nemo ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/rules-for-user-nemo'
     exit 0
   fi
 }

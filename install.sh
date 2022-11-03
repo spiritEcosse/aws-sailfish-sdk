@@ -7,6 +7,36 @@
 set -euox pipefail
 PS4='Line ${LINENO}: '
 
+prepare_device() {
+  devel-su pkcon -y install gcc sudo
+  sudo bash -c 'echo "# User rules for nemo
+nemo ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/rules-for-user-nemo'
+}
+
+install_bash() {
+  BASH_VERSION=5.2
+  NAME_BASH=bash-${BASH_VERSION}
+
+  if [[ $($(which bash) --help | grep -i "BusyBox") ]];
+  then
+    cd ~/
+    curl -O https://ftp.gnu.org/gnu/bash/${NAME_BASH}.tar.gz
+    tar -xzvf ${NAME_BASH}.tar.gz
+    cd ${NAME_BASH}
+    ./configure --prefix=/usr                     \
+      --bindir=/bin                     \
+      --htmldir=/usr/share/doc/${NAME_BASH} \
+      --without-bash-malloc             \
+      --with-installed-readline
+    make
+    sudo make install
+  fi
+
+  bash --version
+}
+
+install_bash
+
 # builtin variables
 RED='\033[0;31m'
 BLUE='\033[1;36m'
@@ -53,16 +83,6 @@ get_name_platform() {
   fi
 }
 
-get_real_bash() {
-  if [[ $(${SHELL} --version | grep -i "GNU bash") ]]; then
-    echo "bash"
-  elif [[ $(${SHELL} --version | grep -i "BusyBox") ]]; then
-    echo "busy_box"
-  fi
-}
-
-SHELL_=$(get_real_bash)
-
 PLATFORM_HOST=$(get_name_platform)
 
 if [[ -z ${PLATFORM+x} ]]; then
@@ -90,12 +110,7 @@ DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
 
 set_rsync_params() {
-  if [[ "${SHELL_}" == 'bash' ]];
-  then
-    RSYNC_PARAMS_UPLOAD_SOURCE_CODE=(-rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.idea' --exclude '.git/modules/')
-  elif [[ "${SHELL_}" == 'busy_box' ]]; then
-    RSYNC_PARAMS_UPLOAD_SOURCE_CODE="-rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.idea' --exclude '.git/modules/'"
-  fi
+  RSYNC_PARAMS_UPLOAD_SOURCE_CODE=(-rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.idea' --exclude '.git/modules/')
 }
 
 install_pigz() {
