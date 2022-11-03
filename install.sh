@@ -790,6 +790,8 @@ docker_run_commands() {
 }
 
 docker_login_build_push() {
+  mkdir -p ~/bible
+  cd ~/bible
   docker_login
   docker_build
   docker_push
