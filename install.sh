@@ -249,7 +249,7 @@ aws_start() {
 
 rsync_from_host_to_sever() {
   set_rsync_params
-  rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/${BUILD_FOLDER_NAME}"
+  rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1"
 }
 
 prepare_aws_instance() {
@@ -563,7 +563,7 @@ install_docker() {
 
 make_deploy_to_device() {
   prepare_aws_instance
-  rsync_from_host_to_sever
+  rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
     export RELEASE=${RELEASE}
@@ -592,7 +592,7 @@ aws_run_commands() {
 
 make_build() {
   prepare_aws_instance
-  rsync_from_host_to_sever
+  rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
     export RELEASE=${RELEASE}
@@ -606,7 +606,7 @@ make_build() {
 
 run_tests() {
   prepare_aws_instance
-  rsync_from_host_to_sever
+  rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
     export RELEASE=${RELEASE}
@@ -752,6 +752,8 @@ docker_push() {
 }
 
 docker_build() {
+  mkdir -p ~/bible
+  rsync_from_host_to_sever ~/bible
   docker build -t "${DOCKER_REPO}${ARCH}:${RELEASE}" --build-arg ARCH="${ARCH}" --build-arg RELEASE="${RELEASE}" .
 }
 
