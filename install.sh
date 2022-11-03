@@ -765,8 +765,7 @@ docker_build() {
 }
 
 rsync_from_host_to_sever_bible() {
-  mkdir -p ~/bible
-  rsync_from_host_to_sever ~/bible
+  rsync_from_host_to_sever bible
 }
 
 docker_run_commands() {
