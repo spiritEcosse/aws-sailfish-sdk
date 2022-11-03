@@ -65,6 +65,10 @@ if [[ -z ${ARCH+x} ]]; then
   ARCH=$(uname -m)
 fi
 
+if [[ -z ${COMMON_DEPLOY+x} ]]; then
+  COMMON_DEPLOY=false
+fi
+
 get_name_platform() {
   if [[ $(uname -a | grep -i "GNU/Linux") ]]; then
     awk -F= '$1=="ID" { print $2 ;}' /etc/os-release
@@ -577,6 +581,11 @@ make_deploy_to_device() {
 
 aws_run_commands() {
   prepare_aws_instance
+  if [[ "${COMMON_DEPLOY}" ]]; then
+    rsync_from_host_to_sever_bible
+  else
+    rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
+  fi
   func_=$(echo "$1" | sed 's^,^;^g')
 
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
@@ -752,9 +761,12 @@ docker_push() {
 }
 
 docker_build() {
+  docker build -t "${DOCKER_REPO}${ARCH}:${RELEASE}" --build-arg ARCH="${ARCH}" --build-arg RELEASE="${RELEASE}" .
+}
+
+rsync_from_host_to_sever_bible() {
   mkdir -p ~/bible
   rsync_from_host_to_sever ~/bible
-  docker build -t "${DOCKER_REPO}${ARCH}:${RELEASE}" --build-arg ARCH="${ARCH}" --build-arg RELEASE="${RELEASE}" .
 }
 
 docker_run_commands() {
