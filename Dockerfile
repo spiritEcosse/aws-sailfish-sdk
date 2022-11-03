@@ -13,8 +13,6 @@ RUN useradd -ms /bin/bash ${USER} && \
 # New added for disable sudo password
 RUN echo 'mersdk ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-RUN curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=install_sshpass
-
 # Set as default user
 USER ${USER}
 RUN mkdir -p /home/${USER}/app
