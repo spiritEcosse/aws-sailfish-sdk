@@ -405,7 +405,7 @@ mb2_cmake_build() {
 }
 
 get_last_modified_file() {
-  LAST_RPM=$(ls -lt *.rpm | sed 1d | head -1 | awk '{ print $9 }')
+  LAST_RPM=$(ls -lt *.rpm | head -1 | awk '{ print $9 }')
 }
 
 rpm_install_app() {
