@@ -339,7 +339,13 @@ set_up_instance_host_to_known_hosts () {
   set_ssh
 
   if ! grep "$1" ~/.ssh/known_hosts; then
-    SSH_KEYSCAN=$(ssh-keyscan -T 180 -H "$1")
+    if [[ ! $(ssh-keyscan -H "$1") ]];then
+      set_up_instance_host_to_known_hosts "$1"
+      return
+    else
+      SSH_KEYSCAN=$(ssh-keyscan -H "$1")
+    fi
+
     printf "#start %s\n%s\n#end %s\n" "$1" "$SSH_KEYSCAN" "$1" >> ~/.ssh/known_hosts
 
     get_sony_xperia_10_password
