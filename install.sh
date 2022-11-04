@@ -265,24 +265,6 @@ prepare_aws_instance() {
   set_up_instance_aws_host_to_known_hosts "${EC2_INSTANCE_HOST}"
 }
 
-download_backup_from_aws_to_aws() {
-  echo "ARCH: ${ARCH}"
-  echo "PLATFORM: ${PLATFORM}"
-  echo "AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}"
-  echo "AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}"
-  echo "AWS_REGION: ${AWS_REGION}"
-
-  prepare_aws_instance
-  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
-    export ARCH=${ARCH}
-    export PLATFORM=${PLATFORM}
-    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    export AWS_REGION=${AWS_REGION}
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=download_backup_from_aws
-  "
-}
-
 download_backup() {
   rm -f ${BACKUP_FILE_PATH}_*
 
@@ -564,20 +546,6 @@ install_docker() {
 		exit 0
 	fi
 	log_app_msg "docker already installed."
-}
-
-make_deploy_to_device() {
-  prepare_aws_instance
-  rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
-  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
-    export ARCH=${ARCH}
-    export RELEASE=${RELEASE}
-    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    export AWS_REGION=${AWS_REGION}
-    export PLATFORM=${PLATFORM}
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='docker_run_commands=mb2_deploy_to_device,mb2_exec_app_on_device'
-  "
 }
 
 aws_run_commands() {
