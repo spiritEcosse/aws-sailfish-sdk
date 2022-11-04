@@ -405,7 +405,21 @@ mb2_cmake_build() {
 }
 
 get_last_modified_file() {
-  LAST_RPM=$(ls -lt | sed 1d | head -1 | awk '{ print $9 }')
+  LAST_RPM=$(ls -lt *.rpm | sed 1d | head -1 | awk '{ print $9 }')
+}
+
+rpm_install_app() {
+  cd ~
+  get_last_modified_file
+  sudo rpm -i ${LAST_RPM}
+}
+
+ssh_on_device() {
+  install_aws
+  set_access_ssh_to_device
+  ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
+    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=rpm_install_app
+  "
 }
 
 mb2_deploy_to_device() {
@@ -419,19 +433,6 @@ mb2_deploy_to_device() {
   get_last_modified_file
   scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:~"
   ssh_on_device
-}
-
-ssh_on_device() {
-  install_aws
-  set_access_ssh_to_device
-  ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -c -- --func=rpm_install_app
-  "
-}
-
-rpm_install_app() {
-  cd ~
-  sudo rpm -i bible.rpm
 }
 
 mb2_build() {
