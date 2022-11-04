@@ -556,7 +556,7 @@ install_docker() {
 
 aws_run_commands() {
   prepare_aws_instance
-  if [[ ! -z ${DONT_NEED_DEPLOY+x} ]]; then
+  if [[ -z ${DONT_NEED_DEPLOY+x} ]]; then
     if [[ "${COMMON_DEPLOY}" ]]; then
       rsync_from_host_to_sever_bible
     else
