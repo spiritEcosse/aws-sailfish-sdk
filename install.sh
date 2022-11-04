@@ -411,7 +411,7 @@ get_last_modified_file() {
 rpm_install_app() {
   cd ~
   get_last_modified_file
-  sudo rpm -i ${LAST_RPM}
+  sudo rpm -i ${LAST_RPM} --force
 }
 
 ssh_on_device() {
