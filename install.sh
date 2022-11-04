@@ -582,10 +582,12 @@ make_deploy_to_device() {
 
 aws_run_commands() {
   prepare_aws_instance
-  if [[ "${COMMON_DEPLOY}" ]]; then
-    rsync_from_host_to_sever_bible
-  else
-    rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
+  if [[ ! -z ${DONT_NEED_DEPLOY+x} ]]; then
+    if [[ "${COMMON_DEPLOY}" ]]; then
+      rsync_from_host_to_sever_bible
+    else
+      rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
+    fi
   fi
   func_=$(echo "$1" | sed 's^,^;^g')
 
