@@ -65,10 +65,6 @@ if [[ -z ${ARCH+x} ]]; then
   ARCH=$(uname -m)
 fi
 
-if [[ -z ${COMMON_DEPLOY+x} ]]; then
-  COMMON_DEPLOY=false
-fi
-
 get_name_platform() {
   if [[ $(uname -a | grep -i "GNU/Linux") ]]; then
     awk -F= '$1=="ID" { print $2 ;}' /etc/os-release
@@ -556,10 +552,10 @@ install_docker() {
 aws_run_commands() {
   prepare_aws_instance
   if [[ -z ${DONT_NEED_DEPLOY+x} ]]; then
-    if [[ "${COMMON_DEPLOY}" ]]; then
-      rsync_from_host_to_sever_bible
-    else
+    if [[ -z ${COMMON_DEPLOY+x} ]]; then
       rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
+    else
+      rsync_from_host_to_sever_bible
     fi
   fi
   func_=$(echo "$1" | sed 's^,^;^g')
