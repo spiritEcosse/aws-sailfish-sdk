@@ -418,7 +418,7 @@ ssh_on_device() {
   install_aws
   set_access_ssh_to_device
   ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func=rpm_install_app
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=rpm_install_app
   "
 }
 
@@ -568,7 +568,7 @@ aws_run_commands() {
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
     export PLATFORM=${PLATFORM}
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='${func_}'
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='${func_}'
   "
 }
 
@@ -582,7 +582,7 @@ make_build() {
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
     export PLATFORM=${PLATFORM}
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build'
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build'
   "
 }
 
@@ -596,7 +596,7 @@ run_tests() {
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
     export PLATFORM=${PLATFORM}
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build,mb2_run_tests'
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build,mb2_run_tests'
   "
 }
 
@@ -609,7 +609,7 @@ exec_app_on_device() {
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
     export PLATFORM=${PLATFORM}
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='docker_run_commands=mb2_exec_app_on_device'
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='docker_run_commands=mb2_exec_app_on_device'
   "
 }
 
@@ -758,7 +758,7 @@ docker_run_commands() {
     -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
     "${DOCKER_REPO}${ARCH}:${RELEASE}" \
     /bin/bash -c "
-      curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash -s -- --func='${func_}'
+      curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='${func_}'
     "
 }
 
@@ -784,14 +784,14 @@ main_from_client() {
 
   prepare_aws_instance
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash
   "
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
     export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
-    curl https://raw.githubusercontent.com/spiritEcosse/aws-sailfish-sdk/master/install.sh | bash
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash
   "
 }
 
