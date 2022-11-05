@@ -414,14 +414,6 @@ rpm_install_app() {
   sudo rpm -i ${LAST_RPM} --force
 }
 
-ssh_on_device() {
-  install_aws
-  set_access_ssh_to_device
-  ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
-    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=rpm_install_app
-  "
-}
-
 mb2_deploy_to_device() {
   cd "${BUILD_FOLDER}"
   mb2_set_target
@@ -432,7 +424,7 @@ mb2_deploy_to_device() {
   cd "${BUILD_FOLDER}/RPMS"
   get_last_modified_file
   scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:~"
-  ssh_on_device
+  run_commands_on_device rpm_install_app
 }
 
 mb2_build() {
@@ -445,18 +437,23 @@ mb2_run_tests() {
   mb2 build-shell ctest --output-on-failure
 }
 
-mb2_exec_app_on_device() {
-  # on device: devel-su usermod -a -G systemd-journal nemo
-  install_aws
-  set_access_ssh_to_device
-#  mb2 device exec /usr/bin/bible &
-#  mb2 device exec journalctl -f /usr/bin/bible
+run_app_on_device() {
+  /usr/bin/bible
 }
 
 mb2_run_ccov_all_capture() {
   cd "${BUILD_FOLDER}"
   mkdir ccov
   mb2 build-shell make ccov-all-capture
+}
+
+run_commands_on_device() {
+  func_=$(echo "$1" | sed 's^,^;^g')
+  install_aws
+  set_access_ssh_to_device
+  ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='${func_}'
+  "
 }
 
 codecov_push_results() {
@@ -597,19 +594,6 @@ run_tests() {
     export AWS_REGION=${AWS_REGION}
     export PLATFORM=${PLATFORM}
     curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build,mb2_run_tests'
-  "
-}
-
-exec_app_on_device() {
-  prepare_aws_instance
-  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
-    export ARCH=${ARCH}
-    export RELEASE=${RELEASE}
-    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    export AWS_REGION=${AWS_REGION}
-    export PLATFORM=${PLATFORM}
-    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='docker_run_commands=mb2_exec_app_on_device'
   "
 }
 
