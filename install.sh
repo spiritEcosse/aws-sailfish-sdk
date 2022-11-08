@@ -816,8 +816,8 @@ do
   params=$(echo "${func_with_params}" | cut -d ' ' -f2)
 
   if [[ ${params} = \(* ]]; then
-    echo ${func_with_params} | sed 's; (; ;g' | sed 's;)$;;g'
+    $(echo ${func_with_params} | sed 's; (; ;g' | sed 's;)$;;g')
   else
-    echo ${func_with_params}
+    ${func_with_params}
   fi
 done
