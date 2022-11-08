@@ -798,7 +798,7 @@ main() {
   wait
 }
 
-OPTIND=1 l=0 r=0; set ""
+OPTIND=1 l=0 r=0;
 while   getopts : na -"${funcs}"
 do      [[ "$l" -gt "$r" ]]
         case    $?$OPTARG  in
@@ -807,15 +807,15 @@ do      [[ "$l" -gt "$r" ]]
         (?\()    l=$((l+1)) ;;
         esac    &&
         set -- "$@$OPTARG" ||
-        set -- "$@" ""
+        set -- "$@" " "
 done;
 
 for func in $(echo "$@")
 do
-  func_with_params=$(echo "${func}" | sed -Er 's;=; ;' )
+  func_with_params=$(echo "${func}" | sed -Er 's;=; ;')
   params=$(echo "${func_with_params}" | cut -d ' ' -f2)
 
-  if [[ ${params} = \(* ]]; then
+  if [[ "${params}" = \(* ]]; then
     $(echo ${func_with_params} | sed 's; (; ;g' | sed 's;)$;;g')
   else
     ${func_with_params}
