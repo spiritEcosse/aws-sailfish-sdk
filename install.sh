@@ -109,6 +109,20 @@ BACKUP_FILE_PATH="${HOME}/${FILE}"
 DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
 
+install_jq() {
+  # TODO: add prepare: install sudo make git
+  if [[ ! $(jq --help) ]]; then
+    git clone https://github.com/stedolan/jq.git
+    cd jq
+    autoreconf -i
+    ./configure --disable-maintainer-mode
+    make
+    sudo make install
+  fi
+}
+
+install_jq
+
 set_rsync_params() {
   RSYNC_PARAMS_UPLOAD_SOURCE_CODE=(-rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.idea' --exclude '.git/modules/')
 }
@@ -448,11 +462,10 @@ mb2_run_ccov_all_capture() {
 }
 
 run_commands_on_device() {
-  func_=$(echo "$1" | sed 's^,^;^g')
   install_aws
   set_access_ssh_to_device
   ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
-    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='${func_}'
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='$1'
   "
 }
 
@@ -556,7 +569,6 @@ aws_run_commands() {
       rsync_from_host_to_sever_bible
     fi
   fi
-  func_=$(echo "$1" | sed 's^,^;^g')
 
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
     export ARCH=${ARCH}
@@ -565,7 +577,7 @@ aws_run_commands() {
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
     export PLATFORM=${PLATFORM}
-    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='${func_}'
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='$1'
   "
 }
 
@@ -728,8 +740,6 @@ rsync_from_host_to_sever_bible() {
 docker_run_commands() {
   cd "${BUILD_FOLDER}"
 
-  func_=$(echo "$1" | sed 's^,^;^g')
-
   docker run --rm --privileged \
     -e BUILD_FOLDER="/home/mersdk/${BUILD_FOLDER_NAME}" \
     -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
@@ -742,7 +752,7 @@ docker_run_commands() {
     -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
     "${DOCKER_REPO}${ARCH}:${RELEASE}" \
     /bin/bash -c "
-      curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='${func_}'
+      curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='$1'
     "
 }
 
@@ -790,8 +800,26 @@ main() {
   wait
 }
 
-for func in $(echo "${funcs}" | tr ";" "\n")
+OPTIND=1 l=0 r=0; set ""
+while   getopts : na -"${funcs}"
+do      [ "$l" -gt "$r" ]
+        case    $?$OPTARG  in
+        (1\;)  ! l=0 r=0    ;;
+        (0\))    r=$((r+1)) ;;
+        (?\()    l=$((l+1)) ;;
+        esac    &&
+        set -- "$@$OPTARG" ||
+        set -- "$@" ""
+done;
+
+for func in $(echo "$@")
 do
-  func_with_params=$(echo "${func}" | sed 's;=; ;')
-  ${func_with_params}
+  func_with_params=$(echo "${func}" | sed -Er 's;=; ;' )
+  params=$(echo "${func_with_params}" | cut -d ' ' -f2)
+
+  if [[ ${params} = \(* ]]; then
+    echo ${func_with_params} | sed 's; (; ;g' | sed 's;)$;;g'
+  else
+    echo ${func_with_params}
+  fi
 done
