@@ -121,8 +121,6 @@ install_jq() {
   fi
 }
 
-install_jq
-
 set_rsync_params() {
   RSYNC_PARAMS_UPLOAD_SOURCE_CODE=(-rv --checksum --ignore-times --info=progress2 --stats --human-readable --exclude '.idea' --exclude '.git/modules/')
 }
