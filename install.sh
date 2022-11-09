@@ -464,7 +464,7 @@ run_commands_on_device() {
   install_aws
   set_access_ssh_to_device
   ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
-    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='$1'
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
   "
 }
 
@@ -702,7 +702,7 @@ docker_run_commands() {
     -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
     "${DOCKER_REPO}${ARCH}:${RELEASE}" \
     /bin/bash -c "
-      curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='$1'
+      curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
     "
 }
 
