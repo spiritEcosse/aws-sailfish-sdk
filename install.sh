@@ -812,7 +812,7 @@ done;
 
 for func in $(echo "$@")
 do
-  func_with_params=$(echo "${func}" | sed -Er 's;=; ;')
+  func_with_params=$(echo "${func}" | sed 's;=; ;')
   params=$(echo "${func_with_params}" | cut -d ' ' -f2)
 
   if [[ "${params}" = \(* ]]; then
