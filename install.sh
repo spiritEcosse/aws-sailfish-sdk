@@ -798,6 +798,7 @@ main() {
   wait
 }
 
+set +e
 OPTIND=1 l=0 r=0;
 while   getopts : na -"${funcs}"
 do      [[ "$l" -gt "$r" ]]
@@ -809,6 +810,7 @@ do      [[ "$l" -gt "$r" ]]
         set -- "$@$OPTARG" ||
         set -- "$@" " "
 done;
+set -e
 
 for func in $(echo "$@")
 do
