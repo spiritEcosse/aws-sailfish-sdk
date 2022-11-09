@@ -800,7 +800,7 @@ main() {
 
 OPTIND=1 l=0 r=0;
 while   getopts : na -"${funcs}"
-do      [[ "$l" -gt "$r" ]]
+do
         case    $?$OPTARG  in
         (1\;)  ! l=0 r=0    ;;
         (0\))    r=$((r+1)) ;;
