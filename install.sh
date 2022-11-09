@@ -559,55 +559,6 @@ install_docker() {
 	log_app_msg "docker already installed."
 }
 
-aws_run_commands() {
-  prepare_aws_instance
-  if [[ -z ${DONT_NEED_DEPLOY+x} ]]; then
-    if [[ -z ${COMMON_DEPLOY+x} ]]; then
-      rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
-    else
-      rsync_from_host_to_sever_bible
-    fi
-  fi
-
-  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
-    export ARCH=${ARCH}
-    export RELEASE=${RELEASE}
-    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    export AWS_REGION=${AWS_REGION}
-    export PLATFORM=${PLATFORM}
-    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
-  "
-}
-
-make_build() {
-  prepare_aws_instance
-  rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
-  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
-    export ARCH=${ARCH}
-    export RELEASE=${RELEASE}
-    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    export AWS_REGION=${AWS_REGION}
-    export PLATFORM=${PLATFORM}
-    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build'
-  "
-}
-
-run_tests() {
-  prepare_aws_instance
-  rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
-  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
-    export ARCH=${ARCH}
-    export RELEASE=${RELEASE}
-    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    export AWS_REGION=${AWS_REGION}
-    export PLATFORM=${PLATFORM}
-    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='docker_run_commands=mb2_cmake_build,mb2_run_tests'
-  "
-}
-
 rm_sdk_settings() {
   rm -fr ~/.config/SailfishSDK
 }
@@ -753,6 +704,27 @@ docker_run_commands() {
     /bin/bash -c "
       curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func='$1'
     "
+}
+
+aws_run_commands() {
+  prepare_aws_instance
+  if [[ -z ${DONT_NEED_DEPLOY+x} ]]; then
+    if [[ -z ${COMMON_DEPLOY+x} ]]; then
+      rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
+    else
+      rsync_from_host_to_sever_bible
+    fi
+  fi
+
+  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+    export ARCH=${ARCH}
+    export RELEASE=${RELEASE}
+    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    export AWS_REGION=${AWS_REGION}
+    export PLATFORM=${PLATFORM}
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
+  "
 }
 
 docker_login_build_push() {
