@@ -575,7 +575,7 @@ aws_run_commands() {
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
     export PLATFORM=${PLATFORM}
-    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=$1
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
   "
 }
 
