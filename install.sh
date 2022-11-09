@@ -450,7 +450,8 @@ mb2_run_tests() {
 }
 
 run_app_on_device() {
-  /usr/bin/bible
+  systemd-run --user bible
+  journalctl -f /usr/bin/bible
 }
 
 mb2_run_ccov_all_capture() {
