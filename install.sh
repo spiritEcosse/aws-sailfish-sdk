@@ -108,6 +108,7 @@ FILE=${FILE_TAR}.gz
 BACKUP_FILE_PATH="${HOME}/${FILE}"
 DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
+HTTP_FILE="https://bible-backups.s3.amazonaws.com/${FILE}"
 
 install_jq() {
   # TODO: add prepare: install sudo make git
@@ -307,28 +308,26 @@ system_prepare_ubuntu() {
   # sudo dpkg --configure -a
 }
 
+file_get_size() {
+  curl -sI "${HTTP_FILE}" | grep -i Content-Length | awk '{print ($2+0)}'
+}
+
 download_backup_from_aws() {
   if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
     system_prepare_ubuntu
-    install_for_ubuntu openssl curl pigz
+    install_for_ubuntu curl pigz
   elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
-    sudo zypper -n install openssl curl pigz
+    sudo zypper -n install curl pigz
   fi
-
-  prepare_aws_instance
 
   cd ~/
 
-  if [[ $(file_get_size) ]]; then # TODO put result to SIZE_BACKUP_FILE
+  if [[ $(aws s3 ls s3://bible-backups/"${FILE}") ]]; then
     SIZE_BACKUP_FILE=$(file_get_size)
     CHUNKS=$(python3 -c "print(100 * 1024 * 1024)")
 
-    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "openssl sha256 ${DESTINATION_FILE_PATH} | awk -F'= ' '{print \$2}'" > "${FILE}"-hash &
-    download_backup http://"${EC2_INSTANCE_HOST}/backups/${FILE}"
+    download_backup "${HTTP_FILE}"
     wait
-    HASH_ORIGINAL=$(cat "${FILE}"-hash)
-    HASH=$(openssl sha256 "${BACKUP_FILE_PATH}" | awk -F'= ' '{print $2}')
-    [ "$HASH_ORIGINAL" = "$HASH" ]
 
     unpigz -v "${FILE}" # TODO: this line is broken on the ubuntu, i will fix it in the future
     tar -xf "${FILE_TAR}"
@@ -382,28 +381,19 @@ set_access_ssh_to_device() {
 }
 
 upload_backup() {
-  if [[ -z ${HASH_ORIGINAL+x} ]]; then
-    HASH_ORIGINAL=""
-  fi
-
   if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
     system_prepare_ubuntu
-    install_for_ubuntu pigz openssl
+    install_for_ubuntu pigz
   elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
-    sudo zypper -n install pigz openssl
+    sudo zypper -n install pigz
   fi
 
   cd "${HOME}"
   tar --use-compress-program="pigz -k " -cf "${FILE}" "${PLATFORM}_${ARCH}"
-  HASH=$(openssl sha256 "${FILE}" | awk -F'= ' '{print $2}')
 
-  if [[ "${HASH_ORIGINAL}" != "${HASH}" ]]; then
-    prepare_aws_instance
-    SEC=$SECONDS
-    scp "${FILE}" "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:${DESTINATION_PATH}"
-    echo "after scp : $(( SECONDS - SEC ))"
-  fi
-  aws_stop
+  SEC=$SECONDS
+  aws s3 cp "${FILE}" s3://bible-backups
+  echo "after aws s3 cp : $(( SECONDS - SEC ))"
 }
 
 mb2_cmake_build() {
@@ -616,10 +606,6 @@ install_ohmyzsh() {
 		sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 	fi
 	set_envs
-}
-
-file_get_size() {
-  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "stat -c%s ${DESTINATION_FILE_PATH}"
 }
 
 git_submodule_remove() {
