@@ -642,6 +642,7 @@ git_submodule_checkout() {
     fi
   done
 
+  git submodule foreach -q --recursive 'git fetch --tags'
   git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag || echo master)'
 }
 
