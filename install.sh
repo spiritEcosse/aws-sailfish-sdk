@@ -639,10 +639,10 @@ git_submodule_checkout() {
       git_submodule_init "${folder_name}"
     elif [[ ! -d "${folder_name}/.git" ]]; then
       git submodule update --init "${folder_name}"
+      git fetch --tags
     fi
   done
 
-  git submodule foreach -q --recursive 'git fetch origin tag $(git config -f $toplevel/.gitmodules submodule.$name.tag) --no-tags'
   git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag || echo master)'
 }
 
