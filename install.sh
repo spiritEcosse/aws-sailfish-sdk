@@ -639,6 +639,7 @@ git_submodule_checkout() {
       git_submodule_init "${folder_name}"
     elif [[ ! -d "${folder_name}/.git" ]]; then
       git submodule update --init "${folder_name}"
+      git fetch --tags
     fi
   done
 
