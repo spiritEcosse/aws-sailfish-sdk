@@ -418,11 +418,10 @@ rpm_install_app() {
 
 mb2_deploy_to_device() {
   cd "${BUILD_FOLDER}"
-  mb2_set_target
   sudo chown -R mersdk:mersdk .
   install_aws
-  set_access_ssh_to_device
-  mb2_build
+  set_access_ssh_to_device  # Todo make async
+  mb2_cmake_build  # Todo make async
   cd "${BUILD_FOLDER}/RPMS"
   get_last_modified_file
   scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:~"
