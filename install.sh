@@ -673,6 +673,22 @@ rsync_from_host_to_sever_bible() {
   rsync_from_host_to_sever bible
 }
 
+docker_run_bash() {
+    docker run --rm --privileged \
+      -e BUILD_FOLDER="/home/mersdk/${BUILD_FOLDER_NAME}" \
+      -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+      -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+      -e AWS_REGION="${AWS_REGION}" \
+      -e ARCH="${ARCH}" \
+      -e RELEASE="${RELEASE}" \
+      -e EC2_INSTANCE_NAME="sony_xperia_10" \
+      -e SSH_CLIENT="${SSH_CLIENT}" \
+      -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
+      -it \
+      "${DOCKER_REPO}${ARCH}:${RELEASE}" \
+      /bin/bash
+}
+
 docker_run_commands() {
   cd "${BUILD_FOLDER}"
 
