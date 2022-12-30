@@ -400,8 +400,8 @@ mb2_cmake_build() {
   cd "${BUILD_FOLDER}"
   mb2_set_target
 #  sudo chown -R mersdk:mersdk .
-  mb2 build-init
-  mb2 build-requires
+#  mb2 build-init
+#  mb2 build-requires
   mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
   mb2 cmake --build .
 }
