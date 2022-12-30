@@ -674,6 +674,8 @@ rsync_from_host_to_sever_bible() {
 }
 
 docker_run_bash() {
+    cd "${BUILD_FOLDER}"
+
     docker run --rm --privileged \
       -e BUILD_FOLDER="/home/mersdk/${BUILD_FOLDER_NAME}" \
       -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
