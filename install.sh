@@ -430,11 +430,19 @@ mb2_deploy_to_device() {
 
 mb2_build() {
   cd "${BUILD_FOLDER}"
+  mb2_set_target
   mb2 build
+}
+
+mb2_make_clean() {
+  cd "${BUILD_FOLDER}"
+  mb2_set_target
+  mb2 make clean
 }
 
 mb2_run_tests() {
   cd "${BUILD_FOLDER}"
+  mb2_set_target
   mb2 build-shell ctest --output-on-failure
 }
 
