@@ -261,7 +261,6 @@ aws_start() {
 
 rsync_from_host_to_sever() {
   set_rsync_params
-#  sudo chown -R mersdk:mersdk .
   rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1"
 }
 
@@ -396,12 +395,16 @@ upload_backup() {
   echo "after aws s3 cp : $(( SECONDS - SEC ))"
 }
 
+chown_mersdk() {
+  sudo chown -R mersdk:mersdk .
+}
+
 mb2_cmake_build() {
   cd "${BUILD_FOLDER}"
   mb2_set_target
-#  sudo chown -R mersdk:mersdk .
-#  mb2 build-init
-#  mb2 build-requires
+  chown_mersdk
+  mb2 build-init
+  mb2 build-requires
   mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
   mb2 cmake --build .
 }
@@ -418,7 +421,7 @@ rpm_install_app() {
 
 mb2_deploy_to_device() {
   cd "${BUILD_FOLDER}"
-  sudo chown -R mersdk:mersdk .
+  chown_mersdk
   install_aws
   mb2_cmake_build  # Todo make async
   set_access_ssh_to_device  # Todo make async
@@ -430,18 +433,21 @@ mb2_deploy_to_device() {
 
 mb2_build() {
   cd "${BUILD_FOLDER}"
+  chown_mersdk
   mb2_set_target
   mb2 build
 }
 
 mb2_make_clean() {
   cd "${BUILD_FOLDER}"
+  chown_mersdk
   mb2_set_target
   mb2 make clean
 }
 
 mb2_run_tests() {
   cd "${BUILD_FOLDER}"
+  chown_mersdk
   mb2_set_target
   mb2 build-shell ctest --output-on-failure
 }
@@ -453,6 +459,7 @@ run_app_on_device() {
 
 mb2_run_ccov_all_capture() {
   cd "${BUILD_FOLDER}"
+  chown_mersdk
   mkdir ccov
   mb2 build-shell make ccov-all-capture
 }
@@ -476,7 +483,7 @@ rsync_share_to_build() {
   cd "${BUILD_FOLDER}"
   set_rsync_params
   sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" /share/ .
-  sudo chown -R mersdk:mersdk .
+  chown_mersdk
 }
 
 mb2_set_target() {
