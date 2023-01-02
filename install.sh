@@ -395,6 +395,15 @@ upload_backup() {
   echo "after aws s3 cp : $(( SECONDS - SEC ))"
 }
 
+install_asan() {
+  if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
+    system_prepare_ubuntu
+    install_for_ubuntu libasan6
+  elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
+    sudo zypper -n install libasan
+  fi
+}
+
 chown_mersdk() {
   sudo chown -R mersdk:mersdk .
 }
@@ -449,6 +458,7 @@ mb2_run_tests() {
   cd "${BUILD_FOLDER}"
   chown_mersdk
   mb2_set_target
+  install_asan
   mb2 build-shell ctest --output-on-failure
 }
 
