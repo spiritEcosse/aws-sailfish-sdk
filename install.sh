@@ -458,7 +458,6 @@ mb2_run_tests() {
   cd "${BUILD_FOLDER}"
   chown_mersdk
   mb2_set_target
-  install_asan
   mb2 build-shell ctest --output-on-failure
 }
 
