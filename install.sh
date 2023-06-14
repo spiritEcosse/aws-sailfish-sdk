@@ -123,7 +123,7 @@ install_jq() {
 }
 
 set_rsync_params() {
-  RSYNC_PARAMS_UPLOAD_SOURCE_CODE=(-rv --checksum --ignore-times --progress --stats --human-readable --exclude '.idea')
+  RSYNC_PARAMS_UPLOAD_SOURCE_CODE=(-rv --size-only --progress --stats --human-readable --exclude '.idea')
 }
 
 install_pigz() {
