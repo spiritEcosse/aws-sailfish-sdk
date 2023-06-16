@@ -443,7 +443,7 @@ rpm_install_app() {
   cd ~
   get_last_modified_file
   sudo pkcon -y --allow-reinstall install zypper
-  sudo zypper -n install --allow-unsigned-rpm ${LAST_RPM}
+  sudo zypper -n install --allow-unsigned-rpm --force ${LAST_RPM}
 }
 
 mb2_deploy_to_device() {
@@ -480,8 +480,9 @@ mb2_run_tests() {
 }
 
 run_app_on_device() {
+  sudo usermod -aG systemd-journal nemo
   systemd-run --user bible
-  journalctl --user -f /usr/bin/bible
+  journalctl -f /usr/bin/bible
 }
 
 mb2_run_ccov_all_capture() {
