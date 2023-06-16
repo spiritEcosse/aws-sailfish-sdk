@@ -39,7 +39,7 @@ install_bash() {
   bash --version
 }
 
-#install_bash
+install_bash
 
 # builtin variables
 RED='\033[0;31m'
