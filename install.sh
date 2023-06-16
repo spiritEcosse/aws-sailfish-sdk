@@ -56,7 +56,7 @@ install_bash() {
 }
 
 install_bash &
-fg
+wait
 
 # builtin variables
 RED='\033[0;31m'
