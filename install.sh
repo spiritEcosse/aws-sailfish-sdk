@@ -42,7 +42,7 @@ install_bash() {
       make
       sudo make install
       ;;
-    *)
+  *)
       echo "i hope here bash"
     ;;
   esac
