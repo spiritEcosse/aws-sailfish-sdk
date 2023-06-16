@@ -21,25 +21,23 @@ install_bash() {
   BASH_VERSION=5.2
   NAME_BASH=bash-${BASH_VERSION}
 
-  if [ $(bash --help | grep -i "BusyBox") ];
-  then
-    cd ~/
-    curl -O https://ftp.gnu.org/gnu/bash/${NAME_BASH}.tar.gz
-    tar -xzvf ${NAME_BASH}.tar.gz
-    cd ${NAME_BASH}
-    ./configure --prefix=/usr                     \
-      --bindir=/bin                     \
-      --htmldir=/usr/share/doc/${NAME_BASH} \
-      --without-bash-malloc             \
-      --with-installed-readline
-    make
-    sudo make install
-  fi;
-
-  if [[ ! $(bash --version | grep "GNU bash") ]];
-  then
-    exit 1;
-  fi;
+  exe=`exec 2>/dev/null; readlink "/proc/$$/exe"`
+  case "$exe" in
+  */busybox)
+      echo "It's a busybox shell."
+      cd ~/
+      curl -O https://ftp.gnu.org/gnu/bash/${NAME_BASH}.tar.gz
+      tar -xzvf ${NAME_BASH}.tar.gz
+      cd ${NAME_BASH}
+      ./configure --prefix=/usr                     \
+        --bindir=/bin                     \
+        --htmldir=/usr/share/doc/${NAME_BASH} \
+        --without-bash-malloc             \
+        --with-installed-readline
+      make
+      sudo make install
+      ;;
+  esac
 
   bash --version
 }
