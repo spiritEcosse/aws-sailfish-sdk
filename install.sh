@@ -13,6 +13,10 @@ prepare_device() {
 nemo ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/rules-for-user-nemo'
 }
 
+run_sshd_on_device() {
+  devel-su systemctl restart sshd
+}
+
 install_bash() {
   BASH_VERSION=5.2
   NAME_BASH=bash-${BASH_VERSION}
@@ -35,7 +39,7 @@ install_bash() {
   bash --version
 }
 
-install_bash
+#install_bash
 
 # builtin variables
 RED='\033[0;31m'
