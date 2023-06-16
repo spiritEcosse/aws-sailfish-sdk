@@ -25,7 +25,9 @@ install_bash() {
   BASH_VERSION=5.2
   NAME_BASH=bash-${BASH_VERSION}
 
+  set -uox pipefail
   exe=`exec 2>/dev/null; readlink "/proc/$$/exe"`
+  set -euox pipefail
   case "$exe" in
   */busybox)
       echo "It's a busybox shell."
@@ -42,8 +44,6 @@ install_bash() {
       make
       sudo make install
       ;;
-  */)
-      echo "i hope here bash";;
   esac
 
   bash --version
