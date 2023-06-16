@@ -7,6 +7,10 @@
 set -euox pipefail
 PS4='Line ${LINENO}: '
 
+get_sony_xperia_10_password() {
+  PASSWORD=$(aws secretsmanager get-secret-value --secret-id sony_xperia_10 --query 'SecretString' --output text | grep -o '"PASSWORD":"[^"]*' |  grep -o '[^"]*$')
+}
+
 prepare_device() {
   get_sony_xperia_10_password
   echo "${PASSWORD}" | devel-su pkcon -y install gcc sudo
@@ -224,10 +228,6 @@ get_ec2_instance_user() {
 
 get_ec2_github_token() {
   GIT_HUB_TOKEN_REGISTRY=$(aws secretsmanager get-secret-value --secret-id github --query 'SecretString' --output text | grep -o '"GIT_HUB_TOKEN_REGISTRY":"[^"]*' |  grep -o '[^"]*$')
-}
-
-get_sony_xperia_10_password() {
-  PASSWORD=$(aws secretsmanager get-secret-value --secret-id sony_xperia_10 --query 'SecretString' --output text | grep -o '"PASSWORD":"[^"]*' |  grep -o '[^"]*$')
 }
 
 get_ec2_instance_identify_file() {
