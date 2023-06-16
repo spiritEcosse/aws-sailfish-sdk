@@ -21,7 +21,7 @@ install_bash() {
   BASH_VERSION=5.2
   NAME_BASH=bash-${BASH_VERSION}
 
-  if [[ $($(which bash) --help | grep -i "BusyBox") ]];
+  if [[ $(bash --help | grep -i "BusyBox") ]];
   then
     cd ~/
     curl -O https://ftp.gnu.org/gnu/bash/${NAME_BASH}.tar.gz
