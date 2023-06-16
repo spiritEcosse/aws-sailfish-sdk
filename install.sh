@@ -1,11 +1,17 @@
 #!/bin/bash
 
-# e - script stops on error (return != 0)
-# u - error if undefined variable
-# o pipefail - script fails if one of piped command fails
-# x - output each line (debug)
-set -euox pipefail
 PS4='Line ${LINENO}: '
+
+add_flags() {
+  # e - script stops on error (return != 0)
+  # u - error if undefined variable
+  # o pipefail - script fails if one of piped command fails
+  # x - output each line (debug)
+
+  set -euox pipefail
+}
+
+add_flags
 
 get_sony_xperia_10_password() {
   PASSWORD=$(aws secretsmanager get-secret-value --secret-id sony_xperia_10 --query 'SecretString' --output text | grep -o '"PASSWORD":"[^"]*' |  grep -o '[^"]*$')
@@ -27,7 +33,7 @@ install_bash() {
 
   set +eo
   exe=`exec 2>/dev/null; readlink "/proc/$$/exe"`
-  set -euox pipefail
+  add_flags
   case "$exe" in
   */busybox)
       echo "It's a busybox shell."
@@ -49,7 +55,8 @@ install_bash() {
   bash --version
 }
 
-install_bash
+install_bash &
+fg
 
 # builtin variables
 RED='\033[0;31m'
