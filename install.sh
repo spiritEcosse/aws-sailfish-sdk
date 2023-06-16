@@ -8,7 +8,8 @@ set -euox pipefail
 PS4='Line ${LINENO}: '
 
 prepare_device() {
-  devel-su pkcon -y install gcc sudo
+  get_sony_xperia_10_password
+  echo "${PASSWORD}" | devel-su pkcon -y install gcc sudo
   sudo bash -c 'echo "# User rules for nemo
 nemo ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/rules-for-user-nemo'
 }
@@ -25,6 +26,7 @@ install_bash() {
   case "$exe" in
   */busybox)
       echo "It's a busybox shell."
+      prepare_device
       cd ~/
       curl -O https://ftp.gnu.org/gnu/bash/${NAME_BASH}.tar.gz
       tar -xzvf ${NAME_BASH}.tar.gz
