@@ -42,6 +42,8 @@ install_bash() {
       make
       sudo make install
       ;;
+    *)
+      :
   esac
 
   bash --version
