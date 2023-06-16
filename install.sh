@@ -34,7 +34,7 @@ install_bash() {
       --with-installed-readline
     make
     sudo make install
-  fi
+  fi;
 
   if [[ ! $(bash --version | grep "GNU bash") ]];
   then
