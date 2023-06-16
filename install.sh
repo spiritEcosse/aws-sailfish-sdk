@@ -25,7 +25,7 @@ install_bash() {
   BASH_VERSION=5.2
   NAME_BASH=bash-${BASH_VERSION}
 
-  set -ux pipefail
+  set -ux
   exe=`exec 2>/dev/null; readlink "/proc/$$/exe"`
   set -euox pipefail
   case "$exe" in
