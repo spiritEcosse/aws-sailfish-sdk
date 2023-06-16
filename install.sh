@@ -13,7 +13,7 @@ get_sony_xperia_10_password() {
 
 prepare_device() {
   get_sony_xperia_10_password
-  echo "${PASSWORD}" | devel-su pkcon -y install gcc sudo
+  devel-su pkcon -y install gcc sudo
   sudo bash -c 'echo "# User rules for nemo
 nemo ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/rules-for-user-nemo'
 }
