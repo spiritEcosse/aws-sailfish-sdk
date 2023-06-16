@@ -440,6 +440,7 @@ rpm_install_app() {
 
 mb2_deploy_to_device() {
   cd "${BUILD_FOLDER}"
+  echo "${DEVICE_PASSWORD}"
   chown_mersdk
   install_aws
   mb2_cmake_build  # Todo make async
