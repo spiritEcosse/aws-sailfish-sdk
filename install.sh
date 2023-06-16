@@ -44,6 +44,7 @@ install_bash() {
       ;;
     *)
       echo "i hope here bash";
+    ;;
   esac
 
   bash --version
