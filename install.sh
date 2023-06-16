@@ -12,7 +12,7 @@ get_sony_xperia_10_password() {
 }
 
 prepare_device() {
-  devel-su pkcon -y install gcc sudo
+  echo "${DEVICE_PASSWORD}" | devel-su pkcon -y install gcc sudo
   sudo bash -c 'echo "# User rules for nemo
 nemo ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/rules-for-user-nemo'
 }
@@ -707,6 +707,7 @@ rsync_from_host_to_sever_bible() {
 
 docker_run_bash() {
     cd "${BUILD_FOLDER}"
+    get_sony_xperia_10_password
 
     docker run --rm --privileged \
       -e BUILD_FOLDER="/home/mersdk/${BUILD_FOLDER_NAME}" \
@@ -717,6 +718,7 @@ docker_run_bash() {
       -e RELEASE="${RELEASE}" \
       -e EC2_INSTANCE_NAME="sony_xperia_10" \
       -e SSH_CLIENT="${SSH_CLIENT}" \
+      -e DEVICE_PASSWORD="${PASSWORD}" \
       -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
       -it \
       "${DOCKER_REPO}${ARCH}:${RELEASE}" \
