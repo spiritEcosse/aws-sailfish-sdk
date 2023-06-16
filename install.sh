@@ -442,7 +442,8 @@ get_last_modified_file() {
 rpm_install_app() {
   cd ~
   get_last_modified_file
-  sudo rpm -i ${LAST_RPM} --force
+  sudo pkcon -y --allow-reinstall install zypper
+  sudo zypper ${LAST_RPM} --force
 }
 
 mb2_deploy_to_device() {
