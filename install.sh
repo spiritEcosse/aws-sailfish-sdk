@@ -12,7 +12,7 @@ get_sony_xperia_10_password() {
 }
 
 prepare_device() {
-  echo "${DEVICE_PASSWORD}" | devel-su pkcon -y install gcc sudo
+  echo "${PASSWORD}" | devel-su pkcon -y install gcc sudo
   sudo bash -c 'echo "# User rules for nemo
 nemo ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/rules-for-user-nemo'
 }
@@ -440,7 +440,6 @@ rpm_install_app() {
 
 mb2_deploy_to_device() {
   cd "${BUILD_FOLDER}"
-  echo "${DEVICE_PASSWORD}"
   chown_mersdk
   install_aws
   mb2_cmake_build  # Todo make async
