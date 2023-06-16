@@ -487,7 +487,7 @@ run_commands_on_device() {
   install_aws
   set_access_ssh_to_device
   ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
-    PASSWORD='${PASSWORD}'; curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
+    PASSWORD='${PASSWORD}'; bash -c 'curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"'
   "
 }
 
