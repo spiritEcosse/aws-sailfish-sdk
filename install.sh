@@ -480,7 +480,7 @@ mb2_run_tests() {
 }
 
 run_app_on_device() {
-  sudo usermod -aG systemd-journal nemo
+  sudo usermod -aG systemd-journal $(whoami)
   systemd-run --user bible
   journalctl -f /usr/bin/bible
 }
