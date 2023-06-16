@@ -36,6 +36,11 @@ install_bash() {
     sudo make install
   fi
 
+  if [[ ! $(bash --version | grep 'GNU bash') ]];
+  then
+    exit 1;
+  fi;
+
   bash --version
 }
 
