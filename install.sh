@@ -488,7 +488,7 @@ run_commands_on_device() {
   install_aws
   set_access_ssh_to_device
   ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
-    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
+    PASSWORD='${PASSWORD}'; curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
   "
 }
 
@@ -710,7 +710,6 @@ rsync_from_host_to_sever_bible() {
 
 docker_run_bash() {
     cd "${BUILD_FOLDER}"
-    get_sony_xperia_10_password
 
     docker run --rm --privileged \
       -e BUILD_FOLDER="/home/mersdk/${BUILD_FOLDER_NAME}" \
@@ -721,7 +720,6 @@ docker_run_bash() {
       -e RELEASE="${RELEASE}" \
       -e EC2_INSTANCE_NAME="sony_xperia_10" \
       -e SSH_CLIENT="${SSH_CLIENT}" \
-      -e DEVICE_PASSWORD="${PASSWORD}" \
       -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
       -it \
       "${DOCKER_REPO}${ARCH}:${RELEASE}" \
