@@ -443,7 +443,7 @@ rpm_install_app() {
   cd ~
   get_last_modified_file
   sudo pkcon -y --allow-reinstall install zypper
-  sudo zypper -n --allow-unsigned-rpm install ${LAST_RPM}
+  sudo zypper -n install --allow-unsigned-rpm ${LAST_RPM}
 }
 
 mb2_deploy_to_device() {
