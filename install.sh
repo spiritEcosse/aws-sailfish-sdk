@@ -453,6 +453,7 @@ mb2_deploy_to_device() {
   mb2_cmake_build  # Todo make async
   set_access_ssh_to_device  # Todo make async
   cd "${BUILD_FOLDER}/RPMS"
+  ls -lah
   get_last_modified_file
   scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:~"
   run_commands_on_device rpm_install_app
