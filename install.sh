@@ -444,6 +444,7 @@ rpm_install_app() {
   get_last_modified_file
   sudo pkcon -y --allow-reinstall install zypper
   sudo zypper -n install --allow-unsigned-rpm --force --details ${LAST_RPM}
+  sudo rpm -i ${LAST_RPM} --force
 }
 
 mb2_deploy_to_device() {
