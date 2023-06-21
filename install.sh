@@ -452,6 +452,7 @@ mb2_deploy_to_device() {
   install_aws
   mb2_cmake_build  # Todo make async
   set_access_ssh_to_device  # Todo make async
+  mb2 build # Todo figure it out, why mb2 cmake --build . doesnt create rpm ?
   cd "${BUILD_FOLDER}/RPMS"
   ls -lah
   get_last_modified_file
