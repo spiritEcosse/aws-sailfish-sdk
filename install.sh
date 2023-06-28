@@ -143,6 +143,10 @@ install_jq() {
   fi
 }
 
+get_pending_time_shutdown() {
+	date --date @$(head -1 /run/systemd/shutdown/scheduled |cut -c6-15)
+}
+
 set_rsync_params() {
   RSYNC_PARAMS_UPLOAD_SOURCE_CODE=(-rv --size-only --progress --stats --human-readable --exclude '.idea')
 }
@@ -440,10 +444,16 @@ get_last_modified_file() {
 }
 
 rpm_install_app() {
-  cd ~
+  cd "${BUILD_FOLDER}"
   get_last_modified_file
   sudo pkcon -y --allow-reinstall install zypper
   sudo zypper -n install --allow-unsigned-rpm --force --details ${LAST_RPM}
+}
+
+remove_build_file() {
+  mkdir -p "${BUILD_FOLDER}"
+  cd "${BUILD_FOLDER}"
+  rm -fr *
 }
 
 mb2_deploy_to_device() {
@@ -456,7 +466,8 @@ mb2_deploy_to_device() {
   cd "${BUILD_FOLDER}/RPMS"
   ls -lah
   get_last_modified_file
-  scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:~"
+  run_commands_on_device remove_build_file
+  scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:~/bible/rpms/"
   run_commands_on_device rpm_install_app
 }
 
