@@ -451,8 +451,8 @@ rpm_install_app() {
 }
 
 remove_build_file() {
-  mkdir -p "${BUILD_FOLDER}"
-  cd "${BUILD_FOLDER}"
+  mkdir -p ~/"${BUILD_FOLDER_NAME}"
+  cd ~/"${BUILD_FOLDER_NAME}"
   rm -fr *
 }
 
@@ -467,7 +467,7 @@ mb2_deploy_to_device() {
   ls -lah
   get_last_modified_file
   run_commands_on_device remove_build_file
-  scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:${BUILD_FOLDER}"
+  scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:~/${BUILD_FOLDER_NAME}"
   run_commands_on_device rpm_install_app
 }
 
