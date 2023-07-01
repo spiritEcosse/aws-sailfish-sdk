@@ -364,7 +364,7 @@ deploy_qml_files_to_device() {
     fi;
 
 #    run_commands_on_device run_app_on_device
-    ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
+    ssh "nemo@192.168.18.12" "
         export ARCH=${ARCH}
         export RELEASE=${RELEASE}
         export PLATFORM=${PLATFORM}
