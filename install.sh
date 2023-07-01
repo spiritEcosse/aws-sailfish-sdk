@@ -358,7 +358,7 @@ download_backup_from_aws() {
 }
 
 deploy_qml_files_to_device() {
-    if [[ $(find . -mmin -100 -type f | grep "qml") && ! $(find . -mmin -100 -type f | grep ".cpp" && find . -mmin -100 -type f | grep ".h") ]];
+    if [[ $(find . -mmin -3 -type f | grep "qml") && ! $(find . -mmin -3 -type f | grep ".cpp" && find . -mmin -3 -type f | grep ".h") ]];
     then
       rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" qml/ "nemo@192.168.18.12:/usr/share/bible/qml";
     fi;
