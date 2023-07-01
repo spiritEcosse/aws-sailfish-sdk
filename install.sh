@@ -357,6 +357,21 @@ download_backup_from_aws() {
   ls -la "${BUILD_FOLDER}"
 }
 
+deploy_qml_files_to_device() {
+    if [[ $(find . -mmin -100 -type f -ls | grep "qml") && ! $(find . -mmin -100 -type f -ls | grep ".cpp" && find . -mmin -100 -type f -ls | grep ".h") ]];
+    then
+      rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" qml/ "nemo@192.168.18.12:/usr/share/bible/qml";
+    fi;
+
+#    run_commands_on_device run_app_on_device
+    ssh "${EC2_INSTANCE_USER}@${DEVICE_IP}" "
+        export ARCH=${ARCH}
+        export RELEASE=${RELEASE}
+        export PLATFORM=${PLATFORM}
+        curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"run_app_on_device\"
+      "
+}
+
 get_device_ip() {
   DEVICE_IP=$(echo "${SSH_CLIENT}" | awk '{ print $1}')
 }
