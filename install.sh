@@ -713,7 +713,7 @@ git_submodule_checkout() {
     if [[ ! $(git submodule status | grep "${folder_name}") ]]; then
       git_submodule_init "${folder_name}"
     elif [[ ! -d "${folder_name}" || ! -d "${folder_name}/.git" ]]; then
-      rm -fr "${folder_name}"
+#      rm -fr "${folder_name}"
       git submodule update --init "${folder_name}"
 #      git fetch --tags # disable it because : Line 718: git fetch --tags
          #error: Could not read a2294d0d05f85c67c172551742a224e6a1f11d15
