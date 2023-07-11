@@ -710,10 +710,10 @@ git_submodule_init() {
 
 git_submodule_checkout() {
   for folder_name in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | tr ' ' '\n'); do
-    if [[ ! -d "${folder_name}" ]]; then
+    if [[ ! $(git submodule status | grep "${folder_name}") ]]; then
       git_submodule_init "${folder_name}"
-    elif [[ ! -d "${folder_name}/.git" ]]; then
-      ls -la "${folder_name}"
+    elif [[ ! -d "${folder_name}" || ! -d "${folder_name}/.git" ]]; then
+      rm -fr "${folder_name}"
       git submodule update --init "${folder_name}"
       git fetch --tags
     fi
