@@ -715,7 +715,7 @@ git_submodule_checkout() {
     elif [[ ! -d "${folder_name}" || ! -d "${folder_name}/.git" ]]; then
       rm -fr "${folder_name}"
       git submodule update --init "${folder_name}"
-      sudo git fetch --tags
+#      git fetch --tags
     fi
   done
 
