@@ -715,7 +715,15 @@ git_submodule_checkout() {
     elif [[ ! -d "${folder_name}" || ! -d "${folder_name}/.git" ]]; then
       rm -fr "${folder_name}"
       git submodule update --init "${folder_name}"
-#      git fetch --tags
+#      git fetch --tags # disable it because : Line 718: git fetch --tags
+         #error: Could not read a2294d0d05f85c67c172551742a224e6a1f11d15
+         #error: Could not read 27b62c5566a769a9379251b1a8c63dc5f9dfe1f2
+         #error: Could not read 3cb38058058ca9f830a877bc672c0458bf379b34
+         #error: Could not read a2294d0d05f85c67c172551742a224e6a1f11d15
+         #error: Could not read 8fa1bd0092144308f2df65477fa1336d315e44c7
+         #error: Could not read 84ea54549417e19caac8035b6c5fb3ba580045f6
+         #fatal: pack has 593 unresolved deltas
+         #fatal: index-pack failed
     fi
   done
 
