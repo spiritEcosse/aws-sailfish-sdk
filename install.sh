@@ -719,8 +719,6 @@ git_submodule_init() {
 }
 
 git_submodule_checkout() {
-  PWD=$(pwd)
-
   for folder_name in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | tr ' ' '\n'); do
     if [[ ! $(git submodule status | grep "${folder_name}") ]]; then
       git_submodule_init "${folder_name}"
@@ -741,7 +739,7 @@ git_submodule_checkout() {
     TAG=$(git config --file .gitmodules --get-regexp tag | grep "${folder_name}" | awk '{ print $2 }' | tr ' ' '\n')
     cd "${folder_name}"
     git fetch origin tag "${TAG}" --no-tags
-    cd "${PWD}"
+    cd ../../
   done
 
   git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag)'
