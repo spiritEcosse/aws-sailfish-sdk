@@ -735,6 +735,8 @@ git_submodule_checkout() {
          #fatal: pack has 593 unresolved deltas
          #fatal: index-pack failed
     fi
+
+    git fetch origin tag $(git config --file .gitmodules --get-regexp tag | grep "${folder_name}" | awk '{ print $2 }' | tr ' ' '\n') --no-tags
   done
 
   git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag)'
