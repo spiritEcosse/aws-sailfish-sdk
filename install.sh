@@ -130,6 +130,7 @@ BACKUP_FILE_PATH="${HOME}/${FILE}"
 DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
 HTTP_FILE="https://bible-backups.s3.amazonaws.com/${FILE}"
+SRC="~/src"
 
 install_jq() {
   # TODO: add prepare: install sudo make git
@@ -451,8 +452,8 @@ mb2_cmake_build() {
   chown_mersdk
   mb2 build-init
   mb2 build-requires
-  mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON
-  mb2 cmake --build .
+  mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
+  mb2 cmake --build "${BUILD_FOLDER}" -j 4
 }
 
 get_last_modified_file() {
@@ -540,11 +541,17 @@ codecov_push_results() {
   ./codecov -t "${CODECOV_TOKEN}" -f ccov/all-merged.info
 }
 
+rsync_share_to_src() {
+  cd "${SRC}"
+  set_rsync_params
+  sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --delete /share/ "${SRC}"
+  chown_mersdk
+}
+
 rsync_share_to_build() {
   cd "${BUILD_FOLDER}"
   set_rsync_params
-  sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" /share/ .
-  chown_mersdk
+  sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" "${SRC}/" .
 }
 
 mb2_set_target() {
@@ -552,7 +559,9 @@ mb2_set_target() {
 }
 
 code_coverage() {
+  mkdir -p "${SRC}"
   download_backup_from_aws
+  rsync_share_to_src
   rsync_share_to_build
   mb2_cmake_build
   upload_backup
