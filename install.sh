@@ -544,7 +544,7 @@ codecov_push_results() {
 rsync_share_to_src() {
   cd "${SRC}"
   set_rsync_params
-  sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --delete /share/ "${SRC}"
+  sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --delete /share/ .
   chown_mersdk
 }
 
