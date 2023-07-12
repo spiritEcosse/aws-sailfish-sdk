@@ -130,7 +130,7 @@ BACKUP_FILE_PATH="${HOME}/${FILE}"
 DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
 HTTP_FILE="https://bible-backups.s3.amazonaws.com/${FILE}"
-SRC="~/src"
+SRC="${HOME}/src"
 
 install_jq() {
   # TODO: add prepare: install sudo make git
