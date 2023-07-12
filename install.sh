@@ -715,7 +715,7 @@ git_submodule_remove() {
 
 git_submodule_init() {
 	URL=$(git config --file .gitmodules --get-regexp url | grep "${1}" | awk '{ print $2 }' | tr ' ' '\n')
-	git submodule add "${URL}" "${1}"
+	git submodule add --depth 1 "${URL}" "${1}"
 }
 
 git_submodule_checkout() {
@@ -724,7 +724,7 @@ git_submodule_checkout() {
       git_submodule_init "${folder_name}"
     elif [[ ! -d "${folder_name}" || ! -d "${folder_name}/.git" ]]; then
 #      rm -fr "${folder_name}"
-      git submodule update --init "${folder_name}"
+      git submodule update --depth 1 --init "${folder_name}"
 #      git fetch --tags # disable it because : Line 718: git fetch --tags
          #error: Could not read a2294d0d05f85c67c172551742a224e6a1f11d15
          #error: Could not read 27b62c5566a769a9379251b1a8c63dc5f9dfe1f2
