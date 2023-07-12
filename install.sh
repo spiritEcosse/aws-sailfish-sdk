@@ -453,7 +453,7 @@ mb2_cmake_build() {
   mb2 build-init
   mb2 build-requires
   mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
-  mb2 cmake --build "${BUILD_FOLDER}" -j 4
+  mb2 cmake --build . -j 4
 }
 
 get_last_modified_file() {
