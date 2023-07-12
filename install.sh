@@ -738,8 +738,8 @@ git_submodule_checkout() {
          #fatal: index-pack failed
     fi
 
-    cd "${folder_name}"
     TAG=$(git config --file .gitmodules --get-regexp tag | grep "${folder_name}" | awk '{ print $2 }' | tr ' ' '\n')
+    cd "${folder_name}"
     git fetch origin tag "${TAG}" --no-tags
     cd "${PWD}"
   done
