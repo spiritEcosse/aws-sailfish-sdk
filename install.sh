@@ -719,6 +719,8 @@ git_submodule_init() {
 }
 
 git_submodule_checkout() {
+  PWD=$(pwd)
+
   for folder_name in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | tr ' ' '\n'); do
     if [[ ! $(git submodule status | grep "${folder_name}") ]]; then
       git_submodule_init "${folder_name}"
@@ -736,7 +738,10 @@ git_submodule_checkout() {
          #fatal: index-pack failed
     fi
 
-    git fetch origin tag $(git config --file .gitmodules --get-regexp tag | grep "${folder_name}" | awk '{ print $2 }' | tr ' ' '\n') --no-tags
+    cd "${folder_name}"
+    TAG=$(git config --file .gitmodules --get-regexp tag | grep "${folder_name}" | awk '{ print $2 }' | tr ' ' '\n')
+    git fetch origin tag "${TAG}" --no-tags
+    cd "${PWD}"
   done
 
   git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag)'
