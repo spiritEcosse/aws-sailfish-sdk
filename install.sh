@@ -123,10 +123,11 @@ echo "PLATFORM: ${PLATFORM}"
 echo "ARCH: ${ARCH}"
 echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
 BUILD_FOLDER_NAME="${PLATFORM}_${ARCH}"
+SRC_FOLDER_NAME="${PLATFORM}_${ARCH}_src"
 BUILD_FOLDER="${HOME}/${BUILD_FOLDER_NAME}"
 FILE_TAR=${BUILD_FOLDER_NAME}.tar
 FILE=${FILE_TAR}.gz
-FILE_SRC_TAR=${BUILD_FOLDER_NAME}_src.tar
+FILE_SRC_TAR=${SRC_FOLDER_NAME}.tar
 FILE_SRC=${FILE_SRC_TAR}.gz
 BACKUP_FILE_PATH="${HOME}/${FILE}"
 BACKUP_FILE_SRC_PATH="${HOME}/${FILE_SRC}"
@@ -134,7 +135,7 @@ DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
 HTTP_FILE="https://bible-backups.s3.amazonaws.com/${FILE}"
 HTTP_FILE_SRC="https://bible-backups.s3.amazonaws.com/${FILE_SRC}"
-SRC="${BUILD_FOLDER}_src"
+SRC="${HOME}/${SRC_FOLDER_NAME}"
 
 install_jq() {
   # TODO: add prepare: install sudo make git
@@ -564,8 +565,8 @@ code_coverage() {
   rsync_share_to_src
   rsync_share_to_build
   mb2_cmake_build
-  upload_backup "${FILE}" "${BUILD_FOLDER}"
-  upload_backup "${FILE_SRC}" "${SRC}"
+  upload_backup "${FILE}" "${BUILD_FOLDER_NAME}"
+  upload_backup "${FILE_SRC}" "${SRC_FOLDER_NAME}"
   mb2_run_tests
   mb2_run_ccov_all_capture
   codecov_push_results
