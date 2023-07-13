@@ -346,6 +346,7 @@ download_backup_from_aws() {
 
     unpigz -v "${1}" # TODO: this line is broken on the ubuntu, i will fix it in the future
     tar -xf "${2}"
+    chown_mersdk "${5}"
   else
     mkdir -p "${5}"
   fi
@@ -531,7 +532,7 @@ codecov_push_results() {
 rsync_share_to_src() {
   cd "${SRC}"
   set_rsync_params
-  sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --delete /share/ .
+  sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --delete --exclude='3rdparty' --include='3rdparty/*.cmake' /share/ .
   chown_mersdk
 }
 
@@ -539,6 +540,7 @@ rsync_share_to_build() {
   cd "${BUILD_FOLDER}"
   set_rsync_params
   sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" "${SRC}/" .
+  chown_mersdk
 }
 
 mb2_set_target() {
