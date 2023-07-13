@@ -122,15 +122,19 @@ echo "RELEASE: ${RELEASE}"
 echo "PLATFORM: ${PLATFORM}"
 echo "ARCH: ${ARCH}"
 echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
-BUILD_FOLDER="${HOME}/${PLATFORM}_${ARCH}"
 BUILD_FOLDER_NAME="${PLATFORM}_${ARCH}"
-FILE_TAR=${PLATFORM}_${ARCH}.tar
+BUILD_FOLDER="${HOME}/${BUILD_FOLDER_NAME}"
+FILE_TAR=${BUILD_FOLDER_NAME}.tar
 FILE=${FILE_TAR}.gz
+FILE_SRC_TAR=${BUILD_FOLDER_NAME}_src.tar
+FILE_SRC=${FILE_SRC_TAR}.gz
 BACKUP_FILE_PATH="${HOME}/${FILE}"
+BACKUP_FILE_SRC_PATH="${HOME}/${FILE_SRC}"
 DESTINATION_PATH="/usr/share/nginx/html/backups/"
 DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
 HTTP_FILE="https://bible-backups.s3.amazonaws.com/${FILE}"
-SRC="${HOME}/src"
+HTTP_FILE_SRC="https://bible-backups.s3.amazonaws.com/${FILE_SRC}"
+SRC="${BUILD_FOLDER}_src"
 
 install_jq() {
   # TODO: add prepare: install sudo make git
@@ -295,26 +299,26 @@ prepare_aws_instance() {
 }
 
 download_backup() {
-  rm -f ${BACKUP_FILE_PATH}_*
+  rm -f ${1}_*
 
   SEC=$SECONDS
   count=0
   start=0
 
-  for i in `seq 1 ${CHUNKS} ${SIZE_BACKUP_FILE}`; do
+  for i in `seq 1 ${4} ${3}`; do
     end=$(python3 -c "start = int(${start})
-end = int(start + ${CHUNKS} - 1)
-size = int(${SIZE_BACKUP_FILE})
+end = int(start + ${4} - 1)
+size = int(${3})
 print(size if end > size else end)")
-    curl -r "${start}"-"${end}" "${1}" -o "${BACKUP_FILE_PATH}_${count}" &
+    curl -r "${start}"-"${end}" "${2}" -o "${1}_${count}" &
     count=$(( "${count}" + 1 ))
-    start=$(python3 -c "print(int(${start}) + int(${CHUNKS}))")
+    start=$(python3 -c "print(int(${start}) + int(${4}))")
   done
 
   wait
   echo "after downloads : $(( SECONDS - SEC ))"
 
-  cat $(ls ${BACKUP_FILE_PATH}_* | sort -V) > "${BACKUP_FILE_PATH}";
+  cat $(ls ${1}_* | sort -V) > "${1}";
 }
 
 system_prepare_ubuntu() {
@@ -330,32 +334,31 @@ system_prepare_ubuntu() {
 }
 
 file_get_size() {
-  curl -sI "${HTTP_FILE}" | grep -i Content-Length | awk '{print ($2+0)}'
+  curl -sI "${1}" | grep -i Content-Length | awk '{print ($2+0)}'
 }
 
 download_backup_from_aws() {
-  if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
-    system_prepare_ubuntu
-    install_for_ubuntu curl pigz
-  elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
-    sudo zypper -n install curl pigz
-  fi
-
   cd ~/
 
-  if [[ $(aws s3 ls s3://bible-backups/"${FILE}") ]]; then
-    SIZE_BACKUP_FILE=$(file_get_size)
-    CHUNKS=$(python3 -c "print(100 * 1024 * 1024)")
-
-    download_backup "${HTTP_FILE}"
+  if [[ $(aws s3 ls s3://bible-backups/"${1}") ]]; then
+    download_backup "${4}" "${3}" $(file_get_size "${3}") $(python3 -c "print(100 * 1024 * 1024)")
     wait
 
-    unpigz -v "${FILE}" # TODO: this line is broken on the ubuntu, i will fix it in the future
-    tar -xf "${FILE_TAR}"
+    unpigz -v "${1}" # TODO: this line is broken on the ubuntu, i will fix it in the future
+    tar -xf "${2}"
   else
-    mkdir -p "${BUILD_FOLDER}"
+    mkdir -p "${5}"
   fi
-  ls -la "${BUILD_FOLDER}"
+  ls -la "${5}"
+}
+
+upload_backup() {
+  cd "${HOME}"
+  tar --use-compress-program="pigz -k " -cf "${1}" "${2}"
+
+  SEC=$SECONDS
+  aws s3 cp "${1}" s3://bible-backups
+  echo "after aws s3 cp : $(( SECONDS - SEC ))"
 }
 
 deploy_qml_files_to_device() {
@@ -415,22 +418,6 @@ set_access_ssh_to_device() {
   get_device_ip
   get_ec2_instance_user
   set_up_instance_host_to_known_hosts "${DEVICE_IP}"
-}
-
-upload_backup() {
-  if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
-    system_prepare_ubuntu
-    install_for_ubuntu pigz
-  elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
-    sudo zypper -n install pigz
-  fi
-
-  cd "${HOME}"
-  tar --use-compress-program="pigz -k " -cf "${FILE}" "${PLATFORM}_${ARCH}"
-
-  SEC=$SECONDS
-  aws s3 cp "${FILE}" s3://bible-backups
-  echo "after aws s3 cp : $(( SECONDS - SEC ))"
 }
 
 install_asan() {
@@ -559,13 +546,20 @@ mb2_set_target() {
 }
 
 code_coverage() {
-  mkdir -p "${SRC}"
-  mkdir -p "${BUILD_FOLDER}"
-  download_backup_from_aws
+  if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
+    system_prepare_ubuntu
+    install_for_ubuntu curl pigz
+  elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
+    sudo zypper -n install curl pigz
+  fi
+
+  download_backup_from_aws "${FILE}" "${FILE_TAR}" "${HTTP_FILE}" "${BACKUP_FILE_PATH}" "${BUILD_FOLDER}"
+  download_backup_from_aws "${FILE_SRC}" "${FILE_SRC_TAR}" "${HTTP_FILE_SRC}" "${BACKUP_FILE_SRC_PATH}" "${SRC}"
   rsync_share_to_src
   rsync_share_to_build
   mb2_cmake_build
-  upload_backup
+  upload_backup "${FILE}" "${BUILD_FOLDER}"
+  upload_backup "${FILE_SRC}" "${SRC}"
   mb2_run_tests
   mb2_run_ccov_all_capture
   codecov_push_results
