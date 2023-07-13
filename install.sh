@@ -352,6 +352,7 @@ download_backup_from_aws() {
     mkdir -p "${5}"
   fi
   ls -la "${5}"
+  ls -la .
 }
 
 upload_backup() {
@@ -361,6 +362,7 @@ upload_backup() {
   SEC=$SECONDS
   aws s3 cp "${1}" s3://bible-backups
   echo "after aws s3 cp : $(( SECONDS - SEC ))"
+  rm "${1}"
 }
 
 deploy_qml_files_to_device() {
