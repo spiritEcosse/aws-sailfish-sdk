@@ -556,7 +556,7 @@ code_coverage() {
   fi
 
   mkdir -p "${BUILD_FOLDER}"
-#  download_backup_from_aws "${FILE}" "${FILE_TAR}" "${HTTP_FILE}" "${BACKUP_FILE_PATH}" "${BUILD_FOLDER}" # build
+  download_backup_from_aws "${FILE}" "${FILE_TAR}" "${HTTP_FILE}" "${BACKUP_FILE_PATH}" "${BUILD_FOLDER}" # build
   download_backup_from_aws "${FILE_SRC}" "${FILE_SRC_TAR}" "${HTTP_FILE_SRC}" "${BACKUP_FILE_SRC_PATH}" "${SRC}" # src
   rsync_share_to_src
   rsync_share_to_build
