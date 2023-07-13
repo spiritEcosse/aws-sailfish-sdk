@@ -561,7 +561,7 @@ mb2_set_target() {
 code_coverage() {
   mkdir -p "${SRC}"
   mkdir -p "${BUILD_FOLDER}"
-#  download_backup_from_aws
+  download_backup_from_aws
   rsync_share_to_src
   rsync_share_to_build
   mb2_cmake_build
