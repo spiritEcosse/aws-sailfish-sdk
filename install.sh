@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: create mock tests https://poisel.info/posts/2022-05-10-shell-unit-tests/
+
 PS4='Line ${LINENO}: '
 
 add_flags() {
@@ -32,7 +34,7 @@ install_bash() {
   NAME_BASH=bash-${BASH_VERSION}
 
   set +eo
-  exe=`exec 2>/dev/null; readlink "/proc/$$/exe"`
+  exe=$(exec 2>/dev/null; readlink "/proc/$$/exe")
   add_flags
   case "$exe" in
   */busybox)
@@ -87,9 +89,11 @@ if [[ -z ${ARCH+x} ]]; then
 fi
 
 get_name_platform() {
-  if [[ $(uname -a | grep -i "GNU/Linux") ]]; then
+  if uname -a | grep -i "GNU/Linux"
+  then
     awk -F= '$1=="ID" { print $2 ;}' /etc/os-release
-  elif [[ $(uname -a | grep -i "darwin") ]]; then
+  elif uname -a | grep -i "darwin"
+  then
     echo "darwin"
 #  elif [[ "$OSTYPE" == "cygwin" ]]; then
 #          # POSIX compatibility layer and Linux environment emulation for Windows
@@ -132,7 +136,6 @@ FILE_SRC=${FILE_SRC_TAR}.gz
 BACKUP_FILE_PATH="${HOME}/${FILE}"
 BACKUP_FILE_SRC_PATH="${HOME}/${FILE_SRC}"
 DESTINATION_PATH="/usr/share/nginx/html/backups/"
-DESTINATION_FILE_PATH="${DESTINATION_PATH}${FILE}"
 HTTP_FILE="https://bible-backups.s3.amazonaws.com/${FILE}"
 HTTP_FILE_SRC="https://bible-backups.s3.amazonaws.com/${FILE_SRC}"
 SRC="${HOME}/${SRC_FOLDER_NAME}"
@@ -150,7 +153,7 @@ install_jq() {
 }
 
 get_pending_time_shutdown() {
-	date --date @$(head -1 /run/systemd/shutdown/scheduled |cut -c6-15)
+	date --date "@$(head -1 /run/systemd/shutdown/scheduled |cut -c6-15)"
 }
 
 set_rsync_params() {
@@ -300,13 +303,13 @@ prepare_aws_instance() {
 }
 
 download_backup() {
-  rm -f ${1}_*
+  rm -f "${1}"_*
 
   SEC=$SECONDS
   count=0
   start=0
 
-  for i in `seq 1 ${4} ${3}`; do
+  for i in $(seq 1 "${4}" "${3}"); do
     end=$(python3 -c "start = int(${start})
 end = int(start + ${4} - 1)
 size = int(${3})
@@ -319,7 +322,7 @@ print(size if end > size else end)")
   wait
   echo "after downloads : $(( SECONDS - SEC ))"
 
-  cat $(ls ${1}_* | sort -V) > "${1}";
+  cat $(ls "${1}"_* | sort -V) > "${1}";
 }
 
 system_prepare_ubuntu() {
@@ -342,12 +345,12 @@ download_backup_from_aws() {
   cd ~/
 
   if [[ $(aws s3 ls s3://bible-backups/"${1}") ]]; then
-    download_backup "${4}" "${3}" $(file_get_size "${3}") $(python3 -c "print(100 * 1024 * 1024)")
+    download_backup "${4}" "${3}" "$(file_get_size "${3}")" "$(python3 -c "print(100 * 1024 * 1024)")"
     wait
 
     unpigz -v "${1}" # TODO: this line is broken on the ubuntu, i will fix it in the future
     tar -xf "${2}"
-    rm -f ${4}*
+    rm -f "${4}"*
     chown_mersdk
   else
     mkdir -p "${5}"
@@ -445,7 +448,7 @@ mb2_cmake_build() {
   mb2 build-init
   mb2 build-requires
   mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
-  mb2 cmake --build . -j $(echo $((2 * $(getconf _NPROCESSORS_ONLN))))
+  mb2 cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
 }
 
 get_last_modified_file() {
@@ -887,10 +890,12 @@ do      [[ "$l" -gt "$r" ]]
         (0\))    r=$((r+1)) ;;
         (?\()    l=$((l+1)) ;;
         esac    &&
-        set -- "$@$OPTARG" ||
+        set -- "$*$OPTARG" ||
         set -- "$@" " "
 done;
 set -ex
+
+echo "$@"
 
 for func in $(echo "$@")
 do
