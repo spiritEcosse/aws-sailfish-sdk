@@ -347,8 +347,7 @@ download_backup_from_aws() {
 
     unpigz -v "${1}" # TODO: this line is broken on the ubuntu, i will fix it in the future
     tar -xf "${2}"
-    rm -f ${4}
-    rm -f ${4}_*
+    rm -f ${4}*
     chown_mersdk
   else
     mkdir -p "${5}"
