@@ -89,10 +89,10 @@ if [[ -z ${ARCH+x} ]]; then
 fi
 
 get_name_platform() {
-  if uname -a | grep -i "GNU/Linux"
+  if uname -a | grep -i "GNU/Linux" >/dev/null
   then
     awk -F= '$1=="ID" { print $2 ;}' /etc/os-release
-  elif uname -a | grep -i "darwin"
+  elif uname -a | grep -i "darwin" >/dev/null
   then
     echo "darwin"
 #  elif [[ "$OSTYPE" == "cygwin" ]]; then
