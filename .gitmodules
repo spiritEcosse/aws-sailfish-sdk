@@ -1,0 +1,4 @@
+[submodule "3rdparty/shellspec"]
+	path = 3rdparty/shellspec
+	url = https://github.com/shellspec/shellspec.git
+    tag = 0.28.1
