@@ -895,7 +895,7 @@ do      [[ "$l" -gt "$r" ]]
 done;
 set -ex
 
-echo "$@"
+echo "Start function ${funcs}"
 
 for func in $(echo "$@")
 do
