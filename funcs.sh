@@ -1,3 +1,5 @@
+#!/bin/bash
+
 get_name_platform() {
   if uname -a | grep -i "GNU/Linux" >/dev/null
   then

@@ -1,5 +1,5 @@
-Describe 'funcs.sh'
-  Include funcs.sh
+Describe 'install.sh'
+  Include install.sh
   It 'Determine platform of system.'
     When call get_name_platform
     The output should equal 'darwin'
