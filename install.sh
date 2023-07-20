@@ -554,6 +554,14 @@ mb2_set_target() {
   alias mb2='mb2 --target SailfishOS-$RELEASE-$ARCH'
 }
 
+download_backup_build_from_aws() {
+  download_backup_from_aws "${FILE}" "${FILE_TAR}" "${HTTP_FILE}" "${BACKUP_FILE_PATH}" "${BUILD_FOLDER}"
+}
+
+download_backup_src_from_aws() {
+  download_backup_from_aws "${FILE_SRC}" "${FILE_SRC_TAR}" "${HTTP_FILE_SRC}" "${BACKUP_FILE_SRC_PATH}" "${SRC}"
+}
+
 code_coverage() {
   if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
     system_prepare_ubuntu
@@ -565,8 +573,8 @@ code_coverage() {
   df -h
 
   mkdir -p "${BUILD_FOLDER}"
-  download_backup_from_aws "${FILE}" "${FILE_TAR}" "${HTTP_FILE}" "${BACKUP_FILE_PATH}" "${BUILD_FOLDER}" # build
-  download_backup_from_aws "${FILE_SRC}" "${FILE_SRC_TAR}" "${HTTP_FILE_SRC}" "${BACKUP_FILE_SRC_PATH}" "${SRC}" # src
+  download_backup_build_from_aws
+  download_backup_src_from_aws
   rsync_share_to_src
   rsync_share_to_build
   mb2_cmake_build
