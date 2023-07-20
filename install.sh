@@ -319,7 +319,7 @@ end = int(start + ${4} - 1)
 size = int(${3})
 print(size if end > size else end)")
     curl -r "${start}"-"${end}" "${2}" -o "${1}_${count}" &
-    count=$(( "${count}" + 1 ))
+    count=$(echo "${count}" + 1 | bc)
     start=$(python3 -c "print(int(${start}) + int(${4}))")
   done
 
