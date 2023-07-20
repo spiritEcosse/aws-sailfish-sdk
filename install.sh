@@ -348,6 +348,12 @@ file_get_size() {
 download_backup_from_aws() {
   cd ~/
 
+  if [[ -d "${5}" ]]; then
+    ls -la "${5}"
+    ls -la .
+    return
+  fi
+
   if [[ $(aws s3 ls s3://bible-backups/"${1}") ]]; then
     download_backup "${4}" "${3}" "$(file_get_size "${3}")" "$(python3 -c "print(100 * 1024 * 1024)")"
     wait
@@ -357,6 +363,7 @@ download_backup_from_aws() {
     rm -f "${4}"*
     chown_current_user
   else
+    echo "Cannot find file ${1} on aws s3"
     mkdir -p "${5}"
   fi
   ls -la "${5}"
