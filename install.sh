@@ -140,6 +140,10 @@ HTTP_FILE="https://bible-backups.s3.amazonaws.com/${FILE}"
 HTTP_FILE_SRC="https://bible-backups.s3.amazonaws.com/${FILE_SRC}"
 SRC="${HOME}/${SRC_FOLDER_NAME}"
 
+chown_current_user() {
+  sudo chown -R "$(whoami):$(id -g -n)" .
+}
+
 install_jq() {
   # TODO: add prepare: install sudo make git
   if [[ ! $(jq --help) ]]; then
@@ -351,7 +355,7 @@ download_backup_from_aws() {
     unpigz -v "${1}" # TODO: this line is broken on the ubuntu, i will fix it in the future
     tar -xf "${2}"
     rm -f "${4}"*
-    chown_mersdk
+    chown_current_user
   else
     mkdir -p "${5}"
   fi
@@ -437,14 +441,10 @@ install_asan() {
   fi
 }
 
-chown_mersdk() {
-  sudo chown -R mersdk:mersdk .
-}
-
 mb2_cmake_build() {
   cd "${BUILD_FOLDER}"
   mb2_set_target
-  chown_mersdk
+  chown_current_user
   mb2 build-init
   mb2 build-requires
   mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
@@ -470,7 +470,7 @@ remove_build_file() {
 
 mb2_deploy_to_device() {
   cd "${BUILD_FOLDER}"
-  chown_mersdk
+  chown_current_user
   install_aws
   mb2_cmake_build  # Todo make async
   set_access_ssh_to_device  # Todo make async
@@ -485,21 +485,21 @@ mb2_deploy_to_device() {
 
 mb2_build() {
   cd "${BUILD_FOLDER}"
-  chown_mersdk
+  chown_current_user
   mb2_set_target
   mb2 build
 }
 
 mb2_make_clean() {
   cd "${BUILD_FOLDER}"
-  chown_mersdk
+  chown_current_user
   mb2_set_target
   mb2 make clean
 }
 
 mb2_run_tests() {
   cd "${BUILD_FOLDER}"
-  chown_mersdk
+  chown_current_user
   mb2_set_target
   mb2 build-shell ctest --output-on-failure
 }
@@ -512,7 +512,7 @@ run_app_on_device() {
 
 mb2_run_ccov_all_capture() {
   cd "${BUILD_FOLDER}"
-  chown_mersdk
+  chown_current_user
   mkdir ccov
   mb2 build-shell make ccov-all-capture
 }
@@ -540,14 +540,14 @@ rsync_share_to_src() {
   cd "${SRC}"
   set_rsync_params
   sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" /share/ .
-  chown_mersdk
+  chown_current_user
 }
 
 rsync_share_to_build() {
   cd "${BUILD_FOLDER}"
   set_rsync_params
   sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" "${SRC}/" .
-  chown_mersdk
+  chown_current_user
 }
 
 mb2_set_target() {
