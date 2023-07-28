@@ -812,7 +812,6 @@ docker_run_commands() {
   cd "${BUILD_FOLDER}"
 
   docker run --rm --privileged \
-    -e BUILD_FOLDER="/home/mersdk/${BUILD_FOLDER_NAME}" \
     -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
     -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
     -e AWS_REGION="${AWS_REGION}" \
@@ -821,6 +820,7 @@ docker_run_commands() {
     -e EC2_INSTANCE_NAME="sony_xperia_10" \
     -e SSH_CLIENT="${SSH_CLIENT}" \
     -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
+    -v "${SRC}:/home/mersdk/${SRC_FOLDER_NAME}" \
     "${DOCKER_REPO}${ARCH}:${RELEASE}" \
     /bin/bash -c "
       curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
