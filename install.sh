@@ -476,6 +476,8 @@ remove_build_file() {
 }
 
 mb2_deploy_to_device() {
+  cd "${SRC}"
+  chown_current_user
   cd "${BUILD_FOLDER}"
   chown_current_user
   install_aws
