@@ -295,7 +295,7 @@ aws_start() {
 
 rsync_from_host_to_sever() {
   set_rsync_params
-  rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1"
+  rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1"
 }
 
 prepare_aws_instance() {
@@ -790,10 +790,6 @@ docker_build() {
   docker build -t "${DOCKER_REPO}${ARCH}:${RELEASE}" --build-arg ARCH="${ARCH}" --build-arg RELEASE="${RELEASE}" .
 }
 
-rsync_from_host_to_sever_bible() {
-  rsync_from_host_to_sever bible
-}
-
 docker_run_bash() {
     cd "${BUILD_FOLDER}"
 
@@ -834,11 +830,7 @@ docker_run_commands() {
 aws_run_commands() {
   prepare_aws_instance
   if [[ -z ${DONT_NEED_DEPLOY+x} ]]; then
-    if [[ -z ${COMMON_DEPLOY+x} ]]; then
-      rsync_from_host_to_sever "${BUILD_FOLDER_NAME}"
-    else
-      rsync_from_host_to_sever_bible
-    fi
+    rsync_from_host_to_sever "${SRC_FOLDER_NAME}"
   fi
 
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
