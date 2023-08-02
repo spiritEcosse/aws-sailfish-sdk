@@ -758,7 +758,10 @@ git_submodule_checkout() {
 
     TAG=$(git config --file .gitmodules --get-regexp tag | grep "${folder_name}" | awk '{ print $2 }' | tr ' ' '\n')
     cd "${folder_name}"
-    git fetch origin tag "${TAG}" --no-tags
+    if [[ ! $(git tag | grep "${TAG}") ]]; then
+       git fetch origin tag "${TAG}" --no-tags
+    fi
+
     cd ../../
   done
 
