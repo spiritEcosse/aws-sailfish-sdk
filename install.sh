@@ -484,8 +484,6 @@ download_backup_src_from_aws() {
 }
 
 mb2_deploy_to_device() {
-  download_backup_build_from_aws
-  download_backup_src_from_aws
   cd "${SRC}"
   chown_current_user
   install_aws
@@ -815,6 +813,8 @@ docker_run_bash() {
 docker_run_commands() {
   cd "${BUILD_FOLDER}"
 
+  download_backup_build_from_aws
+  download_backup_src_from_aws
   docker_run_container
 
   docker exec --privileged \
