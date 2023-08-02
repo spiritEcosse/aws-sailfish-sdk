@@ -794,7 +794,10 @@ docker_build() {
 
 docker_run_container() {
     if [[ ! $(docker ps | grep "${BUILD_FOLDER_NAME}") ]]; then
-      docker run --name "${BUILD_FOLDER_NAME}" -dit "${DOCKER_REPO}${ARCH}:${RELEASE}" bash
+      docker run --name "${BUILD_FOLDER_NAME}" \
+        -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
+        -v "${SRC}:/home/mersdk/${SRC_FOLDER_NAME}" \
+        -dit "${DOCKER_REPO}${ARCH}:${RELEASE}" bash
     fi
 }
 
@@ -812,7 +815,6 @@ docker_run_bash() {
       -e RELEASE="${RELEASE}" \
       -e EC2_INSTANCE_NAME="sony_xperia_10" \
       -e SSH_CLIENT="${SSH_CLIENT}" \
-      -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
       -it \
       "${BUILD_FOLDER_NAME}" \
       /bin/bash
@@ -831,8 +833,6 @@ docker_run_commands() {
     -e RELEASE="${RELEASE}" \
     -e EC2_INSTANCE_NAME="sony_xperia_10" \
     -e SSH_CLIENT="${SSH_CLIENT}" \
-    -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
-    -v "${SRC}:/home/mersdk/${SRC_FOLDER_NAME}" \
     "${BUILD_FOLDER_NAME}" \
     /bin/bash -c "
       curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
