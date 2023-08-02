@@ -478,15 +478,11 @@ remove_build_file() {
 mb2_deploy_to_device() {
   cd "${SRC}"
   chown_current_user
-  cd "${BUILD_FOLDER}"
-  chown_current_user
   install_aws
-#  mb2_cmake_build  # Todo make async
-  cd "${SRC}"
-  mb2 build # Todo figure it out, why mb2 cmake --build . doesnt create rpm ?
-  set_access_ssh_to_device  # Todo make async
+  mb2_build
   cd "${BUILD_FOLDER}/RPMS"
   ls -lah
+  set_access_ssh_to_device  # Todo make async
   get_last_modified_file
   run_commands_on_device remove_build_file
   scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:~/${BUILD_FOLDER_NAME}"
@@ -497,7 +493,7 @@ mb2_build() {
   cd "${BUILD_FOLDER}"
   chown_current_user
   mb2_set_target
-  mb2 build
+  mb2 build "${SRC}"
 }
 
 mb2_make_clean() {
