@@ -475,6 +475,14 @@ remove_build_file() {
   rm -fr *
 }
 
+download_backup_build_from_aws() {
+  download_backup_from_aws "${FILE}" "${FILE_TAR}" "${HTTP_FILE}" "${BACKUP_FILE_PATH}" "${BUILD_FOLDER}"
+}
+
+download_backup_src_from_aws() {
+  download_backup_from_aws "${FILE_SRC}" "${FILE_SRC_TAR}" "${HTTP_FILE_SRC}" "${BACKUP_FILE_SRC_PATH}" "${SRC}"
+}
+
 mb2_deploy_to_device() {
   download_backup_build_from_aws
   download_backup_src_from_aws
@@ -560,14 +568,6 @@ rsync_share_to_build() {
 
 mb2_set_target() {
   alias mb2='mb2 --target SailfishOS-$RELEASE-$ARCH'
-}
-
-download_backup_build_from_aws() {
-  download_backup_from_aws "${FILE}" "${FILE_TAR}" "${HTTP_FILE}" "${BACKUP_FILE_PATH}" "${BUILD_FOLDER}"
-}
-
-download_backup_src_from_aws() {
-  download_backup_from_aws "${FILE_SRC}" "${FILE_SRC_TAR}" "${HTTP_FILE_SRC}" "${BACKUP_FILE_SRC_PATH}" "${SRC}"
 }
 
 code_coverage() {
