@@ -811,10 +811,11 @@ docker_run_bash() {
 }
 
 docker_run_commands() {
-  cd "${BUILD_FOLDER}"
-
   download_backup_build_from_aws
   download_backup_src_from_aws
+
+  cd "${BUILD_FOLDER}"
+
   docker_run_container
 
   docker exec --privileged \
