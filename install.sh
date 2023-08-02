@@ -476,6 +476,8 @@ remove_build_file() {
 }
 
 mb2_deploy_to_device() {
+  download_backup_build_from_aws
+  download_backup_src_from_aws
   cd "${SRC}"
   chown_current_user
   install_aws
