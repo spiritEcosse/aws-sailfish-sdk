@@ -479,7 +479,6 @@ mb2_deploy_to_device() {
   cd "${SRC}"
   chown_current_user
   install_aws
-  mb2_cmake_build
   mb2_build
   cd "${BUILD_FOLDER}/RPMS"
   ls -lah
