@@ -295,7 +295,7 @@ aws_start() {
 
 rsync_from_host_to_sever() {
   set_rsync_params
-  rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1"
+  rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" --exclude ".git" ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1"
 }
 
 prepare_aws_instance() {
