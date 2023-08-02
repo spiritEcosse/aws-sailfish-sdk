@@ -793,12 +793,12 @@ docker_build() {
 }
 
 docker_run_container() {
-    if [[ ! $(docker ps | grep "${BUILD_FOLDER_NAME}") ]]; then
-      docker run --name "${BUILD_FOLDER_NAME}" \
-        -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
-        -v "${SRC}:/home/mersdk/${SRC_FOLDER_NAME}" \
-        -dit "${DOCKER_REPO}${ARCH}:${RELEASE}" bash
-    fi
+  if [[ ! $(docker start "${BUILD_FOLDER_NAME}") ]]; then
+    docker run --name "${BUILD_FOLDER_NAME}" \
+      -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
+      -v "${SRC}:/home/mersdk/${SRC_FOLDER_NAME}" \
+      -dit "${DOCKER_REPO}${ARCH}:${RELEASE}" bash
+  fi
 }
 
 docker_run_bash() {
