@@ -413,7 +413,6 @@ set_up_instance_host_to_known_hosts () {
 
     printf "#start %s\n%s\n#end %s\n" "$1" "$SSH_KEYSCAN" "$1" >> ~/.ssh/known_hosts
 
-    get_sony_xperia_10_password
     sshpass -p "${PASSWORD}" ssh-copy-id -i "${SSH_ID_RSA_PUB}" "${EC2_INSTANCE_USER}@${DEVICE_IP}"
   fi
 }
@@ -436,6 +435,7 @@ set_access_ssh_to_device() {
   install_sshpass
   get_device_ip
   get_ec2_instance_user
+  get_sony_xperia_10_password
   set_up_instance_host_to_known_hosts "${DEVICE_IP}"
 }
 
