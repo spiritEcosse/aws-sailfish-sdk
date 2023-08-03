@@ -752,10 +752,13 @@ git_submodule_checkout() {
        git fetch origin tag "${TAG}" --no-tags
     fi
 
+    if ! git describe --tags | grep "${TAG}"
+    then
+     git checkout "${TAG}"
+    fi
+
     cd ../../
   done
-
-  git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.tag)'
 }
 
 ec2_user_add_to_nginx_group() {
