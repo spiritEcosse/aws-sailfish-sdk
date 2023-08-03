@@ -489,7 +489,7 @@ download_backup_src_from_aws() {
 
 mb2_deploy_to_device() {
   cd "${SRC}"
-#  chown_current_user
+  chown_current_user
   install_aws
   mb2_build
   cd "${BUILD_FOLDER}/RPMS"
@@ -503,7 +503,7 @@ mb2_deploy_to_device() {
 
 mb2_build() {
   cd "${BUILD_FOLDER}"
-#  chown_current_user
+  chown_current_user
   mb2_set_target
   mb2 build "${SRC}"
 }
