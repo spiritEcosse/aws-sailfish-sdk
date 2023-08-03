@@ -294,7 +294,7 @@ aws_start() {
 }
 
 rsync_from_host_to_sever() {
-  if ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "[ -d \$1 ]"
+  if ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "[ -d \$1 ]";
   then
     set_rsync_params
     rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" --exclude ".git" ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
