@@ -391,7 +391,7 @@ deploy_qml_files_to_device() {
 #    fi
 
     set_rsync_params
-    rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" qml/ "nemo@192.168.18.12:/usr/share/bible/qml";
+    rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete qml/ "nemo@192.168.18.12:/usr/share/bible/qml";
     ssh "nemo@192.168.18.12" "
         export ARCH=${ARCH}
         export RELEASE=${RELEASE}
