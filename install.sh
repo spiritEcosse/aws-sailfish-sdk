@@ -588,7 +588,6 @@ code_coverage() {
 
   df -h
 
-  mkdir -p "${BUILD_FOLDER}"
   download_backup_build_from_aws
   download_backup_src_from_aws
   rsync_share_to_src
