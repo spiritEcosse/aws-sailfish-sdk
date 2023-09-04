@@ -512,7 +512,8 @@ mb2_build() {
   cd "${BUILD_FOLDER}"
   chown_current_user
   mb2_set_target
-  ls -la
+  pwd
+  ls -la .
   mb2 build "${SRC}"
 }
 
