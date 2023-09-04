@@ -597,8 +597,8 @@ code_coverage() {
   rsync_share_to_src
 #  rsync_share_to_build
   mb2_cmake_build
-  upload_backup "${FILE}" "${BUILD_FOLDER_NAME}"
-  upload_backup "${FILE_SRC}" "${SRC_FOLDER_NAME}"
+#  upload_backup "${FILE}" "${BUILD_FOLDER_NAME}"
+#  upload_backup "${FILE_SRC}" "${SRC_FOLDER_NAME}"
   mb2_run_tests
   mb2_run_ccov_all_capture
   codecov_push_results
