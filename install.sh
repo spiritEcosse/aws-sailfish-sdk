@@ -463,7 +463,6 @@ mb2_cmake_build() {
   mb2_set_target
   chown_current_user
   mb2 build-init
-  mb2 cmake --build . --target clean -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
   mb2 build-requires
   mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
   mb2 cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
