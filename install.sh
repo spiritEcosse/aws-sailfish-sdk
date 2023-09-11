@@ -513,7 +513,6 @@ mb2_build() {
   chown_current_user
   mb2_set_target
   pwd
-  cp -fr "${SRC}"/rpm .
   ls -la .
   mb2 build "${SRC}"
 }
