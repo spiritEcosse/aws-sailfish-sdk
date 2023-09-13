@@ -294,12 +294,9 @@ aws_start() {
 }
 
 rsync_from_host_to_sever() {
-  if ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "[ -d $1 ]";
-  then
-    set_rsync_params
-    rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" --exclude ".git" ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
-    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "cd \$1 && curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"chown_current_user\"";
-  fi
+  set_rsync_params
+  rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" --exclude ".git" ~/projects/bible/bible/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
+  ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "cd \$1 && curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"chown_current_user\"";
 }
 
 prepare_aws_instance() {
@@ -828,7 +825,6 @@ docker_run_bash() {
 
 docker_run_commands() {
   download_backup_build_from_aws
-  download_backup_src_from_aws
 
   cd "${BUILD_FOLDER}"
 
@@ -851,7 +847,21 @@ docker_run_commands() {
 aws_run_commands() {
   prepare_aws_instance
   if [[ -z ${DONT_NEED_DEPLOY+x} ]]; then
-    rsync_from_host_to_sever "${SRC_FOLDER_NAME}"
+    if ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "[ -d $1 ]";
+    then
+      rsync_from_host_to_sever "${SRC_FOLDER_NAME}"
+    else
+      ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+        export ARCH=${ARCH}
+        export RELEASE=${RELEASE}
+        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+        export AWS_REGION=${AWS_REGION}
+        export PLATFORM=${PLATFORM}
+        curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"download_backup_src_from_aws\"
+      "
+      rsync_from_host_to_sever "${SRC_FOLDER_NAME}"
+    fi
   fi
 
   ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
