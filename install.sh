@@ -847,7 +847,7 @@ docker_run_commands() {
 aws_run_commands() {
   prepare_aws_instance
   if [[ -z ${DONT_NEED_DEPLOY+x} ]]; then
-    if ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "[ -d \$SRC_FOLDER_NAME ]";
+    if ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "[ -d \"${SRC_FOLDER_NAME}\" ]";
     then
       rsync_from_host_to_sever "${SRC_FOLDER_NAME}"
     else
