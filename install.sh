@@ -460,6 +460,7 @@ mb2_cmake_build() {
   mb2_set_target
   chown_current_user
   mb2 build-init "${SRC}"
+  rm -fr rpm
   cp -fr "${SRC}"/rpm .
   mb2 build-requires
   mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
