@@ -769,6 +769,7 @@ git_submodule_init() {
 }
 
 git_submodule_checkout() {
+  export MAIN_FOLDER=`pwd`
   for folder_name in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | tr ' ' '\n'); do
     if [[ ! $(git submodule status | grep "${folder_name}") ]]; then
       git_submodule_init "${folder_name}"
@@ -777,17 +778,23 @@ git_submodule_checkout() {
     fi
 
     TAG=$(git config --file .gitmodules --get-regexp tag | grep "${folder_name}" | awk '{ print $2 }' | tr ' ' '\n')
-    cd "${folder_name}"
-    if [[ ! $(git tag | grep "${TAG}") ]]; then
-       git fetch origin tag "${TAG}" --no-tags
+
+    if [[ ${TAG} != "" ]]; then
+      cd "${folder_name}"
+      if [[ ! $(git tag | grep "${TAG}") ]]; then
+         git fetch origin tag "${TAG}" --no-tags
+      fi
+
+      if ! git describe --tags | grep "${TAG}"
+      then
+       git checkout "${TAG}"
+      fi
     fi
 
-    if ! git describe --tags | grep "${TAG}"
-    then
-     git checkout "${TAG}"
+    if [[ `ls -la .gitmodules` ]]; then
+      curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=git_submodule_checkout
     fi
-    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=git_submodule_checkout
-    cd ../../
+    cd ${MAIN_FOLDER}
   done
 }
 
