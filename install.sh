@@ -777,9 +777,8 @@ git_submodule_checkout() {
       git submodule update --depth 1 --init "${folder_name}"
     fi
 
-    TAG=$(git config --file .gitmodules --get-regexp tag | grep "${folder_name}" | awk '{ print $2 }' | tr ' ' '\n')
-
-    if [[ ${TAG} != "" ]]; then
+    if [[ `git config --file .gitmodules --get-regexp tag` ]]; then
+      TAG=$(git config --file .gitmodules --get-regexp tag | grep "${folder_name}" | awk '{ print $2 }' | tr ' ' '\n')
       cd "${folder_name}"
       if [[ ! $(git tag | grep "${TAG}") ]]; then
          git fetch origin tag "${TAG}" --no-tags
