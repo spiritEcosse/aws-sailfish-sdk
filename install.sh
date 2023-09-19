@@ -786,8 +786,8 @@ git_submodule_checkout() {
             if [[ $(ls -la .gitmodules) ]]; then
                 curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=git_submodule_checkout
             fi
+            cd ${MAIN_FOLDER}
         fi
-        cd ${MAIN_FOLDER}
     done
 }
 
