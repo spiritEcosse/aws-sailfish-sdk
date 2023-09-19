@@ -603,6 +603,25 @@ code_coverage() {
   wait
 }
 
+release() {
+  if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
+    system_prepare_ubuntu
+    install_for_ubuntu curl pigz
+  elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
+    sudo zypper -n install curl pigz
+  fi
+
+  df -h
+
+  download_backup_build_from_aws
+  download_backup_src_from_aws
+  rsync_share_to_src
+  mb2_make_clean
+  mb2_build
+  cd "${BUILD_FOLDER}"
+  sudo cp -f RPMS/*.rpm /share/output
+}
+
 install_for_ubuntu() {
   programs=()
 
@@ -767,7 +786,7 @@ git_submodule_checkout() {
     then
      git checkout "${TAG}"
     fi
-
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=git_submodule_checkout
     cd ../../
   done
 }
