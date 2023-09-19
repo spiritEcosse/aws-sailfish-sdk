@@ -782,11 +782,11 @@ git_submodule_checkout() {
             if ! git describe --tags | grep "${TAG}"; then
                 git checkout "${TAG}"
             fi
-
-            if [[ $(ls -la .gitmodules) ]]; then
-                curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=git_submodule_checkout
-            fi
             cd ${MAIN_FOLDER}
+        fi
+
+        if [[ $(ls -la .gitmodules) ]]; then
+            curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=git_submodule_checkout
         fi
     done
 }
