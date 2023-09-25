@@ -3,11 +3,6 @@ from jira import JIRA
 from os import environ as env
 from collections import defaultdict
 
-env['JIRA_USER'] = "shevchenkcoigor@gmail.com"
-env['JIRA_TOKEN'] = "ATATT3xFfGF08poOg-ZvIu7C3p-wr_j7kKZw4EFs__Jz5TSuWbWS4fZUfJJhAKWgwA9wzzznR2E2TFpHGlB2jwd7Ph440N8-94aoRY6Hwza9zZKYOLMW91qHvvPeffiVBSexom4hM1b26lOM3Bi29tAKzGSp7chhV319kqI8espkwu5wk3rr1OI=4565A944"
-env['JIRA_HOST'] = "https://cross-bible.atlassian.net"
-env['VERSION'] = "v1.0.0"
-
 
 def get_notes_from_jira():
     jira = JIRA(env['JIRA_HOST'], basic_auth=(env['JIRA_USER'], env['JIRA_TOKEN']))
