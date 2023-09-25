@@ -10,6 +10,7 @@ def get_notes_from_jira():
     try:
         jira = JIRA(env['JIRA_HOST'], basic_auth=(env['JIRA_USER'], env['JIRA_TOKEN']))
         issues = jira.search_issues(f"project=FB and fixVersion={env['VERSION']}")
+        issue = "Empty"
 
         with requests.sessions.Session() as session:
             session.auth = (env['JIRA_USER'], env['JIRA_TOKEN'])
