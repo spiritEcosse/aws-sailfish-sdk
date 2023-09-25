@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "aws-sailfish-sdk"
+version = "0.1.0"
+description = ""
+authors = ["spiritEcosse <shevchenkcoigor@gmail.com>"]
+readme = "README.md"
+packages = [{include = "aws_sailfish_sdk"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+jira = "^3.5.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
