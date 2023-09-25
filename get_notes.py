@@ -12,7 +12,7 @@ def get_notes_from_jira():
         session.auth = (env['JIRA_USER'], env['JIRA_TOKEN'])
         d = defaultdict(list)
 
-        for issue in issues[:5]:
+        for issue in issues:
             d[issue.fields.issuetype].append(issue)
 
         notes_list = []
