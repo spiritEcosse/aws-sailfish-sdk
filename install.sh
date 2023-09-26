@@ -461,7 +461,7 @@ mb2_cmake_build() {
     rm -fr rpm
     cp -fr "${SRC}"/rpm .
     mb2 build-requires
-    mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -DQUAZIP_USE_QT_ZLIB=ON -S "${SRC}" -B "${BUILD_FOLDER}"
+    mb2 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
     mb2 cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
 }
 
