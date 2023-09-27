@@ -510,7 +510,7 @@ mb2_build() {
     mb2_set_target
     pwd
     ls -la .
-    mb2 build "${SRC}"
+    mb2 --target SailfishOS-$RELEASE-$ARCH build "${SRC}"
 }
 
 mb2_make_clean() {
