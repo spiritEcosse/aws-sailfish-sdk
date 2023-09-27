@@ -575,7 +575,7 @@ rsync_share_to_build() {
 }
 
 mb2_set_target() {
-    alias mb2='mb2 --target SailfishOS-$RELEASE-$ARCH'
+    alias mb2="mb2 --target SailfishOS-$RELEASE-$ARCH"
 }
 
 code_coverage() {
