@@ -765,7 +765,7 @@ git_submodule_init() {
 git_submodule_checkout() {
     export MAIN_FOLDER=$(pwd)
     for folder_name in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }' | tr ' ' '\n'); do
-        if [[ ! $(git submodule status | grep "${folder_name}") ]]; then
+        if [[ ! $(git submodule status | grep -w "${folder_name}") ]]; then
             git_submodule_init "${folder_name}"
         elif [[ ! $(ls -la "${folder_name}/.git") ]]; then
             git submodule update --depth 1 --init "${folder_name}"
