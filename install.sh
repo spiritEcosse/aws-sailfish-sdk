@@ -758,7 +758,7 @@ git_submodule_remove() {
 }
 
 git_submodule_init() {
-    URL=$(git config --file .gitmodules --get-regexp url | grep "${1}" | awk '{ print $2 }' | tr ' ' '\n')
+    URL=$(git config --file .gitmodules --get-regexp url | grep -w "${1}" | awk '{ print $2 }' | tr ' ' '\n')
     git submodule add --depth 1 "${URL}" "${1}"
 }
 
@@ -772,14 +772,14 @@ git_submodule_checkout() {
         fi
 
         if [[ $(git config --file .gitmodules --get-regexp tag) ]]; then
-            TAG=$(git config --file .gitmodules --get-regexp tag | grep "${folder_name}" | awk '{ print $2 }' | tr ' ' '\n')
+            TAG=$(git config --file .gitmodules --get-regexp tag | grep -w "${folder_name}" | awk '{ print $2 }' | tr ' ' '\n')
             cd "${folder_name}"
 
-            if [[ ! $(git tag | grep "${TAG}") ]]; then
+            if [[ ! $(git tag | grep -w "${TAG}") ]]; then
                 git fetch origin tag "${TAG}" --no-tags
             fi
 
-            if ! git describe --tags | grep "${TAG}"; then
+            if ! git describe --tags | grep -w "${TAG}"; then
                 git checkout "${TAG}"
             fi
             cd ${MAIN_FOLDER}
