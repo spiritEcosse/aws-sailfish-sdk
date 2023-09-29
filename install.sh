@@ -815,7 +815,7 @@ docker_push() {
 }
 
 docker_build() {
-    docker build -t "${DOCKER_REPO}${ARCH}:${RELEASE}" --build-arg ARCH="${ARCH}" --build-arg RELEASE="${RELEASE}" .
+    docker build -t "${DOCKER_REPO}${ARCH}:${RELEASE}" --build-arg ARCH="${ARCH}" --build-arg RELEASE="${RELEASE}" -f Dockerfile rpm
 }
 
 docker_run_container() {
