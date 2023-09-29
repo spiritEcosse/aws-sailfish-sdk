@@ -494,9 +494,18 @@ download_backup_src_from_aws() {
     download_backup_from_aws "${FILE_SRC}" "${FILE_SRC_TAR}" "${HTTP_FILE_SRC}" "${BACKUP_FILE_SRC_PATH}" "${SRC}"
 }
 
+mb2_build() {
+    cd "${BUILD_FOLDER}"
+    chown_current_user
+    mb2_set_target
+    pwd
+    ls -la .
+    mb2 build "${SRC}"
+}
+
 mb2_deploy_to_device() {
     cd "${SRC}"
-    #  chown_current_user
+    chown_current_user # because : fatal: Unable to create '/home/mersdk/sailfishos_armv7hl_src/.git/index.lock': Permission denied
     install_aws
     mb2_build
     cd "${BUILD_FOLDER}/RPMS"
@@ -506,15 +515,6 @@ mb2_deploy_to_device() {
     run_commands_on_device remove_build_file
     scp "${LAST_RPM}" "${EC2_INSTANCE_USER}@${DEVICE_IP}:~/${BUILD_FOLDER_NAME}"
     run_commands_on_device rpm_install_app
-}
-
-mb2_build() {
-    cd "${BUILD_FOLDER}"
-    chown_current_user
-    mb2_set_target
-    pwd
-    ls -la .
-    mb2 build "${SRC}"
 }
 
 mb2_make_clean() {
