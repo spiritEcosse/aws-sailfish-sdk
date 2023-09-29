@@ -453,6 +453,10 @@ install_asan() {
     fi
 }
 
+mb2_set_target() {
+    alias mb2="mb2 --target SailfishOS-$RELEASE-$ARCH"
+}
+
 mb2_cmake_build() {
     cd "${BUILD_FOLDER}"
     mb2_set_target
@@ -510,7 +514,7 @@ mb2_build() {
     mb2_set_target
     pwd
     ls -la .
-    mb2 --target SailfishOS-$RELEASE-$ARCH build "${SRC}"
+    mb2 build "${SRC}"
 }
 
 mb2_make_clean() {
@@ -572,10 +576,6 @@ rsync_share_to_build() {
     set_rsync_params
     sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" "${SRC}/" .
     chown_current_user
-}
-
-mb2_set_target() {
-    alias mb2="mb2 --target SailfishOS-$RELEASE-$ARCH"
 }
 
 code_coverage() {
