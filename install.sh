@@ -88,7 +88,7 @@ BLUE='\033[1;36m'
 #SDK_FILE_NAME="SailfishSDK-${SDK_VERSION}-linux64-offline.run"
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_NONINTERACTIVE_SEEN=true
-DOCKER_REPO="ghcr.io/spiritecosse/bible-sailfishos-"
+DOCKER_REPO="ghcr.io/spiritEcosse/bible"
 SSH_ID_RSA="${HOME}/.ssh/id_rsa"
 SSH_ID_RSA_PUB="${HOME}/.ssh/id_rsa.pub"
 TEMP_SSH_ID_RSA="${HOME}/.id_rsa"
@@ -811,11 +811,11 @@ docker_login() {
 }
 
 docker_push() {
-    docker push "${DOCKER_REPO}${ARCH}:${RELEASE}"
+    docker push "${DOCKER_REPO}:${ARCH}-${RELEASE}"
 }
 
 docker_build() {
-    docker build -t "${DOCKER_REPO}${ARCH}:${RELEASE}" --build-arg ARCH="${ARCH}" --build-arg RELEASE="${RELEASE}" -f Dockerfile rpm
+    docker build -t "${DOCKER_REPO}:${ARCH}-${RELEASE}" --build-arg ARCH="${ARCH}" --build-arg RELEASE="${RELEASE}" -f Dockerfile rpm
 }
 
 docker_run_container() {
@@ -823,7 +823,7 @@ docker_run_container() {
         docker run --name "${BUILD_FOLDER_NAME}" \
             -v "${PWD}:/home/mersdk/${BUILD_FOLDER_NAME}" \
             -v "${SRC}:/home/mersdk/${SRC_FOLDER_NAME}" \
-            -dit "${DOCKER_REPO}${ARCH}:${RELEASE}" bash
+            -dit "${DOCKER_REPO}:${ARCH}-${RELEASE}" bash
     fi
 }
 
@@ -898,8 +898,7 @@ aws_run_commands() {
 }
 
 docker_login_build_push() {
-    mkdir -p ~/bible
-    cd ~/bible
+    cd "${SRC}"
     docker_login
     docker_build
     docker_push
@@ -907,7 +906,7 @@ docker_login_build_push() {
 
 sdk_download() {
     docker_login
-    docker pull "${DOCKER_REPO}${ARCH}:${RELEASE}"
+    docker pull "${DOCKER_REPO}:${ARCH}-${RELEASE}"
 }
 
 main_from_client() {
