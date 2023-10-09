@@ -332,6 +332,7 @@ print(size if end > size else end)")
     echo "after downloads : $((SECONDS - SEC))"
 
     cat $(ls "${1}"_* | sort -V) >"${1}"
+    rm -f "${4}"* "${2}"
 }
 
 system_prepare_ubuntu() {
@@ -365,7 +366,6 @@ download_backup_from_aws() {
 
         unpigz -v "${1}" # TODO: this line is broken on the ubuntu, i will fix it in the future
         tar -xf "${2}"
-        rm -f "${4}"* "${2}"
         chown_current_user
     else
         echo "Cannot find file ${1} on aws s3"
