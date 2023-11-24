@@ -293,7 +293,7 @@ aws_start() {
 
 rsync_from_host_to_sever() {
     set_rsync_params
-    rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" --exclude "cmake-build-debug" --exclude ".git" `pwd`/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
+    rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" --exclude "cmake-build-debug" `pwd`/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
     ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "cd \$1 && curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"chown_current_user\""
 }
 
