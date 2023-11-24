@@ -824,7 +824,6 @@ install_clang() {
         cd ~/
         git clone --depth=1 https://github.com/llvm/llvm-project.git
         cd llvm-project
-        git fetch --unshallow
         git fetch origin tag "${LLVM_TAG}" --no-tags
         git checkout "${LLVM_TAG}"
         mkdir -p build
