@@ -250,7 +250,7 @@ get_ec2_instance_user() {
 }
 
 get_config_app() {
-    CONFIG_APP=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"EC2_CONFIG_APP":"[^"]*' | grep -o '[^"]*$')
+    CONFIG_APP=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | jq -r '.CONFIG_APP')
     echo "${CONFIG_APP}" > "${BUILD_FOLDER}"/config.json
 }
 
@@ -504,7 +504,7 @@ install_clang() {
 }
 
 cmake_build() {
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq
     install_aws
     install_clang
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
