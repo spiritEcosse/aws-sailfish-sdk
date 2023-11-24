@@ -957,6 +957,7 @@ aws_run_commands_simple() {
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
     export FOXY_HTTP_PORT=${FOXY_HTTP_PORT}
+    export EC2_INSTANCE_NAME=${EC2_INSTANCE_NAME}
     curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
   "
 }
