@@ -474,7 +474,9 @@ cmake_build() {
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
     chown_current_user
-    make -f abc clean
+    if [[ `make clean` ]]; then
+        echo "make clean: successfully";
+    fi
     cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
     cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
     make install
