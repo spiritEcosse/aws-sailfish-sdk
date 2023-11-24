@@ -249,6 +249,11 @@ get_ec2_instance_user() {
     EC2_INSTANCE_USER=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"EC2_INSTANCE_USER":"[^"]*' | grep -o '[^"]*$')
 }
 
+get_config_app() {
+    CONFIG_APP=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"EC2_CONFIG_APP":"[^"]*' | grep -o '[^"]*$')
+    echo "${CONFIG_APP}" > "${BUILD_FOLDER}"
+}
+
 get_ec2_github_token() {
     GIT_HUB_TOKEN_REGISTRY=$(aws secretsmanager get-secret-value --secret-id github --query 'SecretString' --output text | grep -o '"GIT_HUB_TOKEN_REGISTRY":"[^"]*' | grep -o '[^"]*$')
 }
@@ -293,7 +298,7 @@ aws_start() {
 
 rsync_from_host_to_sever() {
     set_rsync_params
-    rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" --exclude "cmake-build-debug" `pwd`/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
+    rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "config.json" --exclude "3rdparty/*" --exclude "cmake-build-debug" `pwd`/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
     ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "cd \$1 && curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"chown_current_user\""
 }
 
@@ -503,6 +508,7 @@ cmake_build() {
     install_clang
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
+    get_config_app
     chown_current_user
 #    if [[ `make clean` ]]; then
 #        echo "make clean: successfully";
