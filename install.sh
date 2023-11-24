@@ -499,7 +499,7 @@ install_clang() {
 }
 
 cmake_build() {
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev
     install_clang
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
@@ -507,7 +507,7 @@ cmake_build() {
     if [[ `make clean` ]]; then
         echo "make clean: successfully";
     fi
-    cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
+    cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
     cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
     make install
 }
