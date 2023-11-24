@@ -821,7 +821,7 @@ nginx_destination_path_chown_ec2_user() {
 
 install_clang() {
     if [[ ! $(clang --version) ]]; then
-        LLVM_TAG="llvmorg-17.0.5"
+        LLVM_TAG="17.0.5"
         cd ~/
         wget https://github.com/llvm/llvm-project/releases/download/llvmorg-"${LLVM_TAG}"/clang+llvm-"${LLVM_TAG}"-x86_64-linux-gnu-ubuntu-22.04.tar.xz
         tar xf clang+llvm-"${LLVM_TAG}"-x86_64-linux-gnu-ubuntu-22.04.tar.xz
