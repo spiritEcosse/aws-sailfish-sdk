@@ -470,8 +470,34 @@ mb2_cmake_build() {
     mb2 cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
 }
 
+install_clang() {
+    LLVM_TAG="17.0.5"
+    if [[ ! $(clang --version) ]]; then
+        cd ~/
+        wget https://github.com/llvm/llvm-project/releases/download/llvmorg-"${LLVM_TAG}"/clang+llvm-"${LLVM_TAG}"-x86_64-linux-gnu-ubuntu-22.04.tar.xz
+        tar xf clang+llvm-"${LLVM_TAG}"-x86_64-linux-gnu-ubuntu-22.04.tar.xz
+#        cd llvm-project
+#        mkdir -p build
+#        cd build
+    #    -DLLVM_DISTRIBUTION_COMPONENTS="clang-apply-replacements;clang-format;clang-query;clang-resource-headers;clang-tidy;clang;clangd;clang-extdef-mapping;cmake-exports;dsymutil;lld;llvm-addr2line;llvm-ar;llvm-as;llvm-cov;llvm-cvtres;llvm-cxxmap;llvm-dlltool;llvm-dwp;llvm-dwarfdump;llvm-install-name-tool;llvm-lib;llvm-lipo;llvm-nm;llvm-objcopy;llvm-objdump;llvm-pdbutil;llvm-profdata;llvm-ranlib;llvm-rc;llvm-readelf;llvm-strings;llvm-strip;llvm-symbolizer;llvm-windres;LTO;builtins;compiler-rt;cxx-headers;compiler-rt"
+#        cmake -DCMAKE_INSTALL_PREFIX=/usr -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt;lld;llvm;llvm-cov;libcxx;libcxxabi" -DLLVM_TARGETS_TO_BUILD='ARM;X86;AArch64' -DLLVM_USE_SANITIZER="Address;Memory;Undefined;MemoryWithOrigins;Thread;Leak" -DCMAKE_BUILD_TYPE=Release -G "Ninja" ..
+#        ### possible to set up -DLLVM_ENABLE_PROJECTS=all
+#        ninja
+#        sudo ninja install
+#        clang --version
+#        llvm-cov --version
+    fi
+    llvm_path="/home/ubuntu/clang+llvm-${LLVM_TAG}-x86_64-linux-gnu-ubuntu-22.04/bin"
+    if [[ ":$PATH:" != *":$llvm_path:"* ]]; then
+        export PATH="$llvm_path:$PATH"
+        echo "Added $llvm_path to PATH."
+    else
+        echo "$llvm_path is already in PATH."
+    fi
+}
+
 cmake_build() {
-    install_for_ubuntu uuid-dev libjsoncpp-dev
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make
     install_clang
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
@@ -817,25 +843,6 @@ ec2_user_add_to_nginx_group() {
 nginx_destination_path_chown_ec2_user() {
     # For backup server
     sudo chown -R ec2-user:nginx "${DESTINATION_PATH}"
-}
-
-install_clang() {
-    if [[ ! $(clang --version) ]]; then
-        LLVM_TAG="17.0.5"
-        cd ~/
-        wget https://github.com/llvm/llvm-project/releases/download/llvmorg-"${LLVM_TAG}"/clang+llvm-"${LLVM_TAG}"-x86_64-linux-gnu-ubuntu-22.04.tar.xz
-        tar xf clang+llvm-"${LLVM_TAG}"-x86_64-linux-gnu-ubuntu-22.04.tar.xz
-#        cd llvm-project
-#        mkdir -p build
-#        cd build
-    #    -DLLVM_DISTRIBUTION_COMPONENTS="clang-apply-replacements;clang-format;clang-query;clang-resource-headers;clang-tidy;clang;clangd;clang-extdef-mapping;cmake-exports;dsymutil;lld;llvm-addr2line;llvm-ar;llvm-as;llvm-cov;llvm-cvtres;llvm-cxxmap;llvm-dlltool;llvm-dwp;llvm-dwarfdump;llvm-install-name-tool;llvm-lib;llvm-lipo;llvm-nm;llvm-objcopy;llvm-objdump;llvm-pdbutil;llvm-profdata;llvm-ranlib;llvm-rc;llvm-readelf;llvm-strings;llvm-strip;llvm-symbolizer;llvm-windres;LTO;builtins;compiler-rt;cxx-headers;compiler-rt"
-#        cmake -DCMAKE_INSTALL_PREFIX=/usr -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt;lld;llvm;llvm-cov;libcxx;libcxxabi" -DLLVM_TARGETS_TO_BUILD='ARM;X86;AArch64' -DLLVM_USE_SANITIZER="Address;Memory;Undefined;MemoryWithOrigins;Thread;Leak" -DCMAKE_BUILD_TYPE=Release -G "Ninja" ..
-#        ### possible to set up -DLLVM_ENABLE_PROJECTS=all
-#        ninja
-#        sudo ninja install
-#        clang --version
-#        llvm-cov --version
-    fi
 }
 
 docker_login() {
