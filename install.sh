@@ -471,6 +471,7 @@ mb2_cmake_build() {
 }
 
 cmake_build() {
+    install_for_ubuntu uuid-dev libjsoncpp-dev
     install_clang
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
@@ -820,20 +821,19 @@ nginx_destination_path_chown_ec2_user() {
 
 install_clang() {
     if [[ ! $(clang --version) ]]; then
-        LLVM_TAG="llvmorg-17.0.0"
+        LLVM_TAG="llvmorg-17.0.5"
         cd ~/
-        git clone --depth=1 https://github.com/llvm/llvm-project.git
-        cd llvm-project
-        git fetch origin tag "${LLVM_TAG}" --no-tags
-        git checkout "${LLVM_TAG}"
-        mkdir -p build
-        cd build
+        wget https://github.com/llvm/llvm-project/releases/download/llvmorg-"${LLVM_TAG}"/clang+llvm-"${LLVM_TAG}"-x86_64-linux-gnu-ubuntu-22.04.tar.xz
+        tar xf clang+llvm-"${LLVM_TAG}"-x86_64-linux-gnu-ubuntu-22.04.tar.xz
+#        cd llvm-project
+#        mkdir -p build
+#        cd build
     #    -DLLVM_DISTRIBUTION_COMPONENTS="clang-apply-replacements;clang-format;clang-query;clang-resource-headers;clang-tidy;clang;clangd;clang-extdef-mapping;cmake-exports;dsymutil;lld;llvm-addr2line;llvm-ar;llvm-as;llvm-cov;llvm-cvtres;llvm-cxxmap;llvm-dlltool;llvm-dwp;llvm-dwarfdump;llvm-install-name-tool;llvm-lib;llvm-lipo;llvm-nm;llvm-objcopy;llvm-objdump;llvm-pdbutil;llvm-profdata;llvm-ranlib;llvm-rc;llvm-readelf;llvm-strings;llvm-strip;llvm-symbolizer;llvm-windres;LTO;builtins;compiler-rt;cxx-headers;compiler-rt"
-        cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt;lld;llvm;llvm-cov;libcxx;libcxxabi" -DLLVM_USE_SANITIZER="Address;Memory;Undefined;MemoryWithOrigins;Thread;Leak" -DCMAKE_BUILD_TYPE=Release -G "Ninja" ..
-        ninja
-        sudo ninja install
-        clang --version
-        llvm-cov --version
+#        cmake -DCMAKE_INSTALL_PREFIX=/usr -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt;lld;llvm;llvm-cov;libcxx;libcxxabi" -DLLVM_TARGETS_TO_BUILD='ARM;X86;AArch64' -DLLVM_USE_SANITIZER="Address;Memory;Undefined;MemoryWithOrigins;Thread;Leak" -DCMAKE_BUILD_TYPE=Release -G "Ninja" ..
+#        ninja
+#        sudo ninja install
+#        clang --version
+#        llvm-cov --version
     fi
 }
 
