@@ -251,7 +251,7 @@ get_ec2_instance_user() {
 
 get_config_app() {
     CONFIG_APP=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | jq -r '.CONFIG_APP')
-    echo "${CONFIG_APP}" > "${BUILD_FOLDER}"/config.json
+    echo "${CONFIG_APP}" > "${SRC}"/config.json
 }
 
 get_ec2_github_token() {
