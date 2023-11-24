@@ -499,7 +499,7 @@ install_clang() {
 }
 
 cmake_build() {
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib
     install_clang
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
