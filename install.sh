@@ -472,6 +472,14 @@ mb2_cmake_build() {
 
 install_clang() {
     LLVM_TAG="17.0.5"
+    llvm_path="/home/ubuntu/clang+llvm-${LLVM_TAG}-x86_64-linux-gnu-ubuntu-22.04/bin"
+    if [[ ":$PATH:" != *":$llvm_path:"* ]]; then
+        export PATH="$llvm_path:$PATH"
+        echo "Added $llvm_path to PATH."
+    else
+        echo "$llvm_path is already in PATH."
+    fi
+
     if [[ ! $(clang --version) ]]; then
         cd ~/
         wget https://github.com/llvm/llvm-project/releases/download/llvmorg-"${LLVM_TAG}"/clang+llvm-"${LLVM_TAG}"-x86_64-linux-gnu-ubuntu-22.04.tar.xz
@@ -486,13 +494,6 @@ install_clang() {
 #        sudo ninja install
 #        clang --version
 #        llvm-cov --version
-    fi
-    llvm_path="/home/ubuntu/clang+llvm-${LLVM_TAG}-x86_64-linux-gnu-ubuntu-22.04/bin"
-    if [[ ":$PATH:" != *":$llvm_path:"* ]]; then
-        export PATH="$llvm_path:$PATH"
-        echo "Added $llvm_path to PATH."
-    else
-        echo "$llvm_path is already in PATH."
     fi
 }
 
