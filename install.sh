@@ -470,6 +470,16 @@ mb2_cmake_build() {
     mb2 cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
 }
 
+cmake_build() {
+    mkdir -p ~/"${BUILD_FOLDER_NAME}"
+    cd "${BUILD_FOLDER}"
+    chown_current_user
+    make clean
+    cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
+    cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
+    make install
+}
+
 get_last_modified_file() {
     LAST_RPM=$(ls -lt *.rpm | head -1 | awk '{ print $9 }')
 }
@@ -894,6 +904,20 @@ aws_run_commands() {
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
     export PLATFORM=${PLATFORM}
+    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
+  "
+}
+
+aws_run_commands_simple() {
+    prepare_aws_instance
+    if [[ -z ${DONT_NEED_DEPLOY+x} ]]; then
+        rsync_from_host_to_sever "${SRC_FOLDER_NAME}"
+    fi
+
+    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
+    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    export AWS_REGION=${AWS_REGION}
     curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
   "
 }
