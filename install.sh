@@ -476,7 +476,7 @@ mb2_cmake_build() {
 }
 
 install_clang() {
-    LLVM_TAG="17.0.0"
+    LLVM_TAG="17.0.2"
     llvm_path_root="/home/ubuntu/clang+llvm-${LLVM_TAG}-x86_64-linux-gnu-ubuntu-22.04/"
     llvm_path="/home/ubuntu/clang+llvm-${LLVM_TAG}-x86_64-linux-gnu-ubuntu-22.04/bin"
     if [[ ":$PATH:" != *":$llvm_path:"* ]]; then
