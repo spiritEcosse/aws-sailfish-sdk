@@ -476,7 +476,7 @@ mb2_cmake_build() {
 }
 
 install_clang() {
-    LLVM_TAG="17.0.5"
+    LLVM_TAG="17.0.0"
     llvm_path_root="/home/ubuntu/clang+llvm-${LLVM_TAG}-x86_64-linux-gnu-ubuntu-22.04/"
     llvm_path="/home/ubuntu/clang+llvm-${LLVM_TAG}-x86_64-linux-gnu-ubuntu-22.04/bin"
     if [[ ":$PATH:" != *":$llvm_path:"* ]]; then
@@ -504,7 +504,7 @@ install_clang() {
 }
 
 cmake_build() {
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev
     install_aws
     install_clang
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
