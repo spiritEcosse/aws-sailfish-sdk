@@ -503,11 +503,32 @@ install_clang() {
     fi
 }
 
+create_config_file() {
+    config_file="/etc/supervisor/conf.d/foxy_server.conf"
+
+    # Check if the file already exists
+    if [ ! -f "$config_file" ]; then
+        # Create the file with the specified content using sudo
+        sudo sh -c "cat <<EOF > $config_file
+[program:foxy_server]
+command=/home/ubuntu/ubuntu_x86_64/foxy_server
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/foxy_server.err.log
+stdout_logfile=/var/log/foxy_server.out.log
+environment=CONFIG_APP_PATH=/home/ubuntu/ubuntu_x86_64/config.json,FOXY_HTTP_PORT=80;ENV=prod
+EOF"
+
+        echo "Configuration file created: $config_file"
+    else
+        echo "Configuration file already exists: $config_file"
+    fi
+}
+
 cmake_build() {
-    echo "${FOXY_HTTP_PORT}"
-    echo "${CONFIG_APP_PATH}"
     system_prepare_ubuntu
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro
+    create_config_file
     install_aws
     install_clang
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
@@ -520,6 +541,7 @@ cmake_build() {
     cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
     cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
     sudo supervisorctl restart foxy_server
+    sudo supervisorctl status
 }
 
 get_last_modified_file() {
@@ -960,9 +982,7 @@ aws_run_commands_simple() {
     export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_REGION=${AWS_REGION}
-    export FOXY_HTTP_PORT=${FOXY_HTTP_PORT}
     export EC2_INSTANCE_NAME=${EC2_INSTANCE_NAME}
-    export CONFIG_APP_PATH=${CONFIG_APP_PATH}
     curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
   "
 }
