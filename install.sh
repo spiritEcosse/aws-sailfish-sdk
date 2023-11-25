@@ -504,6 +504,7 @@ install_clang() {
 }
 
 cmake_build() {
+    system_prepare_ubuntu
     install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev
     install_aws
     install_clang
