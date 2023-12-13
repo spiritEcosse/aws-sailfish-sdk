@@ -516,7 +516,7 @@ autostart=true
 autorestart=true
 stderr_logfile=/var/log/foxy_server.err.log
 stdout_logfile=/var/log/foxy_server.out.log
-environment=CONFIG_APP_PATH=/home/ubuntu/ubuntu_x86_64/config.json,FOXY_HTTP_PORT=80;ENV=prod
+environment=CONFIG_APP_PATH=/home/ubuntu/ubuntu_x86_64/config.json,FOXY_HTTP_PORT=80;ENV=beta;FOXY_CLIENT=https://main.d3qx6zskivn1j5.amplifyapp.com
 EOF"
 
         echo "Configuration file created: $config_file"
