@@ -153,6 +153,7 @@ foxy_download_certs() {
     download_cert "foxy-certs/${PUBLIC_IP}/certificate.crt" .
     sudo cp certificate.crt /etc/ssl/certs/
     download_cert "foxy-certs/${PUBLIC_IP}/private.key" .
+    sudo mkdir -p /etc/ssl/private/
     sudo cp private.key /etc/ssl/private/
 }
 
