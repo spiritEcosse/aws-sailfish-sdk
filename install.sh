@@ -143,7 +143,7 @@ SRC="${HOME}/${SRC_FOLDER_NAME}"
 
 
 download_cert() {
-    aws s3 cp s3://"${1}" ${2}
+    aws s3 cp s3://"${1}" "${2}"
 }
 
 foxy_download_certs() {
