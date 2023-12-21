@@ -141,6 +141,18 @@ HTTP_FILE="https://bible-backups.s3.amazonaws.com/${FILE}"
 HTTP_FILE_SRC="https://bible-backups.s3.amazonaws.com/${FILE_SRC}"
 SRC="${HOME}/${SRC_FOLDER_NAME}"
 
+
+download_cert() {
+    aws s3 cp s3://"${1}" ${2}
+}
+
+foxy_download_certs() {
+    export PUBLIC_IP=`curl https://ipinfo.io/ip`
+    download_cert "${FOXY_BUCKET}/${PUBLIC_IP}/ca-certificates.crt" /etc/ssl/certs/
+    download_cert "${FOXY_BUCKET}/${PUBLIC_IP}/ca-bundle.crt" /etc/ssl/certs/
+    download_cert "${FOXY_BUCKET}/${PUBLIC_IP}/private.key" /etc/ssl/private/
+}
+
 chown_current_user() {
     sudo chown -R "$(whoami):$(id -g -n)" .
 }
