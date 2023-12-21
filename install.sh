@@ -149,11 +149,11 @@ download_cert() {
 foxy_download_certs() {
     export PUBLIC_IP=`curl https://ipinfo.io/ip`
     download_cert "foxy-certs/${PUBLIC_IP}/ca_bundle.crt" .
-    cp ca_bundle.crt /etc/ssl/certs/
+    sudo cp ca_bundle.crt /etc/ssl/certs/
     download_cert "foxy-certs/${PUBLIC_IP}/certificate.crt" .
-    cp certificate.crt /etc/ssl/certs/
+    sudo cp certificate.crt /etc/ssl/certs/
     download_cert "foxy-certs/${PUBLIC_IP}/private.key" .
-    cp private.key /etc/ssl/private/
+    sudo cp private.key /etc/ssl/private/
 }
 
 chown_current_user() {
