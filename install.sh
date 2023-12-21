@@ -148,8 +148,8 @@ download_cert() {
 
 foxy_download_certs() {
     export PUBLIC_IP=`curl https://ipinfo.io/ip`
-    download_cert "foxy-certs/${PUBLIC_IP}/ca-certificates.crt" /etc/ssl/certs/
-    download_cert "foxy-certs/${PUBLIC_IP}/ca-bundle.crt" /etc/ssl/certs/
+    download_cert "foxy-certs/${PUBLIC_IP}/ca_bundle.crt" /etc/ssl/certs/
+    download_cert "foxy-certs/${PUBLIC_IP}/certificate.crt" /etc/ssl/certs/
     download_cert "foxy-certs/${PUBLIC_IP}/private.key" /etc/ssl/private/
 }
 
