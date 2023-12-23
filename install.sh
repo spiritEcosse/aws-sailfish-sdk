@@ -523,6 +523,27 @@ install_clang() {
     fi
 }
 
+create_server_python() {
+    install_for_ubuntu python3-pip
+    export PUBLIC_IP=`curl https://ipinfo.io/ip`
+    download_cert `pwd` "${PIK_FILE}"
+    pip install flask
+    sh -c "cat <<EOF > foxy_server.py
+    from flask import Flask, send_file
+
+    app = Flask(__name__)
+
+    @app.route('/.well-known/pki-validation/${PIK_FILE}')
+    def serve_file():
+        file_path = '${PIK_FILE}'  # Replace with the actual path to your file
+        return send_file(file_path, as_attachment=True)
+
+    if __name__ == '__main__':
+        app.run(debug=True, port=8080)
+EOF"
+    python3 foxy_server.py
+}
+
 create_config_file() {
     config_file="/etc/supervisor/conf.d/foxy_server.conf"
 
@@ -544,6 +565,7 @@ EOF"
         echo "Configuration file already exists: $config_file"
     fi
 }
+
 
 cmake_build() {
     system_prepare_ubuntu
