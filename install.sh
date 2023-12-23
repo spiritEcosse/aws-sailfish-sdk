@@ -143,7 +143,7 @@ SRC="${HOME}/${SRC_FOLDER_NAME}"
 
 
 download_cert() {
-    if [[ ! -z $(sudo ls -la "${1}${2}") ]]; then
+    if [[ ! -f "${1}${2}" ]]; then
         sudo mkdir -p "${1}"
         aws s3 cp s3://"foxy-certs/${PUBLIC_IP}/${2}" .
         sudo cp "${2}" "${1}"
