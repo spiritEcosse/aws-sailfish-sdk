@@ -143,18 +143,18 @@ SRC="${HOME}/${SRC_FOLDER_NAME}"
 
 
 download_cert() {
-    aws s3 cp s3://"${1}" "${2}"
+    if [[ ! -f "${2}${1}" ]]; then
+        sudo mkdir -p "${2}"
+        aws s3 cp s3://"foxy-certs/${PUBLIC_IP}/${1}" .
+        sudo cp ca_bundle.crt "${2}"
+    fi
 }
 
-foxy_download_certs() {
+put_certs() {
     export PUBLIC_IP=`curl https://ipinfo.io/ip`
-    download_cert "foxy-certs/${PUBLIC_IP}/ca_bundle.crt" .
-    sudo cp ca_bundle.crt /etc/ssl/certs/
-    download_cert "foxy-certs/${PUBLIC_IP}/certificate.crt" .
-    sudo cp certificate.crt /etc/ssl/certs/
-    download_cert "foxy-certs/${PUBLIC_IP}/private.key" .
-    sudo mkdir -p /etc/ssl/private/
-    sudo cp private.key /etc/ssl/private/
+    download_cert /etc/ssl/certs/ "ca_bundle.crt"
+    download_cert /etc/ssl/certs/ "certificate.crt"
+    download_cert /etc/ssl/private/ "private.key"
 }
 
 chown_current_user() {
@@ -276,6 +276,10 @@ get_ec2_github_token() {
 
 get_ec2_instance_identify_file() {
     IDENTITY_FILE=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"IDENTITY_FILE":"[^"]*' | grep -o '[^"]*$')
+}
+
+get_ec2_instance_foxy_client() {
+    FOXY_CLIENT=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"CLIENT":"[^"]*' | grep -o '[^"]*$')
 }
 
 set_up_instance_aws_host_to_known_hosts() {
@@ -527,12 +531,12 @@ create_config_file() {
         # Create the file with the specified content using sudo
         sudo sh -c "cat <<EOF > $config_file
 [program:foxy_server]
-command=/home/ubuntu/ubuntu_x86_64/foxy_server
+command=${BUILD_FOLDER}/foxy_server
 autostart=true
 autorestart=true
 stderr_logfile=/var/log/foxy_server.err.log
 stdout_logfile=/var/log/foxy_server.out.log
-environment=CONFIG_APP_PATH=/home/ubuntu/ubuntu_x86_64/config.json,FOXY_HTTP_PORT=80;ENV=beta;FOXY_CLIENT=https://main.d3qx6zskivn1j5.amplifyapp.com
+environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80;ENV=beta;FOXY_CLIENT=${FOXY_CLIENT}
 EOF"
 
         echo "Configuration file created: $config_file"
@@ -544,6 +548,8 @@ EOF"
 cmake_build() {
     system_prepare_ubuntu
     install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip
+    put_certs
+    get_ec2_instance_foxy_client
     create_config_file
     install_aws
     install_clang
