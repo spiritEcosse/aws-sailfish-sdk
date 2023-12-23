@@ -531,17 +531,17 @@ create_server_python() {
     download_cert "$(pwd)/foxy-certs" "${PIK_FILE}"
     pip install flask
     sh -c "cat <<EOF > foxy_server.py
-    from flask import Flask, send_file
+from flask import Flask, send_file
 
-    app = Flask(__name__)
+app = Flask(__name__)
 
-    @app.route('/.well-known/pki-validation/${PIK_FILE}')
-    def serve_file():
-        file_path = '$(pwd)/foxy-certs/${PIK_FILE}'  # Replace with the actual path to your file
-        return send_file(file_path, as_attachment=True)
+@app.route('/.well-known/pki-validation/${PIK_FILE}')
+def serve_file():
+    file_path = '$(pwd)/foxy-certs/${PIK_FILE}'  # Replace with the actual path to your file
+    return send_file(file_path, as_attachment=True)
 
-    if __name__ == '__main__':
-        app.run(debug=True, port=8080)
+if __name__ == '__main__':
+    app.run(debug=True, port=8080)
 EOF"
     python3 foxy_server.py
 }
