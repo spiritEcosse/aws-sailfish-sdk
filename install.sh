@@ -528,7 +528,7 @@ create_server_python() {
     install_for_ubuntu python3-pip
     install_aws
     export PUBLIC_IP=`curl https://ipinfo.io/ip`
-    download_cert `pwd` "${PIK_FILE}"
+    download_cert "$(pwd)/foxy-certs" "${PIK_FILE}"
     pip install flask
     sh -c "cat <<EOF > foxy_server.py
     from flask import Flask, send_file
@@ -537,7 +537,7 @@ create_server_python() {
 
     @app.route('/.well-known/pki-validation/${PIK_FILE}')
     def serve_file():
-        file_path = '${PIK_FILE}'  # Replace with the actual path to your file
+        file_path = '$(pwd)/foxy-certs/${PIK_FILE}'  # Replace with the actual path to your file
         return send_file(file_path, as_attachment=True)
 
     if __name__ == '__main__':
