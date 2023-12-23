@@ -524,7 +524,9 @@ install_clang() {
 }
 
 create_server_python() {
+    system_prepare_ubuntu
     install_for_ubuntu python3-pip
+    install_aws
     export PUBLIC_IP=`curl https://ipinfo.io/ip`
     download_cert `pwd` "${PIK_FILE}"
     pip install flask
