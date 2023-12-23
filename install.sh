@@ -537,11 +537,11 @@ app = Flask(__name__)
 
 @app.route('/.well-known/pki-validation/${PIK_FILE}')
 def serve_file():
-    file_path = '$(pwd)/foxy-certs/${PIK_FILE}'  # Replace with the actual path to your file
+    file_path = '$(pwd)/foxy-certs/${PIK_FILE}'
     return send_file(file_path, as_attachment=True)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    app.run(debug=True, host='0.0.0.0', port=8080)
 EOF"
     python3 foxy_server.py
 }
