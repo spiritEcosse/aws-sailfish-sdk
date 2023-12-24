@@ -529,7 +529,7 @@ create_server_python() {
     install_aws
     export PUBLIC_IP=`curl https://ipinfo.io/ip`
     download_cert "$(pwd)/foxy-certs" "${PIK_FILE}"
-    pip install flask
+    sudo pip install flask
     sh -c "cat <<EOF > foxy_server.py
 from flask import Flask, send_file
 
@@ -543,7 +543,7 @@ def serve_file():
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=80)
 EOF"
-    python3 foxy_server.py
+    sudo python3 foxy_server.py
 }
 
 create_config_file() {
