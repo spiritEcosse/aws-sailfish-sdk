@@ -145,13 +145,12 @@ SRC="${HOME}/${SRC_FOLDER_NAME}"
 download_cert() {
     if [[ ! -f "${1}${2}" ]]; then
         sudo mkdir -p "${1}"
-        aws s3 cp s3://"foxy-certs/${PUBLIC_IP}/${2}" .
+        aws s3 cp s3://"foxy-certs/${EC2_INSTANCE_NAME}/${2}" .
         sudo cp "${2}" "${1}"
     fi
 }
 
 put_certs() {
-    export PUBLIC_IP=`curl https://ipinfo.io/ip`
     download_cert /etc/ssl/certs/ ca_bundle.crt
     download_cert /etc/ssl/certs/ certificate.crt
     download_cert /etc/ssl/private/ private.key
