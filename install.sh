@@ -568,7 +568,6 @@ EOF"
 cmake_build() {
     system_prepare_ubuntu
     install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip
-    put_certs
     get_ec2_instance_foxy_client
     create_config_file
     install_aws
