@@ -505,7 +505,7 @@ install_clang() {
     llvm_path_root="$HOME/${CLANG_FILE_PATH}/"
     llvm_path="$HOME/${CLANG_FILE_PATH}/bin"
 
-    if [[ ! -f "${llvm_path}" ]]; then
+    if [[ ! -d "${llvm_path}" ]]; then
         cd ~/
         wget https://github.com/llvm/llvm-project/releases/download/llvmorg-"${LLVM_TAG}/${CLANG_FILE_FILE}"
         tar xf "${CLANG_FILE_FILE}"
