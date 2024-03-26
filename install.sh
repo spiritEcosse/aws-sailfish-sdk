@@ -583,7 +583,7 @@ autostart=true
 autorestart=true
 stderr_logfile=/var/log/foxy_server.err.log
 stdout_logfile=/var/log/foxy_server.out.log
-environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80;ENV=beta;FOXY_CLIENT=${FOXY_CLIENT};APP_CLOUD_NAME=${APP_CLOUD_NAME};FOXY_ADMIN=${FOXY_ADMIN};SENTRY_DSN=${SENTRY_DSN}
+environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80,ENV=beta,FOXY_CLIENT=${FOXY_CLIENT},APP_CLOUD_NAME=${APP_CLOUD_NAME},FOXY_ADMIN=${FOXY_ADMIN},SENTRY_DSN=${SENTRY_DSN}
 EOF"
 
         echo "Configuration file created: $config_file"
