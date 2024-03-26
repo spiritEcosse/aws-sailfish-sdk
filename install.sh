@@ -300,7 +300,7 @@ set_up_instance_aws_host_to_known_hosts() {
         chmod 600 "${TEMP_SSH_ID_RSA}"
         cat "${SSH_ID_RSA_PUB}" | ssh -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${EC2_INSTANCE_USER}@$1" 'cat >> ~/.ssh/authorized_keys'
 
-        ssh "${EC2_INSTANCE_USER}@$1" "sudo shutdown +60"
+#        ssh "${EC2_INSTANCE_USER}@$1" "sudo shutdown +60"
     fi
 }
 
