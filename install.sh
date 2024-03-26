@@ -278,7 +278,15 @@ get_ec2_instance_identify_file() {
 }
 
 get_ec2_instance_foxy_client() {
-    FOXY_CLIENT=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"CLIENT":"[^"]*' | grep -o '[^"]*$')
+    FOXY_CLIENT=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"FOXY_CLIENT":"[^"]*' | grep -o '[^"]*$')
+}
+
+get_ec2_instance_foxy_admin() {
+    FOXY_ADMIN=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"FOXY_ADMIN":"[^"]*' | grep -o '[^"]*$')
+}
+
+get_ec2_instance_app_cloud_name() {
+    APP_CLOUD_NAME=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"APP_CLOUD_NAME":"[^"]*' | grep -o '[^"]*$')
 }
 
 set_up_instance_aws_host_to_known_hosts() {
@@ -554,6 +562,10 @@ EOF"
 }
 
 create_config_file() {
+    get_ec2_instance_foxy_client
+    get_ec2_instance_foxy_admin
+    get_ec2_instance_app_cloud_name
+
     config_file="/etc/supervisor/conf.d/foxy_server.conf"
 
     # Check if the file already exists
@@ -566,7 +578,7 @@ autostart=true
 autorestart=true
 stderr_logfile=/var/log/foxy_server.err.log
 stdout_logfile=/var/log/foxy_server.out.log
-environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80;ENV=beta;FOXY_CLIENT=${FOXY_CLIENT}
+environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80;ENV=beta;FOXY_CLIENT=${FOXY_CLIENT};APP_CLOUD_NAME=${APP_CLOUD_NAME};FOXY_ADMIN=${FOXY_ADMIN}
 EOF"
 
         echo "Configuration file created: $config_file"
@@ -580,7 +592,6 @@ cmake_build() {
     system_prepare_ubuntu
     install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev
     install_aws
-    get_ec2_instance_foxy_client
     create_config_file
     install_clang
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
