@@ -289,6 +289,10 @@ get_ec2_instance_app_cloud_name() {
     APP_CLOUD_NAME=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"APP_CLOUD_NAME":"[^"]*' | grep -o '[^"]*$')
 }
 
+get_ec2_instance_sentry() {
+    SENTRY_DSN=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"SENTRY_DSN":"[^"]*' | grep -o '[^"]*$')
+}
+
 set_up_instance_aws_host_to_known_hosts() {
     set_ssh
     get_ec2_instance_user
@@ -565,6 +569,7 @@ create_config_file() {
     get_ec2_instance_foxy_client
     get_ec2_instance_foxy_admin
     get_ec2_instance_app_cloud_name
+    get_ec2_instance_sentry
 
     config_file="/etc/supervisor/conf.d/foxy_server.conf"
 
@@ -578,7 +583,7 @@ autostart=true
 autorestart=true
 stderr_logfile=/var/log/foxy_server.err.log
 stdout_logfile=/var/log/foxy_server.out.log
-environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80;ENV=beta;FOXY_CLIENT=${FOXY_CLIENT};APP_CLOUD_NAME=${APP_CLOUD_NAME};FOXY_ADMIN=${FOXY_ADMIN}
+environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80;ENV=beta;FOXY_CLIENT=${FOXY_CLIENT};APP_CLOUD_NAME=${APP_CLOUD_NAME};FOXY_ADMIN=${FOXY_ADMIN};SENTRY_DSN=${SENTRY_DSN}
 EOF"
 
         echo "Configuration file created: $config_file"
