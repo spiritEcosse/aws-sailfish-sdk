@@ -520,11 +520,16 @@ install_clang() {
 #        clang --version
 #        llvm-cov --version
     fi
+
     if [[ ":$PATH:" != *":$llvm_path:"* ]]; then
         export PATH="$llvm_path:$PATH"
         echo "Added $llvm_path to PATH."
     else
         echo "$llvm_path is already in PATH."
+    fi
+
+    if [[ "${PLATFORM_HOST}" == "darwin" ]]; then
+        echo -e "\e[33mWARNING: Dont forget to run: install_name_tool -add_rpath ${CLANG_FILE_PATH}/lib/ /path/bin/server.\e[0m"
     fi
 }
 
