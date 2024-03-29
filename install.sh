@@ -573,10 +573,8 @@ create_config_file() {
 
     config_file="/etc/supervisor/conf.d/foxy_server.conf"
 
-    # Check if the file already exists
-    if [ ! -f "$config_file" ]; then
-        # Create the file with the specified content using sudo
-        sudo sh -c "cat <<EOF > $config_file
+    # Create the file with the specified content using sudo
+    sudo sh -c "cat <<EOF > $config_file
 [program:foxy_server]
 command=${BUILD_FOLDER}/foxy_server
 autostart=true
@@ -585,11 +583,6 @@ stderr_logfile=/var/log/foxy_server.err.log
 stdout_logfile=/var/log/foxy_server.out.log
 environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80,ENV=beta,FOXY_CLIENT=\"${FOXY_CLIENT}\",APP_CLOUD_NAME=\"${APP_CLOUD_NAME}\",FOXY_ADMIN=\"${FOXY_ADMIN}\",SENTRY_DSN=\"${SENTRY_DSN}\"
 EOF"
-
-        echo "Configuration file created: $config_file"
-    else
-        echo "Configuration file already exists: $config_file"
-    fi
 }
 
 
