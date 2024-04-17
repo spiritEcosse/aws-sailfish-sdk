@@ -909,7 +909,7 @@ git_submodule_checkout() {
             git submodule update --depth 1 --init "${folder_name}"
         fi
 
-        if [[ $(git config --file .gitmodules --get-regexp tag) ]]; then
+        if [[ $(git config --file .gitmodules --get-regexp tag | grep -w "${folder_name}") ]]; then
             TAG=$(git config --file .gitmodules --get-regexp tag | grep -w "${folder_name}" | awk '{ print $2 }' | tr ' ' '\n')
             cd "${folder_name}"
 
