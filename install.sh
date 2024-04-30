@@ -1099,6 +1099,15 @@ add_user() {
     echo "User $1 added successfully."
 }
 
+install_psql() {
+    install_for_ubuntu postgresql
+    sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/g" /etc/postgresql/*/main/postgresql.conf
+    # create user from $1
+    sudo -u postgres psql -c "CREATE USER $1 WITH ENCRYPTED PASSWORD '$2';"
+    echo "host          all         all         0.0.0.0/0           scram-sha-256" | sudo tee -a /etc/postgresql/*/main/pg_hba.conf
+    sudo systemctl restart postgresql
+}
+
 main() {
     install_deps
     install_docker
