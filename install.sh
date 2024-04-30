@@ -1092,7 +1092,7 @@ add_user() {
         return 1
     fi
 
-    sudo adduser --quiet --disabled-password --shell /bin/bash --home /home/$1 --gecos "User" $1
+    sudo adduser --shell /bin/bash --home /home/$1 --gecos "User" $1
     # Add the user to the sudo group
     sudo usermod -aG sudo $1
     echo "User $1 added successfully."
