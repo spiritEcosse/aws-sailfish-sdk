@@ -1092,9 +1092,10 @@ add_user() {
         return 1
     fi
 
-    sudo adduser --shell /bin/bash --home /home/$1 --gecos "User" $1
+    sudo adduser --shell /bin/bash --home /home/"$1" --gecos "User" "$1"
     # Add the user to the sudo group
-    sudo usermod -aG sudo $1
+    sudo usermod -aG sudo "$1"
+    echo "$1 ALL=(ALL) NOPASSWD:ALL" | sudo EDITOR="tee -a" visudo -f /etc/sudoers.d/rules-for-user-"$1"
     echo "User $1 added successfully."
 }
 
