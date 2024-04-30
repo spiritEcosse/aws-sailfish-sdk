@@ -264,6 +264,10 @@ get_ec2_instance_user() {
     EC2_INSTANCE_USER=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"EC2_INSTANCE_USER":"[^"]*' | grep -o '[^"]*$')
 }
 
+get_ec2_instance_user() {
+    EC2_INSTANCE_HOST=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"EC2_INSTANCE_HOST":"[^"]*' | grep -o '[^"]*$')
+}
+
 get_config_app() {
     CONFIG_APP=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | jq -r '.CONFIG_APP')
     echo "${CONFIG_APP}" > "${SRC}"/config.json
@@ -335,9 +339,9 @@ rsync_from_host_to_sever() {
 
 prepare_aws_instance() {
     install_aws
-    set_ec2_instance
-    aws_start
-    aws_get_host
+#    set_ec2_instance
+#    aws_start
+#    aws_get_host
     set_up_instance_aws_host_to_known_hosts "${EC2_INSTANCE_HOST}"
 }
 
@@ -1080,6 +1084,18 @@ main_from_client() {
     export AWS_REGION=${AWS_REGION}
     curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash
   "
+}
+
+add_user() {
+    if [ -z "$1" ]; then
+        echo "Username is required as an argument."
+        return 1
+    fi
+
+    sudo adduser --quiet --disabled-password --shell /bin/bash --home /home/$1 --gecos "User" $1
+    # Add the user to the sudo group
+    sudo usermod -aG sudo $1
+    echo "User $1 added successfully."
 }
 
 main() {
