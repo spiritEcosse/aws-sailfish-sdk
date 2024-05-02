@@ -342,7 +342,7 @@ prepare_aws_instance() {
 #    set_ec2_instance
 #    aws_start
 #    aws_get_host
-    set_up_instance_aws_host_to_known_hosts "${EC2_INSTANCE_HOST}"
+#    set_up_instance_aws_host_to_known_hosts "${EC2_INSTANCE_HOST}"
 }
 
 download_backup() {
@@ -598,7 +598,7 @@ cmake_build() {
     install_clang
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
-    get_config_app
+#    get_config_app
     chown_current_user
 #    if [[ `make clean` ]]; then
 #        echo "make clean: successfully";
@@ -1100,12 +1100,17 @@ add_user() {
 }
 
 install_psql() {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo "Username and password is required as an argument."
+        return 1
+    fi
+
     install_for_ubuntu postgresql
     sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/g" /etc/postgresql/*/main/postgresql.conf
-    # create user from $1
-    sudo -u postgres psql -c "CREATE USER $1 WITH ENCRYPTED PASSWORD '$2';"
     echo "host          all         all         0.0.0.0/0           scram-sha-256" | sudo tee -a /etc/postgresql/*/main/pg_hba.conf
     sudo systemctl restart postgresql
+    sudo -u postgres psql -c "CREATE USER $1 WITH ENCRYPTED PASSWORD '$2';"
+    sudo -u postgres psql -c "CREATE DATABASE $1 WITH OWNER $1";
 }
 
 main() {
