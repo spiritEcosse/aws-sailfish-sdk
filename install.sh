@@ -339,6 +339,8 @@ rsync_from_host_to_sever() {
 
 prepare_aws_instance() {
     install_aws
+    get_ec2_instance_host
+    get_ec2_instance_user
 #    set_ec2_instance
 #    aws_start
 #    aws_get_host
