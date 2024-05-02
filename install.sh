@@ -264,7 +264,7 @@ get_ec2_instance_user() {
     EC2_INSTANCE_USER=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"EC2_INSTANCE_USER":"[^"]*' | grep -o '[^"]*$')
 }
 
-get_ec2_instance_user() {
+get_ec2_instance_host() {
     EC2_INSTANCE_HOST=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"EC2_INSTANCE_HOST":"[^"]*' | grep -o '[^"]*$')
 }
 
