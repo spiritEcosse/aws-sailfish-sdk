@@ -602,10 +602,11 @@ supervisorctl() {
 }
 
 cmake_build() {
+    if [[ -z ${CMAKE_BUILD_TYPE+x} ]]; then
+        CMAKE_BUILD_TYPE=Debug
+    fi
     system_prepare_ubuntu
     install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git
-#    install_aws
-#    create_config_file
     install_clang
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
@@ -625,9 +626,15 @@ cmake_build() {
 #    /usr/bin/ld: ../snapshot/libcrashpad_snapshot.a(system_snapshot_linux.cc.o): in function `crashpad::internal::SystemSnapshotLinux::CPUX86SupportsDAZ() const':
 #    /home/runner/ubuntu_x86_64/_deps/sentry-src/external/crashpad/snapshot/linux/system_snapshot_linux.cc:317: undefined reference to `crashpad::internal::CpuidReader::SupportsDAZ() const'
 #    collect2: error: ld returned 1 exit status
-    cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
-    cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
+    cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
+    cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
     cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
+}
+
+deploy_foxy_server() {
+    install_aws
+    prepare_aws_instance
+    aws_run_commands_simple "create_config_file;supervisorctl"
 }
 
 get_last_modified_file() {
