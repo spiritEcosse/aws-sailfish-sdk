@@ -613,6 +613,18 @@ cmake_build() {
 #    if [[ `make clean` ]]; then
 #        echo "make clean: successfully";
 #    fi
+    # I have to make cmake twice because of
+#    /usr/bin/ld: ../snapshot/libcrashpad_snapshot.a(system_snapshot_linux.cc.o): in function `crashpad::internal::SystemSnapshotLinux::SystemSnapshotLinux()':
+#    /home/runner/ubuntu_x86_64/_deps/sentry-src/external/crashpad/snapshot/linux/system_snapshot_linux.cc:145: undefined reference to `crashpad::internal::CpuidReader::CpuidReader()'
+#    /usr/bin/ld: ../snapshot/libcrashpad_snapshot.a(system_snapshot_linux.cc.o): in function `crashpad::internal::SystemSnapshotLinux::~SystemSnapshotLinux()':
+#    /home/runner/ubuntu_x86_64/_deps/sentry-src/external/crashpad/snapshot/linux/system_snapshot_linux.cc:155: undefined reference to `crashpad::internal::CpuidReader::~CpuidReader()'
+#    /usr/bin/ld: ../snapshot/libcrashpad_snapshot.a(system_snapshot_linux.cc.o): in function `crashpad::internal::SystemSnapshotLinux::CPURevision() const':
+#    /home/runner/ubuntu_x86_64/_deps/sentry-src/external/crashpad/snapshot/linux/system_snapshot_linux.cc:219: undefined reference to `crashpad::internal::CpuidReader::Revision() const'
+#    /usr/bin/ld: ../snapshot/libcrashpad_snapshot.a(system_snapshot_linux.cc.o): in function `crashpad::internal::SystemSnapshotLinux::CPUX86Leaf7Features() const':
+#    /home/runner/ubuntu_x86_64/_deps/sentry-src/external/crashpad/snapshot/linux/system_snapshot_linux.cc:307: undefined reference to `crashpad::internal::CpuidReader::Leaf7Features() const'
+#    /usr/bin/ld: ../snapshot/libcrashpad_snapshot.a(system_snapshot_linux.cc.o): in function `crashpad::internal::SystemSnapshotLinux::CPUX86SupportsDAZ() const':
+#    /home/runner/ubuntu_x86_64/_deps/sentry-src/external/crashpad/snapshot/linux/system_snapshot_linux.cc:317: undefined reference to `crashpad::internal::CpuidReader::SupportsDAZ() const'
+#    collect2: error: ld returned 1 exit status
     cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
     cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
     cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
