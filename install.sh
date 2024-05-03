@@ -528,7 +528,7 @@ install_clang() {
 
     if [[ ! -d "${llvm_path}" ]]; then
         cd ~/
-        curl -Os https://github.com/llvm/llvm-project/releases/download/llvmorg-"${LLVM_TAG}/${CLANG_FILE_FILE}"
+        wget https://github.com/llvm/llvm-project/releases/download/llvmorg-"${LLVM_TAG}/${CLANG_FILE_FILE}"
         tar xf "${CLANG_FILE_FILE}"
 #        cd llvm-project
 #        mkdir -p build
@@ -598,7 +598,7 @@ supervisorctl() {
 
 foxy_sever_libs() {
     system_prepare_ubuntu
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl wget
     install_clang
 }
 
