@@ -268,7 +268,7 @@ get_ec2_instance_host() {
     EC2_INSTANCE_HOST=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"EC2_INSTANCE_HOST":"[^"]*' | grep -o '[^"]*$')
 }
 
-get_config_app() {
+get_ec2_get_config_app() {
     CONFIG_APP=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | jq -r '.CONFIG_APP')
     echo "${CONFIG_APP}" > "${SRC}"/config.json
 }
@@ -576,6 +576,7 @@ create_config_file() {
     get_ec2_instance_foxy_admin
     get_ec2_instance_app_cloud_name
     get_ec2_instance_sentry
+    get_ec2_config_app
 
     config_file="/etc/supervisor/conf.d/foxy_server.conf"
 
@@ -601,12 +602,11 @@ supervisorctl() {
 cmake_build() {
     system_prepare_ubuntu
     install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git
-    install_aws
-    create_config_file
+#    install_aws
+#    create_config_file
     install_clang
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
-    get_config_app
     chown_current_user
 #    if [[ `make clean` ]]; then
 #        echo "make clean: successfully";
