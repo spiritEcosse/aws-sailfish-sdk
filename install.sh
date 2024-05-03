@@ -387,7 +387,7 @@ system_prepare_ubuntu() {
 
     sudo apt update -y
     sudo apt upgrade -y
-    sudo apt dist-upgrade -y
+#    sudo apt dist-upgrade -y
     # sudo dpkg --configure -a
 }
 
