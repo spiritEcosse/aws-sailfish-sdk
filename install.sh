@@ -128,7 +128,9 @@ echo "PLATFORM: ${PLATFORM}"
 echo "ARCH: ${ARCH}"
 echo "EC2_INSTANCE_NAME: ${EC2_INSTANCE_NAME}"
 BUILD_FOLDER_NAME="${PLATFORM}_${ARCH}"
-SRC_FOLDER_NAME="${PLATFORM}_${ARCH}_src"
+if [[ -z ${SRC_FOLDER_NAME+x} ]]; then
+    SRC_FOLDER_NAME="${PLATFORM}_${ARCH}_src"
+fi
 BUILD_FOLDER="${HOME}/${BUILD_FOLDER_NAME}"
 FILE_TAR=${BUILD_FOLDER_NAME}.tar
 FILE=${FILE_TAR}.gz
@@ -384,8 +386,8 @@ system_prepare_ubuntu() {
     fi
 
     sudo apt update -y
-    sudo apt upgrade -y
-    sudo apt dist-upgrade -y
+#    sudo apt upgrade -y
+#    sudo apt dist-upgrade -y
     # sudo dpkg --configure -a
 }
 
