@@ -299,13 +299,12 @@ get_ec2_instance_sentry() {
     SENTRY_DSN=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"SENTRY_DSN":"[^"]*' | grep -o '[^"]*$')
 }
 
-set_up_instance_aws_host_to_known_hosts() {
+set_up_instance_server_host_to_known_hosts() {
     set_ssh
-    get_ec2_instance_user
 
     if ! grep "$1" ~/.ssh/known_hosts; then
         if [[ ! $(ssh-keyscan -H "$1") ]]; then
-            set_up_instance_aws_host_to_known_hosts "$1"
+            set_up_instance_server_host_to_known_hosts "$1"
             return
         else
             SSH_KEYSCAN=$(ssh-keyscan -H "$1")
@@ -313,12 +312,9 @@ set_up_instance_aws_host_to_known_hosts() {
 
         printf "#start %s\n%s\n#end %s\n" "$1" "$SSH_KEYSCAN" "$1" >>~/.ssh/known_hosts
 
-        get_ec2_instance_identify_file
         echo "${IDENTITY_FILE}" | sed 's;\\n;\n;g' | sed -e 1b -e 's/ //' | sed 's;\\$;;' >"${TEMP_SSH_ID_RSA}"
         chmod 600 "${TEMP_SSH_ID_RSA}"
         cat "${SSH_ID_RSA_PUB}" | ssh -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${EC2_INSTANCE_USER}@$1" 'cat >> ~/.ssh/authorized_keys'
-
-#        ssh "${EC2_INSTANCE_USER}@$1" "sudo shutdown +60"
     fi
 }
 
@@ -335,8 +331,7 @@ aws_start() {
 
 rsync_from_host_to_sever() {
     set_rsync_params
-    rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "config.json" --exclude "3rdparty/*" --exclude "cmake-build-debug" `pwd`/ "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}:~/$1" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
-    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "cd \$1 && curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"chown_current_user\""
+    rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "config.json" --exclude "3rdparty/*" --exclude "cmake-build-debug" `pwd`/ "${SERVER_USER}@${SERVER_HOST}:~/${SRC_FOLDER_NAME}" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
 }
 
 prepare_aws_instance() {
@@ -514,16 +509,22 @@ mb2_cmake_build() {
     mb2 cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
 }
 
-install_clang() {
-    LLVM_TAG="17.0.2"
+set_clang_variables() {
+    export LLVM_TAG="17.0.2"
+
     if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
-        CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-linux-gnu-${PLATFORM_HOST}-22.04"
+        export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-linux-gnu-${PLATFORM_HOST}-22.04"
     elif [[ "${PLATFORM_HOST}" == "darwin" ]]; then
-        CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-apple-${PLATFORM_HOST}22.0"
+        export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-apple-${PLATFORM_HOST}22.0"
     fi
-    CLANG_FILE_FILE="${CLANG_FILE_PATH}.tar.xz"
-    llvm_path_root="$HOME/${CLANG_FILE_PATH}/"
-    llvm_path="$HOME/${CLANG_FILE_PATH}/bin"
+
+    export CLANG_FILE_FILE="${CLANG_FILE_PATH}.tar.xz"
+    export llvm_path_root="$HOME/${CLANG_FILE_PATH}/"
+    export llvm_path="$HOME/${CLANG_FILE_PATH}/bin"
+}
+
+install_clang() {
+    set_clang_variables
 
     if [[ ! -d "${llvm_path}" ]]; then
         cd ~/
@@ -574,12 +575,6 @@ EOF"
 }
 
 create_config_file() {
-    get_ec2_instance_foxy_client
-    get_ec2_instance_foxy_admin
-    get_ec2_instance_app_cloud_name
-    get_ec2_instance_sentry
-    get_ec2_config_app
-
     config_file="/etc/supervisor/conf.d/foxy_server.conf"
 
     # Create the file with the specified content using sudo
@@ -601,19 +596,27 @@ supervisorctl() {
     sudo supervisorctl status
 }
 
+foxy_sever_libs() {
+    system_prepare_ubuntu
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git
+    install_clang
+}
+
+rsync_share_to_src() {
+    cd "${SRC}"
+    set_rsync_params
+    sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" /share/ .
+    chown_current_user
+    ls -la .
+}
+
 cmake_build() {
     if [[ -z ${CMAKE_BUILD_TYPE+x} ]]; then
         CMAKE_BUILD_TYPE=Debug
     fi
-    system_prepare_ubuntu
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git
-    install_clang
+    rsync_share_to_src
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
-    chown_current_user
-#    if [[ `make clean` ]]; then
-#        echo "make clean: successfully";
-#    fi
     # I have to make cmake twice because of
 #    /usr/bin/ld: ../snapshot/libcrashpad_snapshot.a(system_snapshot_linux.cc.o): in function `crashpad::internal::SystemSnapshotLinux::SystemSnapshotLinux()':
 #    /home/runner/ubuntu_x86_64/_deps/sentry-src/external/crashpad/snapshot/linux/system_snapshot_linux.cc:145: undefined reference to `crashpad::internal::CpuidReader::CpuidReader()'
@@ -629,12 +632,6 @@ cmake_build() {
     cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
     cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
     cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
-}
-
-deploy_foxy_server() {
-    install_aws
-    prepare_aws_instance
-    aws_run_commands_simple "create_config_file;supervisorctl"
 }
 
 get_last_modified_file() {
@@ -729,14 +726,6 @@ codecov_push_results() {
     curl -Os https://uploader.codecov.io/latest/linux/codecov
     chmod +x codecov
     ./codecov -t "${CODECOV_TOKEN}" -f ccov/all-merged.info
-}
-
-rsync_share_to_src() {
-    cd "${SRC}"
-    set_rsync_params
-    sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" /share/ .
-    chown_current_user
-    ls -la .
 }
 
 rsync_share_to_build() {
@@ -1065,19 +1054,18 @@ aws_run_commands() {
   "
 }
 
-aws_run_commands_simple() {
-    prepare_aws_instance
-    if [[ -z ${DONT_NEED_DEPLOY+x} ]]; then
-        rsync_from_host_to_sever "${SRC_FOLDER_NAME}"
-    fi
+server_run_commands() {
+    set_up_instance_server_host_to_known_hosts
 
-    ssh "${EC2_INSTANCE_USER}@${EC2_INSTANCE_HOST}" "
-    export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-    export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    export AWS_REGION=${AWS_REGION}
-    export EC2_INSTANCE_NAME=${EC2_INSTANCE_NAME}
-    curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
-  "
+    ssh "${SERVER_USER}@${SERVER_HOST}" "
+        export APP_CLOUD_NAME=\"${APP_CLOUD_NAME}\"
+        export CMAKE_BUILD_TYPE=\"${CMAKE_BUILD_TYPE}\"
+        export CONFIG_APP=\"${CONFIG_APP}\"
+        export FOXY_ADMIN=\"${FOXY_ADMIN}\"
+        export FOXY_CLIENT=\"${FOXY_CLIENT}\"
+        export SENTRY_DSN=\"${SENTRY_DSN}\"
+        curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
+      "
 }
 
 docker_login_build_push() {
