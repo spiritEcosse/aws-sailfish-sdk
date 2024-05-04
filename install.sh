@@ -512,6 +512,7 @@ mb2_cmake_build() {
 set_clang_variables() {
     export LLVM_TAG="17.0.2"
 
+    ARCH="x86_64"
     export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-linux-gnu-${PLATFORM_HOST}-22.04"
 #    if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
 #        export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-linux-gnu-${PLATFORM_HOST}-22.04"
