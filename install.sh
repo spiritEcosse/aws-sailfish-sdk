@@ -619,6 +619,7 @@ cmake_build() {
     if [[ -z ${CMAKE_BUILD_TYPE+x} ]]; then
         CMAKE_BUILD_TYPE=Debug
     fi
+    set_clang_variables
     rsync_share_to_src
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
