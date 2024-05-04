@@ -528,7 +528,9 @@ install_clang() {
 
     if [[ ! -d "${llvm_path}" ]]; then
         cd ~/
-        curl -O https://github.com/llvm/llvm-project/releases/download/llvmorg-"${LLVM_TAG}/${CLANG_FILE_FILE}"
+        HTTP_FILE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${LLVM_TAG}/${CLANG_FILE_FILE}"
+        download_backup "${BACKUP_FILE_PATH}" "${HTTP_FILE}" "$(file_get_size "${HTTP_FILE}")" "$(python3 -c "print(100 * 1024 * 1024)")"
+        wait
         tar xf "${CLANG_FILE_FILE}"
 #        cd llvm-project
 #        mkdir -p build
