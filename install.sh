@@ -606,6 +606,7 @@ foxy_sever_libs() {
 }
 
 rsync_share_to_src() {
+    install_for_ubuntu rsync
     mkdir -p "${SRC}"
     cd "${SRC}"
     set_rsync_params
