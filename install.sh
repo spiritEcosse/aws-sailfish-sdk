@@ -512,13 +512,11 @@ mb2_cmake_build() {
 set_clang_variables() {
     export LLVM_TAG="17.0.2"
 
-    ARCH="x86_64"
-    export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-linux-gnu-${PLATFORM_HOST}-22.04"
-#    if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
-#        export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-linux-gnu-${PLATFORM_HOST}-22.04"
-#    elif [[ "${PLATFORM_HOST}" == "darwin" ]]; then
-#        export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-apple-${PLATFORM_HOST}22.0"
-#    fi
+    if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
+        export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-linux-gnu-${PLATFORM_HOST}-22.04"
+    elif [[ "${PLATFORM_HOST}" == "darwin" ]]; then
+        export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-apple-${PLATFORM_HOST}22.0"
+    fi
 
     export CLANG_FILE_FILE="${CLANG_FILE_PATH}.tar.xz"
     export llvm_path_root="$HOME/${CLANG_FILE_PATH}/"
@@ -532,7 +530,6 @@ install_clang() {
         cd ~/
         HTTP_FILE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${LLVM_TAG}/${CLANG_FILE_FILE}"
         curl -O -L "${HTTP_FILE}"
-#        download_backup "${BACKUP_FILE_PATH}" "${HTTP_FILE}" "$(file_get_size "${HTTP_FILE}")" "$(python3 -c "print(100 * 1024 * 1024)")"
         ls -lah
         tar xf "${CLANG_FILE_FILE}"
 #        cd llvm-project
@@ -602,8 +599,8 @@ supervisorctl() {
 }
 
 foxy_sever_libs() {
-#    system_prepare_ubuntu
-#    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl
+    system_prepare_ubuntu
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils
     install_clang
     ls -lah
 }
