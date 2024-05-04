@@ -345,11 +345,11 @@ prepare_aws_instance() {
 }
 
 download_backup() {
-    if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
-        install_for_ubuntu bc
-    elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
-        sudo zypper -n install bc
-    fi
+#    if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
+#        install_for_ubuntu bc
+#    elif [[ "${PLATFORM_HOST}" == "sailfishos" ]]; then
+#        sudo zypper -n install bc
+#    fi
 
     rm -f "${1}"_*
 
