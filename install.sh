@@ -331,7 +331,7 @@ aws_start() {
 
 rsync_from_host_to_sever() {
     set_rsync_params
-    rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "config.json" --exclude "3rdparty/*" --exclude "cmake-build-debug" `pwd`/ "${SERVER_USER}@${SERVER_HOST}:~/${SRC_FOLDER_NAME}" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
+    rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "config.json" --exclude "3rdparty/*" --exclude "cmake-build-debug" "${BUILD_FOLDER}" "${SERVER_USER}@${SERVER_HOST}:~/${BUILD_FOLDER}" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
 }
 
 prepare_aws_instance() {
