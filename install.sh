@@ -606,6 +606,7 @@ foxy_sever_libs() {
 }
 
 rsync_share_to_src() {
+    mkdir -p "${SRC}"
     cd "${SRC}"
     set_rsync_params
     sudo rsync "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --delete --include "3rdparty/*.cmake" --exclude "3rdparty/*" /share/ .
