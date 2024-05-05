@@ -319,7 +319,7 @@ set_up_instance_server_host_to_known_hosts() {
         echo "${IDENTITY_FILE}" | sed 's;\\n;\n;g' | sed -e 1b -e 's/ //' | sed 's;\\$;;' >"${TEMP_SSH_ID_RSA}"
         chmod 600 "${TEMP_SSH_ID_RSA}"
 
-        ssh -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys'
+        ssh -o StrictHostKeyChecking=no -vv -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys'
         cat "${SSH_ID_RSA_PUB}" | ssh -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'cat >> ~/.ssh/authorized_keys'
     fi
 }
