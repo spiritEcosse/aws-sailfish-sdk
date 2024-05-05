@@ -307,19 +307,20 @@ ssh_copy_id() {
 set_up_instance_server_host_to_known_hosts() {
     set_ssh
 
-    if ! grep "${SERVER_HOST}" ~/.ssh/known_hosts; then
-        if [[ ! $(ssh-keyscan -H "${SERVER_HOST}") ]]; then
-            set_up_instance_server_host_to_known_hosts
+    if ! grep -q "${SERVER_HOST}" ~/.ssh/known_hosts; then
+        SSH_KEYSCAN=$(ssh-keyscan -H "${SERVER_HOST}" 2>/dev/null)
+        if [[ -z "${SSH_KEYSCAN}" ]]; then
+            echo "Failed to get host key for ${SERVER_HOST}"
             return
-        else
-            SSH_KEYSCAN=$(ssh-keyscan -H "${SERVER_HOST}")
         fi
 
-        printf "#start %s\n%s\n#end %s\n" "${SERVER_HOST}" "$SSH_KEYSCAN" "${SERVER_HOST}" >>~/.ssh/known_hosts
+        printf "#start %s\n%s\n#end %s\n" "${SERVER_HOST}" "${SSH_KEYSCAN}" "${SERVER_HOST}" >>~/.ssh/known_hosts
 
         echo "${IDENTITY_FILE}" | sed 's;\\n;\n;g' | sed -e 1b -e 's/ //' | sed 's;\\$;;' >"${TEMP_SSH_ID_RSA}"
         chmod 600 "${TEMP_SSH_ID_RSA}"
-        cat "${SSH_ID_RSA_PUB}" | ssh -vv -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'cat >> ~/.ssh/authorized_keys'
+
+        ssh -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys'
+        cat "${SSH_ID_RSA_PUB}" | ssh -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'cat >> ~/.ssh/authorized_keys'
     fi
 }
 
