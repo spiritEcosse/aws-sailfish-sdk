@@ -467,7 +467,7 @@ install_sshpass() {
 
     if [[ ! $(which sshpass) ]]; then
         cd ~/
-        curl -O https://altushost-swe.dl.sourceforge.net/project/sshpass/sshpass/1.08/sshpass-1.08.tar.gz
+        curl -O https://deac-riga.dl.sourceforge.net/project/sshpass/sshpass/1.10/sshpass-1.10.tar.gz
         tar -xf sshpass-1.08.tar.gz
         cd sshpass-1.08
         ./configure
