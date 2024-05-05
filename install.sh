@@ -306,6 +306,7 @@ ssh_copy_id() {
 
 set_up_instance_server_host_to_known_hosts() {
     set_ssh
+    install_for_ubuntu openssl
 
     if ! grep -q "${SERVER_HOST}" ~/.ssh/known_hosts; then
         SSH_KEYSCAN=$(ssh-keyscan -H "${SERVER_HOST}" 2>/dev/null)
