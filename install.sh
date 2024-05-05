@@ -311,7 +311,7 @@ set_up_instance_server_host_to_known_hosts() {
             return
         fi
 
-        sshpass -p "${SERVER_PASSWORD}" ssh-copy-id -i "${SSH_ID_RSA_PUB}" "${SERVER_USER}@${SERVER_HOST}"
+        sshpass -p "${SERVER_PASSWORD}" ssh-copy-id -v -i "${SSH_ID_RSA_PUB}" "${SERVER_USER}@${SERVER_HOST}"
         printf "#start %s\n%s\n#end %s\n" "${SERVER_HOST}" "${SSH_KEYSCAN}" "${SERVER_HOST}" >>~/.ssh/known_hosts
     fi
 }
