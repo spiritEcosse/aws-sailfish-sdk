@@ -260,6 +260,7 @@ set_ssh() {
     if [[ ! -f "${SSH_ID_RSA}" ]]; then
         ssh-keygen -t rsa -q -f "${SSH_ID_RSA}" -N ""
         chmod 600 "${SSH_ID_RSA}"
+        chmod 600 "${SSH_ID_RSA_PUB}"
     fi
 }
 
