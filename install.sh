@@ -300,6 +300,11 @@ get_ec2_instance_sentry() {
     SENTRY_DSN=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"SENTRY_DSN":"[^"]*' | grep -o '[^"]*$')
 }
 
+ssh_copy_id() {
+    set_ssh
+    ssh-copy-id "${SERVER_USER}@${SERVER_HOST}"
+}
+
 set_up_instance_server_host_to_known_hosts() {
     set_ssh
 
@@ -331,7 +336,7 @@ aws_start() {
 }
 
 rsync_from_host_to_sever() {
-    set_up_instance_server_host_to_known_hosts "${SERVER_HOST}"
+    ssh_copy_id
     set_rsync_params
     rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "config.json" --exclude "3rdparty/*" --exclude "cmake-build-debug" "${BUILD_FOLDER}" "${SERVER_USER}@${SERVER_HOST}:~/${BUILD_FOLDER}" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
 }
@@ -1063,15 +1068,15 @@ aws_run_commands() {
 }
 
 server_run_commands() {
-    set_up_instance_server_host_to_known_hosts
+    ssh_copy_id
 
     ssh "${SERVER_USER}@${SERVER_HOST}" "
-        export APP_CLOUD_NAME=\"${APP_CLOUD_NAME}\"
-        export CMAKE_BUILD_TYPE=\"${CMAKE_BUILD_TYPE}\"
-        export CONFIG_APP=\"${CONFIG_APP}\"
-        export FOXY_ADMIN=\"${FOXY_ADMIN}\"
-        export FOXY_CLIENT=\"${FOXY_CLIENT}\"
-        export SENTRY_DSN=\"${SENTRY_DSN}\"
+        export APP_CLOUD_NAME=${APP_CLOUD_NAME}
+        export CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        export CONFIG_APP=${CONFIG_APP}
+        export FOXY_ADMIN=${FOXY_ADMIN}
+        export FOXY_CLIENT=${FOXY_CLIENT}
+        export SENTRY_DSN=${SENTRY_DSN}
         curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
       "
 }
