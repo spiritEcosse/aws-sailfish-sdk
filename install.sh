@@ -92,6 +92,7 @@ DOCKER_REPO="ghcr.io/spiritecosse/bible"
 SSH_ID_RSA="${HOME}/.ssh/id_rsa"
 SSH_ID_RSA_PUB="${HOME}/.ssh/id_rsa.pub"
 TEMP_SSH_ID_RSA="${HOME}/.id_rsa"
+TEMP_SSH_ID_RSA_PUB="${HOME}/.id_rsa.pub"
 PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Default values
@@ -299,11 +300,6 @@ get_ec2_instance_sentry() {
     SENTRY_DSN=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"SENTRY_DSN":"[^"]*' | grep -o '[^"]*$')
 }
 
-ssh_copy_id() {
-    set_ssh
-    ssh-copy-id "${SERVER_USER}@${SERVER_HOST}"
-}
-
 set_up_instance_server_host_to_known_hosts() {
     set_ssh
     install_for_ubuntu openssl
@@ -317,12 +313,12 @@ set_up_instance_server_host_to_known_hosts() {
 
         printf "#start %s\n%s\n#end %s\n" "${SERVER_HOST}" "${SSH_KEYSCAN}" "${SERVER_HOST}" >>~/.ssh/known_hosts
 
-#        echo "${IDENTITY_FILE}" | sed 's;\\n;\n;g' | sed -e 1b -e 's/ //' | sed 's;\\$;;' >"${TEMP_SSH_ID_RSA}"
-#        chmod 600 "${TEMP_SSH_ID_RSA}"
+        echo "${IDENTITY_FILE}" | sed 's;\\n;\n;g' | sed -e 1b -e 's/ //' | sed 's;\\$;;' >"${TEMP_SSH_ID_RSA}"
+        chmod 600 "${TEMP_SSH_ID_RSA}"
 
         ssh-keygen -y -e -f "${SSH_ID_RSA}"
-        ssh -o StrictHostKeyChecking=no -vv -i "${SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys'
-        cat "${SSH_ID_RSA_PUB}" | ssh -vv -o StrictHostKeyChecking=no -i "${SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'cat >> ~/.ssh/authorized_keys'
+        ssh -o StrictHostKeyChecking=no -vv -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys'
+        cat "${SSH_ID_RSA_PUB}" | ssh -vv -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'cat >> ~/.ssh/authorized_keys'
     fi
 }
 
