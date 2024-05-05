@@ -317,8 +317,9 @@ set_up_instance_server_host_to_known_hosts() {
         chmod 600 "${TEMP_SSH_ID_RSA}"
 
         ssh-keygen -y -e -f "${SSH_ID_RSA}"
-        ssh -o StrictHostKeyChecking=no -vv -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys'
-        cat "${SSH_ID_RSA_PUB}" | ssh -vv -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'cat >> ~/.ssh/authorized_keys'
+        ssh -vv -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" "ls -la"
+#        ssh -o StrictHostKeyChecking=no -vv -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys'
+#        cat "${SSH_ID_RSA_PUB}" | ssh -vv -o StrictHostKeyChecking=no -i "${TEMP_SSH_ID_RSA}" "${SERVER_USER}@${SERVER_HOST}" 'cat >> ~/.ssh/authorized_keys'
     fi
 }
 
