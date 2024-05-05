@@ -468,8 +468,8 @@ install_sshpass() {
     if [[ ! $(which sshpass) ]]; then
         cd ~/
         curl -O https://deac-riga.dl.sourceforge.net/project/sshpass/sshpass/1.10/sshpass-1.10.tar.gz
-        tar -xf sshpass-1.08.tar.gz
-        cd sshpass-1.08
+        tar -xf sshpass-1.10.tar.gz
+        cd sshpass-1.10
         ./configure
         make
         sudo make install
