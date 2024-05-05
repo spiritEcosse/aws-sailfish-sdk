@@ -312,7 +312,7 @@ set_up_instance_server_host_to_known_hosts() {
             return
         fi
 
-        sshpass -p "${SERVER_PASSWORD}" ssh-copy-id -i "${SSH_ID_RSA_PUB}" "${SERVER_USER}@${SERVER_HOST}"
+        sshpass -p "${SERVER_PASSWORD}" ssh-copy-id -o StrictHostKeyChecking=no "${SERVER_USER}@${SERVER_HOST}"
         printf "#start %s\n%s\n#end %s\n" "${SERVER_HOST}" "${SSH_KEYSCAN}" "${SERVER_HOST}" >>~/.ssh/known_hosts
     fi
 }
@@ -329,7 +329,7 @@ aws_start() {
 }
 
 rsync_from_host_to_sever() {
-    ssh_copy_id
+    set_up_instance_server_host_to_known_hosts
     set_rsync_params
     rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "config.json" --exclude "3rdparty/*" --exclude "cmake-build-debug" "${BUILD_FOLDER}" "${SERVER_USER}@${SERVER_HOST}:~/${BUILD_FOLDER}" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
 }
