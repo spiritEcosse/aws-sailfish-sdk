@@ -568,6 +568,7 @@ EOF"
 }
 
 create_config_file() {
+    echo "${CONFIG_APP}" > "${BUILD_FOLDER}"/config.json
     config_file="/etc/supervisor/conf.d/foxy_server.conf"
 
     # Create the file with the specified content using sudo
