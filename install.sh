@@ -305,7 +305,7 @@ set_up_instance_server_host_to_known_hosts() {
     set_ssh
     install_for_ubuntu openssl build-essential sudo
     install_sshpass
-    sshpass -v -p "${SERVER_PASSWORD}" ssh-copy-id -o StrictHostKeyChecking=no "${SERVER_USER}@${SERVER_HOST}"
+    sshpass -v -p ${SERVER_PASSWORD} ssh-copy-id -o StrictHostKeyChecking=no "${SERVER_USER}@${SERVER_HOST}"
 }
 
 aws_start() {
