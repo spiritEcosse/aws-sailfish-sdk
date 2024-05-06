@@ -568,7 +568,7 @@ EOF"
 }
 
 create_config_file() {
-    echo "{'listeners':[{'address':'0.0.0.0','port':80,'https':false}],'db_clients':[{'name':'default','rdbms':'postgresql','host':'localhost','port':5432,'dbname':'${SERVER_PSQL_DBNAME}','user':'${SERVER_PSQL_USER}','passwd':'${SERVER_PSQL_PASSWORD}','is_fast':true,'connection_number':1,'filename':''}]}" > "${BUILD_FOLDER}"/config.json
+    echo "{\"listeners\":[{\"address\":\"0.0.0.0\",\"port\":80,\"https\":false}],\"db_clients\":[{\"name\":\"default\",\"rdbms\":\"postgresql\",\"host\":\"localhost\",\"port\":5432,\"dbname\":\"${SERVER_PSQL_DBNAME}\",\"user\":\"${SERVER_PSQL_USER}\",\"passwd\":\"${SERVER_PSQL_PASSWORD}\",\"is_fast\":true,\"connection_number\":1,\"filename\":\"\"}]}" > "${BUILD_FOLDER}"/config.json
     config_file="/etc/supervisor/conf.d/foxy_server.conf"
 
     # Create the file with the specified content using sudo
