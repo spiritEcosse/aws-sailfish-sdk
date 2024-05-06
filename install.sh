@@ -303,18 +303,9 @@ get_ec2_instance_sentry() {
 
 set_up_instance_server_host_to_known_hosts() {
     set_ssh
-    install_for_ubuntu openssl sshpass
-
-    if ! grep -q "${SERVER_HOST}" ~/.ssh/known_hosts; then
-        SSH_KEYSCAN=$(ssh-keyscan -H "${SERVER_HOST}" 2>/dev/null)
-        if [[ -z "${SSH_KEYSCAN}" ]]; then
-            echo "Failed to get host key for ${SERVER_HOST}"
-            return
-        fi
-
-        sshpass -p "${SERVER_PASSWORD}" ssh-copy-id -o StrictHostKeyChecking=no "${SERVER_USER}@${SERVER_HOST}"
-        printf "#start %s\n%s\n#end %s\n" "${SERVER_HOST}" "${SSH_KEYSCAN}" "${SERVER_HOST}" >>~/.ssh/known_hosts
-    fi
+    install_for_ubuntu openssl build-essential sudo
+    install_sshpass
+    sshpass -v -p "${SERVER_PASSWORD}" ssh-copy-id -o StrictHostKeyChecking=no "${SERVER_USER}@${SERVER_HOST}"
 }
 
 aws_start() {
@@ -600,7 +591,7 @@ supervisorctl() {
 
 foxy_sever_libs() {
     system_prepare_ubuntu
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync build-essential sudo
     install_clang
     ls -lah
 }
