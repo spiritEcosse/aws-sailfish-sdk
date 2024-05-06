@@ -1064,7 +1064,7 @@ server_run_commands() {
         export SENTRY_DSN=${SENTRY_DSN}
         export SERVER_PSQL_DBNAME=${SERVER_PSQL_DBNAME}
         export SERVER_PSQL_USER=${SERVER_PSQL_USER}
-        export SERVER_PSQL_PASSWORD=${SERVER_PSQL_PASSWORD}
+        export SERVER_PSQL_PASSWORD=\'${SERVER_PSQL_PASSWORD}\'
         curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
       "
 }
