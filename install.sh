@@ -304,6 +304,7 @@ get_ec2_instance_sentry() {
 ssh_copy_id() {
     set_ssh
     install_for_ubuntu sshpass
+    sleep 5
     sshpass -v -p ${SERVER_PASSWORD} ssh-copy-id -o StrictHostKeyChecking=no "${SERVER_USER}@${SERVER_HOST}"
 }
 
