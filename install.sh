@@ -303,7 +303,6 @@ get_ec2_instance_sentry() {
 
 ssh_copy_id() {
     set_ssh
-    install_for_ubuntu sshpass
     sshpass -v -p ${SERVER_PASSWORD} ssh-copy-id -o StrictHostKeyChecking=no "${SERVER_USER}@${SERVER_HOST}"
 }
 
@@ -1123,9 +1122,9 @@ install_psql() {
     install_for_ubuntu postgresql
     sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/g" /etc/postgresql/*/main/postgresql.conf
     echo "host          all         all         ${DEVICE_IP}/0           scram-sha-256" | sudo tee -a /etc/postgresql/*/main/pg_hba.conf
-    sudo systemctl restart postgresql
     sudo -u postgres psql -c "CREATE USER $1 WITH ENCRYPTED PASSWORD '$2';"
     sudo -u postgres psql -c "CREATE DATABASE $3 WITH OWNER $1";
+    sudo systemctl restart postgresql
 }
 
 main_server() {
