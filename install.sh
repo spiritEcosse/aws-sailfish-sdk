@@ -567,7 +567,31 @@ EOF"
 }
 
 create_config_file() {
-    echo "{\"listeners\":[{\"address\":\"0.0.0.0\",\"port\":80,\"https\":false}],\"db_clients\":[{\"name\":\"default\",\"rdbms\":\"postgresql\",\"host\":\"localhost\",\"port\":5432,\"dbname\":\"${SERVER_PSQL_DBNAME}\",\"user\":\"${SERVER_PSQL_USER}\",\"passwd\":\"${SERVER_PSQL_PASSWORD}\",\"is_fast\":true,\"connection_number\":1,\"filename\":\"\"}]}" > "${BUILD_FOLDER}"/config.json
+    echo "{
+      \"listeners\": [
+        {
+          \"address\": \"0.0.0.0\",
+          \"port\": 443,
+          \"https\": true,
+          \"cert\": \"$CERT_PATH\",
+          \"key\": \"$KEY_PATH\"
+        }
+      ],
+      \"db_clients\": [
+        {
+          \"name\": \"default\",
+          \"rdbms\": \"postgresql\",
+          \"host\": \"localhost\",
+          \"port\": 5432,
+          \"dbname\": \"$DB_NAME\",
+          \"user\": \"$DB_USER\",
+          \"passwd\": \"$DB_PASS\",
+          \"is_fast\": true,
+          \"connection_number\": 1,
+          \"filename\": \"\"
+        }
+      ]
+    }" > "${BUILD_FOLDER}"/config.json
     config_file="/etc/supervisor/conf.d/foxy_server.conf"
 
     # Create the file with the specified content using sudo
@@ -1063,6 +1087,8 @@ server_run_commands() {
         export SERVER_PSQL_DBNAME=${SERVER_PSQL_DBNAME}
         export SERVER_PSQL_USER=${SERVER_PSQL_USER}
         export SERVER_PSQL_PASSWORD=\"${SERVER_PSQL_PASSWORD}\"
+        export CERT_PATH=\"${CERT_PATH}\"
+        export KEY_PATH=\"${KEY_PATH}\"
         curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
       "
 }
