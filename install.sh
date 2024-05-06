@@ -303,8 +303,7 @@ get_ec2_instance_sentry() {
 
 set_up_instance_server_host_to_known_hosts() {
     set_ssh
-    install_for_ubuntu openssl build-essential sudo
-    install_sshpass
+    install_for_ubuntu openssl build-essential sudo sshpass
     sshpass -v -p ${SERVER_PASSWORD} ssh-copy-id -o StrictHostKeyChecking=no "${SERVER_USER}@${SERVER_HOST}"
 }
 
@@ -591,7 +590,7 @@ supervisorctl() {
 
 foxy_sever_libs() {
     system_prepare_ubuntu
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync build-essential sudo
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make g++ g++-multilib zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync build-essential sudo sshpass
     install_clang
     ls -lah
 }
