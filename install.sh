@@ -301,9 +301,9 @@ get_ec2_instance_sentry() {
     SENTRY_DSN=$(aws secretsmanager get-secret-value --secret-id "${EC2_INSTANCE_NAME}" --query 'SecretString' --output text | grep -o '"SENTRY_DSN":"[^"]*' | grep -o '[^"]*$')
 }
 
-set_up_instance_server_host_to_known_hosts() {
+ssh_copy_id() {
     set_ssh
-    install_for_ubuntu openssl build-essential sudo sshpass
+    install_for_ubuntu sshpass
     sshpass -v -p ${SERVER_PASSWORD} ssh-copy-id -o StrictHostKeyChecking=no "${SERVER_USER}@${SERVER_HOST}"
 }
 
@@ -319,7 +319,7 @@ aws_start() {
 }
 
 rsync_from_host_to_sever() {
-    set_up_instance_server_host_to_known_hosts
+    ssh_copy_id
     set_rsync_params
     rsync --rsync-path="sudo rsync" "${RSYNC_PARAMS_UPLOAD_SOURCE_CODE[@]}" --checksum --ignore-times --delete --include "3rdparty/*.cmake" --exclude "config.json" --exclude "3rdparty/*" --exclude "cmake-build-debug" "${BUILD_FOLDER}" "${SERVER_USER}@${SERVER_HOST}:~/${BUILD_FOLDER}" # TODO: check why i nee --checksum --ignore-times to transfer files to ec2 but it doesn't work for github action ubuntu ???
 }
