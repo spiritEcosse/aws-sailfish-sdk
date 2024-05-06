@@ -1128,6 +1128,13 @@ install_psql() {
     sudo -u postgres psql -c "CREATE DATABASE $3 WITH OWNER $1";
 }
 
+main_server() {
+    add_user ubuntu
+    install_psql "${1}" "${2}" "${3}"
+    sudo systemctl stop apache2
+    sudo systemctl disable apache2
+}
+
 main() {
     install_deps
     install_docker
