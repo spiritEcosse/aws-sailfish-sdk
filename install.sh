@@ -304,7 +304,6 @@ get_ec2_instance_sentry() {
 ssh_copy_id() {
     set_ssh
     install_for_ubuntu sshpass
-    sleep 5
     sshpass -v -p ${SERVER_PASSWORD} ssh-copy-id -o StrictHostKeyChecking=no "${SERVER_USER}@${SERVER_HOST}"
 }
 
@@ -1064,7 +1063,7 @@ server_run_commands() {
         export SENTRY_DSN=${SENTRY_DSN}
         export SERVER_PSQL_DBNAME=${SERVER_PSQL_DBNAME}
         export SERVER_PSQL_USER=${SERVER_PSQL_USER}
-        export SERVER_PSQL_PASSWORD=\'${SERVER_PSQL_PASSWORD}\'
+        export SERVER_PSQL_PASSWORD=\"${SERVER_PSQL_PASSWORD}\"
         curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
       "
 }
