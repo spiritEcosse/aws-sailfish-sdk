@@ -583,9 +583,9 @@ create_config_file() {
           \"rdbms\": \"postgresql\",
           \"host\": \"localhost\",
           \"port\": 5432,
-          \"dbname\": \"$DB_NAME\",
-          \"user\": \"$DB_USER\",
-          \"passwd\": \"$DB_PASS\",
+          \"dbname\": \"$SERVER_PSQL_DBNAME\",
+          \"user\": \"$SERVER_PSQL_USER\",
+          \"passwd\": \"$SERVER_PSQL_PASSWORD\",
           \"is_fast\": true,
           \"connection_number\": 1,
           \"filename\": \"\"
