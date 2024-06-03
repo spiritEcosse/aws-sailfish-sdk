@@ -503,7 +503,11 @@ set_clang_variables() {
     export LLVM_TAG="17.0.2"
 
     if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
-        export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-linux-gnu-${PLATFORM_HOST}-22.04"
+        if [[ "${ARCH}" == "x86_64" ]]; then
+            export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-linux-gnu-${PLATFORM_HOST}-22.04"
+        elif [[ "${ARCH}" == "aarch64" ]]; then
+            export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-linux-gnu"
+        fi
     elif [[ "${PLATFORM_HOST}" == "darwin" ]]; then
         export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-apple-${PLATFORM_HOST}22.0"
     fi
