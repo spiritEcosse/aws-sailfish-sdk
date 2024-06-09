@@ -639,7 +639,6 @@ cmake_build() {
         CMAKE_BUILD_TYPE=Debug
     fi
     set_clang_variables
-    rsync_share_to_src
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
     # I have to make cmake twice because of
