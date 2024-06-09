@@ -638,7 +638,7 @@ cmake_build() {
     if [[ -z ${CMAKE_BUILD_TYPE+x} ]]; then
         CMAKE_BUILD_TYPE=Debug
     fi
-    cd "${SRC}"
+    git config --global --add safe.directory "${SRC}"
     chown_current_user
     set_clang_variables
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
