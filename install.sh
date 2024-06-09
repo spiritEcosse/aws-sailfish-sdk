@@ -641,6 +641,7 @@ cmake_build() {
     set_clang_variables
     mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
+    chown_current_user
     # I have to make cmake twice because of
 #    /usr/bin/ld: ../snapshot/libcrashpad_snapshot.a(system_snapshot_linux.cc.o): in function `crashpad::internal::SystemSnapshotLinux::SystemSnapshotLinux()':
 #    /home/runner/ubuntu_x86_64/_deps/sentry-src/external/crashpad/snapshot/linux/system_snapshot_linux.cc:145: undefined reference to `crashpad::internal::CpuidReader::CpuidReader()'
