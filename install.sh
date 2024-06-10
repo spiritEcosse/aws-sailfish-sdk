@@ -509,7 +509,8 @@ mb2_cmake_build() {
 set_clang_variables() {
     export LLVM_TAG="17.0.2"
 
-    if [[ "${PLATFORM_HOST}" == "ubuntu" ]]; then
+    # include if its match with debian or ubuntu
+    if [[ "${PLATFORM_HOST}" == "ubuntu" ]] || [[ "${PLATFORM_HOST}" == "debian" ]]; then
         if [[ "${ARCH}" == "x86_64" ]]; then
             export CLANG_FILE_PATH="clang+llvm-${LLVM_TAG}-${ARCH}-linux-gnu-${PLATFORM_HOST}-22.04"
         elif [[ "${ARCH}" == "aarch64" ]]; then
