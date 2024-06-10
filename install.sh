@@ -648,8 +648,8 @@ cmake_build() {
     fi
     set_clang_variables
     # Set the environment variables for the C and C++ compilers
-    ENV CC="${llvm_path}"/clang
-    ENV CXX="${llvm_path}"/clang++
+    CC="${llvm_path}"/clang
+    CXX="${llvm_path}"/clang++
     git config --global --add safe.directory "${SRC}"
     chown_current_user
     cd "${BUILD_FOLDER}"
