@@ -132,7 +132,10 @@ BUILD_FOLDER_NAME="${PLATFORM}_${ARCH}"
 if [[ -z ${SRC_FOLDER_NAME+x} ]]; then
     SRC_FOLDER_NAME="${PLATFORM}_${ARCH}_src"
 fi
-BUILD_FOLDER="${HOME}/${BUILD_FOLDER_NAME}"
+if [[ -z ${BUILD_FOLDER+x} ]]; then
+    BUILD_FOLDER="${HOME}/${BUILD_FOLDER_NAME}"
+fi
+mkdir -p "${BUILD_FOLDER}"
 FILE_TAR=${BUILD_FOLDER_NAME}.tar
 FILE=${FILE_TAR}.gz
 FILE_SRC_TAR=${SRC_FOLDER_NAME}.tar
@@ -142,7 +145,11 @@ BACKUP_FILE_SRC_PATH="${HOME}/${FILE_SRC}"
 DESTINATION_PATH="/usr/share/nginx/html/backups/"
 HTTP_FILE="https://bible-backups.s3.amazonaws.com/${FILE}"
 HTTP_FILE_SRC="https://bible-backups.s3.amazonaws.com/${FILE_SRC}"
-SRC="${HOME}/${SRC_FOLDER_NAME}"
+
+if [[ -z ${SRC+x} ]]; then
+    SRC="${HOME}/${SRC_FOLDER_NAME}"
+fi
+mkdir -p "${SRC}"
 
 
 download_cert() {
@@ -641,7 +648,6 @@ cmake_build() {
     git config --global --add safe.directory "${SRC}"
     chown_current_user
     set_clang_variables
-    mkdir -p ~/"${BUILD_FOLDER_NAME}"
     cd "${BUILD_FOLDER}"
     # I have to make cmake twice because of
 #    /usr/bin/ld: ../snapshot/libcrashpad_snapshot.a(system_snapshot_linux.cc.o): in function `crashpad::internal::SystemSnapshotLinux::SystemSnapshotLinux()':
