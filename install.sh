@@ -645,12 +645,12 @@ cmake_build() {
     if [[ -z ${CMAKE_BUILD_TYPE+x} ]]; then
         CMAKE_BUILD_TYPE=Debug
     fi
+    set_clang_variables
     # Set the environment variables for the C and C++ compilers
     ENV CC="${llvm_path}"/clang
     ENV CXX="${llvm_path}"/clang++
     git config --global --add safe.directory "${SRC}"
     chown_current_user
-    set_clang_variables
     cd "${BUILD_FOLDER}"
     # I have to make cmake twice because of
 #    /usr/bin/ld: ../snapshot/libcrashpad_snapshot.a(system_snapshot_linux.cc.o): in function `crashpad::internal::SystemSnapshotLinux::SystemSnapshotLinux()':
