@@ -649,6 +649,12 @@ cmake_build() {
     set_clang_variables
     # Set the environment variables for the C and C++ compilers
     git config --global --add safe.directory "${SRC}"
+    # check existing folder $llvm_path
+    ls -la "${llvm_path}"
+    if [[ ! -d "${llvm_path}" ]]; then
+        echo "The folder ${llvm_path} does not exist."
+        return 1
+    fi
     chown_current_user
     cd "${BUILD_FOLDER}"
     # I have to make cmake twice because of
