@@ -625,6 +625,24 @@ supervisorctl() {
     sudo supervisorctl status
 }
 
+install_for_ubuntu() {
+    programs=()
+
+    for lib in "$@"; do
+        if [[ ! $(dpkg -s ${lib}) ]]; then
+            echo "============================================= install ${lib} ===================================================="
+            sudo apt-get install -y ${lib}
+        fi
+
+        programs+=("${lib}: $(dpkg -s ${lib} | grep Status && dpkg -s ${lib} | grep Version || echo 'Not installed')\n")
+    done
+
+    if [[ "${programs}" ]]; then
+        log_app_msg "Installed programs: "
+        echo -e "${programs[@]}"
+    fi
+}
+
 foxy_sever_libs() {
     system_prepare_ubuntu
     install_for_ubuntu uuid-dev libjsoncpp-dev cmake make zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync sudo sshpass
@@ -655,6 +673,7 @@ cmake_build() {
         echo "The folder ${llvm_path} does not exist."
         return 1
     fi
+    cd "${SRC}"
     chown_current_user
     cd "${BUILD_FOLDER}"
     # I have to make cmake twice because of
@@ -700,8 +719,8 @@ cmake_build() {
     -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
     -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
     -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
-    -DCMAKE_C_FLAGS=-I"${llvm_path_root}"include \
-    -DCMAKE_CXX_FLAGS=-I"${llvm_path_root}"include
+    -DCMAKE_C_FLAGS=-I"${llvm_path_root}"include/clang-c/ \
+    -DCMAKE_CXX_FLAGS=-I"${llvm_path_root}"include/c++/v1/
     cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
 }
 
@@ -871,24 +890,6 @@ release() {
     mb2_build
     cd "${BUILD_FOLDER}"
     sudo cp -f RPMS/*.rpm /share/output
-}
-
-install_for_ubuntu() {
-    programs=()
-
-    for lib in "$@"; do
-        if [[ ! $(dpkg -s ${lib}) ]]; then
-            echo "============================================= install ${lib} ===================================================="
-            sudo apt-get install -y ${lib}
-        fi
-
-        programs+=("${lib}: $(dpkg -s ${lib} | grep Status && dpkg -s ${lib} | grep Version || echo 'Not installed')\n")
-    done
-
-    if [[ "${programs}" ]]; then
-        log_app_msg "Installed programs: "
-        echo -e "${programs[@]}"
-    fi
 }
 
 log_app_msg() {
