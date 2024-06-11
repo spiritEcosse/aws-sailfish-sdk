@@ -702,8 +702,8 @@ cmake_build() {
     -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
     -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
     -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
-    -DCMAKE_C_FLAGS=-I"${llvm_path_root}"include \
-    -DCMAKE_CXX_FLAGS=-I"${llvm_path_root}"include
+    -DCMAKE_C_FLAGS=-I"${llvm_path_root}"include/clang-c/ \
+    -DCMAKE_CXX_FLAGS=-I"${llvm_path_root}"include/c++/v1/
 
     cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
     -D-DCMAKE_C_COMPILER="${llvm_path}"/clang \
