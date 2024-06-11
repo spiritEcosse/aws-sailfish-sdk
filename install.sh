@@ -669,8 +669,39 @@ cmake_build() {
 #    /usr/bin/ld: ../snapshot/libcrashpad_snapshot.a(system_snapshot_linux.cc.o): in function `crashpad::internal::SystemSnapshotLinux::CPUX86SupportsDAZ() const':
 #    /home/runner/ubuntu_x86_64/_deps/sentry-src/external/crashpad/snapshot/linux/system_snapshot_linux.cc:317: undefined reference to `crashpad::internal::CpuidReader::SupportsDAZ() const'
 #    collect2: error: ld returned 1 exit status
-    cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_C_COMPILER="${llvm_path}"/clang -DCMAKE_CXX_COMPILER="${llvm_path}"/clang++ -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
-    cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_C_COMPILER="${llvm_path}"/clang -DCMAKE_CXX_COMPILER="${llvm_path}"/clang++ -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}" -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/
+    cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
+    -D-DCMAKE_C_COMPILER="${llvm_path}"/clang \
+    -DCMAKE_CXX_COMPILER="${llvm_path}"/clang++ \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_TESTING=ON \
+    -DCODE_COVERAGE=ON \
+    -S "${SRC}" \
+    -B "${BUILD_FOLDER}" \
+    -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ \
+    -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ \
+    -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ \
+    -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
+    -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
+    -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
+    -DCMAKE_C_FLAGS=-I"${llvm_path_root}"include \
+    -DCMAKE_CXX_FLAGS=-I"${llvm_path_root}"include
+
+    cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
+    -D-DCMAKE_C_COMPILER="${llvm_path}"/clang \
+    -DCMAKE_CXX_COMPILER="${llvm_path}"/clang++ \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_TESTING=ON \
+    -DCODE_COVERAGE=ON \
+    -S "${SRC}" \
+    -B "${BUILD_FOLDER}" \
+    -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ \
+    -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ \
+    -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ \
+    -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
+    -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
+    -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
+    -DCMAKE_C_FLAGS=-I"${llvm_path_root}"include \
+    -DCMAKE_CXX_FLAGS=-I"${llvm_path_root}"include
     cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
 }
 
