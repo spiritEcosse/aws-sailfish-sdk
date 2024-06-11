@@ -670,6 +670,31 @@ cmake_build() {
     cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
 }
 
+remove_folders_from_compile_commands() {
+    # Directories to exclude
+    declare -a dirs=("build" "cmake-build-debug" "3rdparty")
+
+    # Path to the compile_commands.json file
+    file="${BUILD_FOLDER}/compile_commands.json"
+
+    # Create a temporary file
+    temp=$(mktemp)
+
+    # Copy the original file to the temporary file
+    cp "$file" "$temp"
+
+    # For each directory
+    for dir in "${dirs[@]}"; do
+        # Use jq to remove entries where the "file" field contains the directory
+        jq 'map(select(.file | test("'"$dir"'") | not))' "$temp" > "$file"
+        # Copy the modified file back to the temporary file for the next iteration
+        cp "$file" "$temp"
+    done
+
+    # Remove the temporary file
+    rm "$temp"
+}
+
 get_last_modified_file() {
     LAST_RPM=$(ls -lt *.rpm | head -1 | awk '{ print $9 }')
 }
