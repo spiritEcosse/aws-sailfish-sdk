@@ -95,6 +95,10 @@ TEMP_SSH_ID_RSA="${HOME}/.id_rsa"
 TEMP_SSH_ID_RSA_PUB="${HOME}/.id_rsa.pub"
 PATH=$HOME/bin:/usr/local/bin:$PATH
 
+if [[ -z ${LLVM_TAG+x} ]]; then
+    export LLVM_TAG="18.1.7"
+fi
+
 # Default values
 funcs=main
 
@@ -507,11 +511,6 @@ mb2_cmake_build() {
 }
 
 set_clang_variables() {
-    echo "${LLVM_TAG}"
-    if [[ -z ${LLVM_TAG+x} ]]; then
-        export LLVM_TAG="18.1.7"
-    fi
-
     # include if its match with debian or ubuntu
     if [[ "${PLATFORM_HOST}" == "ubuntu" ]] || [[ "${PLATFORM_HOST}" == "debian" ]]; then
         if [[ "${ARCH}" == "x86_64" ]]; then
