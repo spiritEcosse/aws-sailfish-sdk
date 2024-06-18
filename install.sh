@@ -507,7 +507,7 @@ mb2_cmake_build() {
 }
 
 set_clang_variables() {
-    export LLVM_TAG="17.0.2"
+    export LLVM_TAG="17.0.6"
 
     # include if its match with debian or ubuntu
     if [[ "${PLATFORM_HOST}" == "ubuntu" ]] || [[ "${PLATFORM_HOST}" == "debian" ]]; then
