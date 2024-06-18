@@ -507,6 +507,7 @@ mb2_cmake_build() {
 }
 
 set_clang_variables() {
+    echo "${LLVM_TAG}"
     if [[ -z ${LLVM_TAG+x} ]]; then
         export LLVM_TAG="18.1.7"
     fi
