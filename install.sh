@@ -96,7 +96,7 @@ TEMP_SSH_ID_RSA_PUB="${HOME}/.id_rsa.pub"
 PATH=$HOME/bin:/usr/local/bin:$PATH
 
 if [[ -z ${LLVM_TAG+x} ]]; then
-    export LLVM_TAG="18.1.7"
+    export LLVM_TAG="17.0.6"
 fi
 
 # Default values
