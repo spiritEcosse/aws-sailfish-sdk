@@ -616,7 +616,7 @@ autostart=true
 autorestart=true
 stderr_logfile=/var/log/foxy_server.err.log
 stdout_logfile=/var/log/foxy_server.out.log
-environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80,ENV=beta,FOXY_CLIENT=\"${FOXY_CLIENT}\",APP_CLOUD_NAME=\"${APP_CLOUD_NAME}\",FOXY_ADMIN=\"${FOXY_ADMIN}\",SENTRY_DSN=\"${SENTRY_DSN}\"
+environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80,ENV=beta,FOXY_CLIENT=\"${FOXY_CLIENT}\",APP_CLOUD_NAME=\"${APP_CLOUD_NAME}\",FOXY_ADMIN=\"${FOXY_ADMIN}\",SENTRY_DSN=\"${SENTRY_DSN}\",APP_DOMAIN=\"${APP_DOMAIN}\",TWITTER_ACCESS_TOKEN=\"${TWITTER_ACCESS_TOKEN}\",TWITTER_ACCESS_TOKEN_SECRET=\"${TWITTER_ACCESS_TOKEN_SECRET}\",TWITTER_API_KEY=\"${TWITTER_API_KEY}\",TWITTER_API_SECRET=\"${TWITTER_API_SECRET}\"
 EOF"
 }
 
@@ -663,6 +663,31 @@ rsync_share_to_src() {
 }
 
 cmake_build() {
+    # Print the variables
+    echo "APP_CLOUD_NAME: $APP_CLOUD_NAME"
+    echo "CMAKE_BUILD_TYPE: $CMAKE_BUILD_TYPE"
+    echo "FOXY_ADMIN: $FOXY_ADMIN"
+    echo "FOXY_CLIENT: $FOXY_CLIENT"
+    echo "SENTRY_DSN: $SENTRY_DSN"
+    echo "SERVER_HOST: $SERVER_HOST"
+    echo "SERVER_USER: $SERVER_USER"
+    echo "SERVER_PASSWORD: $SERVER_PASSWORD"
+    echo "SERVER_PSQL_DBNAME: $SERVER_PSQL_DBNAME"
+    echo "SERVER_PSQL_USER: $SERVER_PSQL_USER"
+    echo "SERVER_PSQL_PASSWORD: $SERVER_PSQL_PASSWORD"
+    echo "TWITTER_ACCESS_TOKEN: $TWITTER_ACCESS_TOKEN"
+    echo "TWITTER_ACCESS_TOKEN_SECRET: $TWITTER_ACCESS_TOKEN_SECRET"
+    echo "TWITTER_API_KEY: $TWITTER_API_KEY"
+    echo "TWITTER_API_SECRET: $TWITTER_API_SECRET"
+    echo "LLVM_TAG: $LLVM_TAG"
+    echo "KEY_PATH: $KEY_PATH"
+    echo "BUILD_FOLDER: $BUILD_FOLDER"
+    echo "SRC: $SRC"
+
+    # Mount directories
+    echo "Mounting current directory to SRC: $SRC"
+    echo "Mounting ~/build to BUILD_FOLDER: $BUILD_FOLDER"
+
     if [[ -z ${CMAKE_BUILD_TYPE+x} ]]; then
         CMAKE_BUILD_TYPE=Debug
     fi
@@ -1157,16 +1182,19 @@ server_run_commands() {
     ssh_copy_id
 
     ssh "${SERVER_USER}@${SERVER_HOST}" "
-        export APP_CLOUD_NAME=${APP_CLOUD_NAME}
-        export CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        export FOXY_ADMIN=${FOXY_ADMIN}
-        export FOXY_CLIENT=${FOXY_CLIENT}
-        export SENTRY_DSN=${SENTRY_DSN}
-        export SERVER_PSQL_DBNAME=${SERVER_PSQL_DBNAME}
-        export SERVER_PSQL_USER=${SERVER_PSQL_USER}
+        export APP_CLOUD_NAME=\"${APP_CLOUD_NAME}\"
+        export CMAKE_BUILD_TYPE=\"${CMAKE_BUILD_TYPE}\"
+        export FOXY_ADMIN=\"${FOXY_ADMIN}\"
+        export FOXY_CLIENT=\"${FOXY_CLIENT}\"
+        export SENTRY_DSN=\"${SENTRY_DSN}\"
+        export SERVER_PSQL_DBNAME=\"${SERVER_PSQL_DBNAME}\"
+        export SERVER_PSQL_USER=\"${SERVER_PSQL_USER}\"
         export SERVER_PSQL_PASSWORD=\"${SERVER_PSQL_PASSWORD}\"
-        export CERT_PATH=\"${CERT_PATH}\"
         export KEY_PATH=\"${KEY_PATH}\"
+        export TWITTER_ACCESS_TOKEN=\"${TWITTER_ACCESS_TOKEN}\"
+        export TWITTER_ACCESS_TOKEN_SECRET=\"${TWITTER_ACCESS_TOKEN_SECRET}\"
+        export TWITTER_API_KEY=\"${TWITTER_API_KEY}\"
+        export TWITTER_API_SECRET=\"${TWITTER_API_SECRET}\"
         curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
       "
 }
