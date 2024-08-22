@@ -681,6 +681,7 @@ cmake_build() {
     echo "TWITTER_API_SECRET: $TWITTER_API_SECRET"
     echo "LLVM_TAG: $LLVM_TAG"
     echo "KEY_PATH: $KEY_PATH"
+    echo "CERT_PATH: $CERT_PATH"
     echo "BUILD_FOLDER: $BUILD_FOLDER"
     echo "SRC: $SRC"
 
@@ -1191,6 +1192,7 @@ server_run_commands() {
         export SERVER_PSQL_USER=\"${SERVER_PSQL_USER}\"
         export SERVER_PSQL_PASSWORD=\"${SERVER_PSQL_PASSWORD}\"
         export KEY_PATH=\"${KEY_PATH}\"
+        export CERT_PATH=\"${CERT_PATH}\"
         export TWITTER_ACCESS_TOKEN=\"${TWITTER_ACCESS_TOKEN}\"
         export TWITTER_ACCESS_TOKEN_SECRET=\"${TWITTER_ACCESS_TOKEN_SECRET}\"
         export TWITTER_API_KEY=\"${TWITTER_API_KEY}\"
