@@ -616,7 +616,7 @@ autostart=true
 autorestart=true
 stderr_logfile=/var/log/foxy_server.err.log
 stdout_logfile=/var/log/foxy_server.out.log
-environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80,ENV=beta,FOXY_CLIENT=\"${FOXY_CLIENT}\",APP_CLOUD_NAME=\"${APP_CLOUD_NAME}\",FOXY_ADMIN=\"${FOXY_ADMIN}\",SENTRY_DSN=\"${SENTRY_DSN}\",TWITTER_ACCESS_TOKEN=\"${TWITTER_ACCESS_TOKEN}\",TWITTER_ACCESS_TOKEN_SECRET=\"${TWITTER_ACCESS_TOKEN_SECRET}\",TWITTER_API_KEY=\"${TWITTER_API_KEY}\",TWITTER_API_SECRET=\"${TWITTER_API_SECRET}\"
+environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80,ENV=beta,FOXY_CLIENT=\"${FOXY_CLIENT}\",APP_CLOUD_NAME=\"${APP_CLOUD_NAME}\",APP_BUCKET_HOST=\"${APP_BUCKET_HOST}\",FOXY_ADMIN=\"${FOXY_ADMIN}\",SENTRY_DSN=\"${SENTRY_DSN}\",TWITTER_ACCESS_TOKEN=\"${TWITTER_ACCESS_TOKEN}\",TWITTER_ACCESS_TOKEN_SECRET=\"${TWITTER_ACCESS_TOKEN_SECRET}\",TWITTER_API_KEY=\"${TWITTER_API_KEY}\",TWITTER_API_SECRET=\"${TWITTER_API_SECRET}\"
 EOF"
 }
 
@@ -647,7 +647,7 @@ install_for_ubuntu() {
 
 foxy_sever_libs() {
     system_prepare_ubuntu
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync sudo sshpass libunwind-dev binutils-dev
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync sudo sshpass libunwind-dev binutils-dev libunwind8
     install_clang
     ls -lah
 }
@@ -665,6 +665,7 @@ rsync_share_to_src() {
 cmake_build() {
     # Print the variables
     echo "APP_CLOUD_NAME: $APP_CLOUD_NAME"
+    echo "APP_BUCKET_HOST: $APP_BUCKET_HOST"
     echo "CMAKE_BUILD_TYPE: $CMAKE_BUILD_TYPE"
     echo "FOXY_ADMIN: $FOXY_ADMIN"
     echo "FOXY_CLIENT: $FOXY_CLIENT"
@@ -1184,6 +1185,7 @@ server_run_commands() {
 
     ssh "${SERVER_USER}@${SERVER_HOST}" "
         export APP_CLOUD_NAME=\"${APP_CLOUD_NAME}\"
+        export APP_BUCKET_HOST=\"${APP_BUCKET_HOST}\"
         export CMAKE_BUILD_TYPE=\"${CMAKE_BUILD_TYPE}\"
         export FOXY_ADMIN=\"${FOXY_ADMIN}\"
         export FOXY_CLIENT=\"${FOXY_CLIENT}\"
