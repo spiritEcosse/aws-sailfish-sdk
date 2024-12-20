@@ -616,7 +616,6 @@ autostart=true
 autorestart=true
 stderr_logfile=/var/log/foxy_server.err.log
 stdout_logfile=/var/log/foxy_server.out.log
-environment=CONFIG_APP_PATH=${BUILD_FOLDER}/config.json,FOXY_HTTP_PORT=80,ENV=beta,FOXY_CLIENT=\"${FOXY_CLIENT}\",APP_CLOUD_NAME=\"${APP_CLOUD_NAME}\",APP_BUCKET_HOST=\"${APP_BUCKET_HOST}\",FOXY_ADMIN=\"${FOXY_ADMIN}\",SENTRY_DSN=\"${SENTRY_DSN}\",TWITTER_ACCESS_TOKEN=\"${TWITTER_ACCESS_TOKEN}\",TWITTER_ACCESS_TOKEN_SECRET=\"${TWITTER_ACCESS_TOKEN_SECRET}\",TWITTER_API_KEY=\"${TWITTER_API_KEY}\",TWITTER_API_SECRET=\"${TWITTER_API_SECRET}\"
 EOF"
 }
 
@@ -685,6 +684,12 @@ cmake_build() {
     echo "CERT_PATH: $CERT_PATH"
     echo "BUILD_FOLDER: $BUILD_FOLDER"
     echo "SRC: $SRC"
+    echo "CONFIG_APP_PATH: $CONFIG_APP_PATH"
+    echo "FOXY_HTTP_PORT: $FOXY_HTTP_PORT"
+    echo "ENVIRONMENT: $ENVIRONMENT"
+    echo "PINTEREST_API_HOST: $PINTEREST_API_HOST"
+    echo "PINTEREST_ACCESS_TOKEN: $PINTEREST_ACCESS_TOKEN"
+    echo "PINTEREST_BOARD_ID: $PINTEREST_BOARD_ID"
 
     # Mount directories
     echo "Mounting current directory to SRC: $SRC"
@@ -1184,21 +1189,6 @@ server_run_commands() {
     ssh_copy_id
 
     ssh "${SERVER_USER}@${SERVER_HOST}" "
-        export APP_CLOUD_NAME=\"${APP_CLOUD_NAME}\"
-        export APP_BUCKET_HOST=\"${APP_BUCKET_HOST}\"
-        export CMAKE_BUILD_TYPE=\"${CMAKE_BUILD_TYPE}\"
-        export FOXY_ADMIN=\"${FOXY_ADMIN}\"
-        export FOXY_CLIENT=\"${FOXY_CLIENT}\"
-        export SENTRY_DSN=\"${SENTRY_DSN}\"
-        export SERVER_PSQL_DBNAME=\"${SERVER_PSQL_DBNAME}\"
-        export SERVER_PSQL_USER=\"${SERVER_PSQL_USER}\"
-        export SERVER_PSQL_PASSWORD=\"${SERVER_PSQL_PASSWORD}\"
-        export KEY_PATH=\"${KEY_PATH}\"
-        export CERT_PATH=\"${CERT_PATH}\"
-        export TWITTER_ACCESS_TOKEN=\"${TWITTER_ACCESS_TOKEN}\"
-        export TWITTER_ACCESS_TOKEN_SECRET=\"${TWITTER_ACCESS_TOKEN_SECRET}\"
-        export TWITTER_API_KEY=\"${TWITTER_API_KEY}\"
-        export TWITTER_API_SECRET=\"${TWITTER_API_SECRET}\"
         curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
       "
 }
