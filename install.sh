@@ -712,7 +712,7 @@ cmake_build() {
     chown_current_user
     cd "${BUILD_FOLDER}"
     cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
-    -D-DCMAKE_C_COMPILER="${llvm_path}"/clang \
+    -DCMAKE_C_COMPILER="${llvm_path}"/clang \
     -DCMAKE_CXX_COMPILER="${llvm_path}"/clang++ \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DBUILD_TESTING=ON \
