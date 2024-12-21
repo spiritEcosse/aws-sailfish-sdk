@@ -663,7 +663,8 @@ foxy_sever_libs() {
 
     # System preparation and library installation
     system_prepare_ubuntu
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync sshpass libunwind-dev binutils-dev libunwind8 clang-17
+    install_for_ubuntu clang-17
+#    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync sshpass libunwind-dev binutils-dev libunwind8 clang-17
 }
 
 rsync_share_to_src() {
