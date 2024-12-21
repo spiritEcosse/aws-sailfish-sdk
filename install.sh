@@ -652,13 +652,14 @@ set_tz() {
 
 foxy_sever_libs() {
     export DEBIAN_FRONTEND=noninteractive
+    system_prepare_ubuntu
+    install_for_ubuntu sudo gnupg lsb-release
 
     # Set timezone
     echo "tzdata tzdata/Areas select Europe" | sudo debconf-set-selections
     echo "tzdata tzdata/Zones/Europe select Madrid" | sudo debconf-set-selections
 
     # Install necessary tools
-    install_for_ubuntu sudo gnupg lsb-release
     echo "deb [signed-by=/usr/share/keyrings/llvm-keyring.gpg] http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-17 main" | sudo tee /etc/apt/sources.list.d/llvm.list
     curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /usr/share/keyrings/llvm-keyring.gpg > /dev/null
 
