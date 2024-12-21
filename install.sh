@@ -660,8 +660,8 @@ foxy_sever_libs() {
     echo "tzdata tzdata/Zones/Europe select Madrid" | sudo debconf-set-selections
 
     # Install necessary tools
-    echo "deb [signed-by=/usr/share/keyrings/llvm-keyring.gpg] http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-17 main" | sudo tee /etc/apt/sources.list.d/llvm.list
     curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /usr/share/keyrings/llvm-keyring.gpg > /dev/null
+    echo "deb [signed-by=/usr/share/keyrings/llvm-keyring.gpg] http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-17 main" | sudo tee /etc/apt/sources.list.d/llvm.list
 
     # System preparation and library installation
     system_prepare_ubuntu
