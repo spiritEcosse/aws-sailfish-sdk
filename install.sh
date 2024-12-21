@@ -645,8 +645,6 @@ install_for_ubuntu() {
 }
 
 set_tz() {
-    system_prepare_ubuntu
-    install_for_ubuntu systemd
     sudo timedatectl set-timezone Europe/Madrid
     timedatectl
 }
@@ -656,7 +654,8 @@ foxy_sever_libs() {
     export DEBIAN_FRONTEND=noninteractive
 
     # Set timezone
-    set_tz
+    echo "tzdata tzdata/Areas select Europe" | sudo debconf-set-selections
+    echo "tzdata tzdata/Zones/Europe select Madrid" | sudo debconf-set-selections
 
     # Install necessary tools
     install_for_ubuntu sudo gnupg lsb-release
