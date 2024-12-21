@@ -652,19 +652,12 @@ set_tz() {
 
 foxy_sever_libs() {
     system_prepare_ubuntu
-    install_for_ubuntu sudo gnupg lsb-release curl ca-certificates
+    install_for_ubuntu sudo gnupg lsb-release curl ca-certificates wget software-properties-common gnupg
 
-    # Set timezone
-    echo "tzdata tzdata/Areas select Europe" | sudo debconf-set-selections
-    echo "tzdata tzdata/Zones/Europe select Madrid" | sudo debconf-set-selections
-
-    # Download and add the LLVM GPG key
-    curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/llvm-archive-keyring.gpg
-
+    curl -fsSL https://apt.llvm.org/llvm.sh | sudo bash -s 17
     # System preparation and library installation
     system_prepare_ubuntu
-    install_for_ubuntu clang-17
-#    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync sshpass libunwind-dev binutils-dev libunwind8 clang-17
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync sshpass libunwind-dev binutils-dev libunwind8
 }
 
 rsync_share_to_src() {
