@@ -655,6 +655,7 @@ foxy_sever_libs() {
     install_for_ubuntu sudo gnupg lsb-release curl ca-certificates wget software-properties-common gnupg
 
     curl -fsSL https://apt.llvm.org/llvm.sh | sudo bash -s 17
+    clang-17 --version
     # System preparation and library installation
     system_prepare_ubuntu
     install_for_ubuntu uuid-dev libjsoncpp-dev cmake make zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync sshpass libunwind-dev binutils-dev libunwind8
