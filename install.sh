@@ -721,22 +721,7 @@ cmake_build() {
     cd "${SRC}"
     chown_current_user
     cd "${BUILD_FOLDER}"
-    cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
-    -DCMAKE_C_COMPILER="${llvm_path}"/clang \
-    -DCMAKE_CXX_COMPILER="${llvm_path}"/clang++ \
-    -DCMAKE_INSTALL_PREFIX=/usr \
-    -DBUILD_TESTING=ON \
-    -DCODE_COVERAGE=ON \
-    -S "${SRC}" \
-    -B "${BUILD_FOLDER}" \
-    -DCMAKE_MODULE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ \
-    -DCMAKE_SHARED_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ \
-    -DCMAKE_EXE_LINKER_FLAGS_INIT=-L"${llvm_path_root}"lib/ \
-    -DCMAKE_EXE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
-    -DCMAKE_MODULE_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
-    -DCMAKE_SHARED_LINKER_FLAGS=-L"${llvm_path_root}"lib/ \
-    -DCMAKE_C_FLAGS=-I"${llvm_path_root}"include \
-    -DCMAKE_CXX_FLAGS=-I"${llvm_path_root}"include
+    cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
     cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
 }
 
