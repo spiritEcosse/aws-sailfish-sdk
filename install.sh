@@ -645,6 +645,8 @@ install_for_ubuntu() {
 }
 
 set_tz() {
+    system_prepare_ubuntu
+    install_for_ubuntu systemd
     sudo timedatectl set-timezone Europe/Madrid
     timedatectl
 }
@@ -660,9 +662,6 @@ foxy_sever_libs() {
     install_for_ubuntu sudo gnupg lsb-release
     echo "deb [signed-by=/usr/share/keyrings/llvm-keyring.gpg] http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-17 main" | sudo tee /etc/apt/sources.list.d/llvm.list
     curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /usr/share/keyrings/llvm-keyring.gpg > /dev/null
-
-    # Update package lists
-    sudo apt update
 
     # System preparation and library installation
     system_prepare_ubuntu
