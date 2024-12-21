@@ -715,7 +715,14 @@ cmake_build() {
     cd "${SRC}"
     chown_current_user
     cd "${BUILD_FOLDER}"
-    cmake -G Ninja -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
+    cmake -G Ninja \
+        -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
+        -DBUILD_TESTING=ON \
+        -DCODE_COVERAGE=ON \
+        -DCMAKE_C_COMPILER=clang-17 \
+        -DCMAKE_CXX_COMPILER=clang++-17 \
+        -S "${SRC}" \
+        -B "${BUILD_FOLDER}"
     cmake --build .
 }
 
