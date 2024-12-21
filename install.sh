@@ -651,7 +651,6 @@ set_tz() {
 
 
 foxy_sever_libs() {
-    export DEBIAN_FRONTEND=noninteractive
     system_prepare_ubuntu
     install_for_ubuntu sudo gnupg lsb-release
 
