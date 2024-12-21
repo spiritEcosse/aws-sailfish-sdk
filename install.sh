@@ -659,7 +659,7 @@ foxy_sever_libs() {
     echo "tzdata tzdata/Zones/Europe select Madrid" | sudo debconf-set-selections
 
     # Download and add the LLVM GPG key
-    curl -O https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+    curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/llvm-archive-keyring.gpg
 
     # System preparation and library installation
     system_prepare_ubuntu
