@@ -644,11 +644,29 @@ install_for_ubuntu() {
     fi
 }
 
+set_tz() {
+    sudo timedatectl set-timezone Europe/Madrid
+    timedatectl
+}
+
+
 foxy_sever_libs() {
+    export DEBIAN_FRONTEND=noninteractive
+
+    # Set timezone
+    set_tz
+
+    # Install necessary tools
+    install_for_ubuntu sudo gnupg lsb-release
+    echo "deb [signed-by=/usr/share/keyrings/llvm-keyring.gpg] http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-17 main" | sudo tee /etc/apt/sources.list.d/llvm.list
+    curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /usr/share/keyrings/llvm-keyring.gpg > /dev/null
+
+    # Update package lists
+    sudo apt update
+
+    # System preparation and library installation
     system_prepare_ubuntu
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync sudo sshpass libunwind-dev binutils-dev libunwind8
-    install_clang
-    ls -lah
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync sshpass libunwind-dev binutils-dev libunwind8 clang-17
 }
 
 rsync_share_to_src() {
@@ -904,12 +922,6 @@ log_app_msg() {
 
 log_failure_msg() {
     echo -ne "[${RED}ERROR] $@\n"
-}
-
-set_tz() {
-    sudo timedatectl list-timezones | grep Europe
-    sudo timedatectl set-timezone Europe/Madrid
-    timedatectl
 }
 
 install_deps() {
