@@ -658,7 +658,7 @@ foxy_sever_libs() {
     clang-17 --version
     # System preparation and library installation
     system_prepare_ubuntu
-    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync sshpass libunwind-dev binutils-dev libunwind8
+    install_for_ubuntu uuid-dev libjsoncpp-dev cmake make zlib1g-dev supervisor jq libpq-dev micro unzip nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev git curl xz-utils rsync sshpass libunwind-dev binutils-dev libunwind8 ninja-build
 }
 
 rsync_share_to_src() {
@@ -709,20 +709,14 @@ cmake_build() {
     if [[ -z ${CMAKE_BUILD_TYPE+x} ]]; then
         CMAKE_BUILD_TYPE=Debug
     fi
-    set_clang_variables
     # Set the environment variables for the C and C++ compilers
     git config --global --add safe.directory "${SRC}"
     # check existing folder $llvm_path
-    ls -la "${llvm_path}"
-    if [[ ! -d "${llvm_path}" ]]; then
-        echo "The folder ${llvm_path} does not exist."
-        return 1
-    fi
     cd "${SRC}"
     chown_current_user
     cd "${BUILD_FOLDER}"
-    cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
-    cmake --build . -j "$((2 * $(getconf _NPROCESSORS_ONLN)))"
+    cmake -G Ninja -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_TESTING=ON -DCODE_COVERAGE=ON -S "${SRC}" -B "${BUILD_FOLDER}"
+    cmake --build .
 }
 
 remove_folders_from_compile_commands() {
