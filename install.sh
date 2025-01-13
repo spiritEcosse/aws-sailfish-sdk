@@ -1151,6 +1151,11 @@ server_run_commands() {
     ssh_copy_id
 
     ssh "${SERVER_USER}@${SERVER_HOST}" "
+        export KEY_PATH=\"${KEY_PATH}\"
+        export CERT_PATH=\"${CERT_PATH}\"
+        export SERVER_PSQL_DBNAME=\"${SERVER_PSQL_DBNAME}\"
+        export SERVER_PSQL_USER=\"${SERVER_PSQL_USER}\"
+        export SERVER_PSQL_PASSWORD=\"${SERVER_PSQL_PASSWORD}\"
         curl https://spiritecosse.github.io/aws-sailfish-sdk/install.sh | bash -s -- --func=\"$1\"
       "
 }
