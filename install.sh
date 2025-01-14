@@ -719,6 +719,7 @@ cmake_build() {
         -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
         -DBUILD_TESTING=ON \
         -DCODE_COVERAGE=ON \
+        -DENABLE_TESTS=ON \
         -DCMAKE_C_COMPILER=clang-17 \
         -DCMAKE_CXX_COMPILER=clang++-17 \
         -S "${SRC}" \
