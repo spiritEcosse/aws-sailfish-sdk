@@ -78,9 +78,6 @@ install_bash() {
     bash --version
 }
 
-install_bash &
-wait
-
 # builtin variables
 RED='\033[0;31m'
 BLUE='\033[1;36m'
@@ -678,7 +675,7 @@ cmake_build() {
     echo "CMAKE_BUILD_TYPE: $CMAKE_BUILD_TYPE"
     echo "FOXY_ADMIN: $FOXY_ADMIN"
     echo "FOXY_CLIENT: $FOXY_CLIENT"
-    echo "SENTRY_DSN: $SENTRY_DSN"
+#    echo "SENTRY_DSN: $SENTRY_DSN"
     echo "SERVER_HOST: $SERVER_HOST"
     echo "SERVER_USER: $SERVER_USER"
     echo "SERVER_PASSWORD: $SERVER_PASSWORD"
