@@ -600,7 +600,20 @@ create_config_file() {
           \"is_fast\": true,
           \"connection_number\": 1,
           \"filename\": \"\"
-        }
+        },
+      \"db_clients\": [
+        {
+          \"name\": \"default_not_fast\",
+          \"rdbms\": \"postgresql\",
+          \"host\": \"localhost\",
+          \"port\": 5432,
+          \"dbname\": \"$SERVER_PSQL_DBNAME\",
+          \"user\": \"$SERVER_PSQL_USER\",
+          \"passwd\": \"$SERVER_PSQL_PASSWORD\",
+          \"is_fast\": false,
+          \"connection_number\": 1,
+          \"filename\": \"\"
+        },
       ]
     }" > "${BUILD_FOLDER}"/config.json
     config_file="/etc/supervisor/conf.d/foxy_server.conf"
