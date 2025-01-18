@@ -601,7 +601,6 @@ create_config_file() {
           \"connection_number\": 1,
           \"filename\": \"\"
         },
-      \"db_clients\": [
         {
           \"name\": \"default_not_fast\",
           \"rdbms\": \"postgresql\",
@@ -613,7 +612,7 @@ create_config_file() {
           \"is_fast\": false,
           \"connection_number\": 1,
           \"filename\": \"\"
-        },
+        }
       ]
     }" > "${BUILD_FOLDER}"/config.json
     config_file="/etc/supervisor/conf.d/foxy_server.conf"
