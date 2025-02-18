@@ -1206,12 +1206,17 @@ add_user() {
         return 1
     fi
 
+    if id "$1" &>/dev/null; then
+        echo "User '$1' already exists."
+        return 1
+    fi
+
     adduser --shell /bin/bash --home /home/"$1" --gecos "User" "$1"
-    # Add the user to the sudo group
     usermod -aG sudo "$1"
     echo "$1 ALL=(ALL) NOPASSWD:ALL" | EDITOR="tee -a" visudo -f /etc/sudoers.d/rules-for-user-"$1"
     echo "User $1 added successfully."
 }
+
 
 install_psql() {
     if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
