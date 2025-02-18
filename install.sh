@@ -1208,12 +1208,12 @@ add_user() {
 
     if id "$1" &>/dev/null; then
         echo "User '$1' already exists."
+    else
+      adduser --shell /bin/bash --home /home/"$1" --gecos "User" "$1"
+      usermod -aG sudo "$1"
+      echo "$1 ALL=(ALL) NOPASSWD:ALL" | EDITOR="tee -a" visudo -f /etc/sudoers.d/rules-for-user-"$1"
+      echo "User $1 added successfully."
     fi
-
-    adduser --shell /bin/bash --home /home/"$1" --gecos "User" "$1"
-    usermod -aG sudo "$1"
-    echo "$1 ALL=(ALL) NOPASSWD:ALL" | EDITOR="tee -a" visudo -f /etc/sudoers.d/rules-for-user-"$1"
-    echo "User $1 added successfully."
 }
 
 
