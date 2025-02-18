@@ -1208,7 +1208,6 @@ add_user() {
 
     if id "$1" &>/dev/null; then
         echo "User '$1' already exists."
-        return 1
     fi
 
     adduser --shell /bin/bash --home /home/"$1" --gecos "User" "$1"
