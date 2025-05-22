@@ -582,12 +582,15 @@ create_config_file() {
       \"listeners\": [
         {
           \"address\": \"0.0.0.0\",
-          \"port\": 443,
+          \"port\": 8444,
           \"https\": true,
           \"cert\": \"$CERT_PATH\",
           \"key\": \"$KEY_PATH\"
         }
       ],
+      \"load_app\": true,
+      \"enable_server_header\": false,
+      \"use_default_listener\": false,
       \"db_clients\": [
         {
           \"name\": \"default\",
